@@ -1,11 +1,11 @@
-package HapSwitchUser.core.db.table
+package Hap_extend.core.db
 
 
 import com.hand.hap.liquibase.MigrationHelper
 
 def mhi = MigrationHelper.getInstance()
 
-databaseChangeLog(logicalFilePath:"HapSwitchUser/core/db/2016-06-01-init-migration.groovy"){
+databaseChangeLog(logicalFilePath:"Hap_extend/core/db/2016-06-01-init-migration.groovy"){
 
 
 //    changeSet(author: "jessen", id: "20160601-hailor-1") {

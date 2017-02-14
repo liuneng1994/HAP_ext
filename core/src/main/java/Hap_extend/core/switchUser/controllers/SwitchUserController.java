@@ -1,7 +1,7 @@
-package HapSwitchUser.core.switchUser.controllers;
+package Hap_extend.core.switchUser.controllers;
 
-import com.hand.hap.account.dto.Role;
 import com.hand.hap.account.dto.User;
+import com.hand.hap.account.service.IRole;
 import com.hand.hap.account.service.IRoleService;
 import com.hand.hap.account.service.IUserService;
 import com.hand.hap.activiti.service.IActivitiEntityService;
@@ -55,8 +55,11 @@ public class SwitchUserController extends BaseController{
         User newUser = fetchUserById(targetUserId,requestContext);
         switchToTarget(targetUserId,newUser.getUserName(), session,requestContext);
         //set source user to session
-        session.setAttribute(FIELD_SOURCE_USER_ID,oldUserId);
-        session.setAttribute(FIELD_SOURCE_USER_NAME,oldUserName);
+        if(null == session.getAttribute(FIELD_SOURCE_USER_ID)){
+            session.setAttribute(FIELD_SOURCE_USER_ID,oldUserId);
+            session.setAttribute(FIELD_SOURCE_USER_NAME,oldUserName);
+        }
+
         //redirect to home page
         return new ResponseData(true);
     }
@@ -89,13 +92,13 @@ public class SwitchUserController extends BaseController{
         //fetch roleId of new user
         User user = new User();
         user.setUserId(userId);
-        List<Role> roleList = roleService.selectRolesByUser(requestContext,user);
+        List<IRole> roleList = roleService.selectRolesByUser(requestContext,user);
         Assert.notNull(roleList,"illegal userId");
         Assert.notEmpty(roleList,"illegal userId");
         final int size = roleList.size();
         Long[] userIds = new Long[size];
         int index = 0;
-        for(Role role : roleList){
+        for(IRole role : roleList){
             userIds[index++] = role.getRoleId();
         }
         //fetch employee code of new user
