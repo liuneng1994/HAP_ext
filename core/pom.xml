@@ -12,6 +12,13 @@
     <name>core</name>
     <url>http://maven.apache.org</url>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.github.jsqlparser/jsqlparser -->
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
