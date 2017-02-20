@@ -71,10 +71,10 @@ public class DataPermissionInterceptor implements Interceptor {
         MappedStatement statement = (MappedStatement) args[0];//在当前类的开头使用注解规定需要注入的参数
 //        logger.debug("\n\n\n拦截的sql id------------------------"+statement.getId());
 
-        Cache<Long[]> ruleIdsOfMethodUserMapping = applicationContext.getBean(CacheManager.class).getCache(Constant.FIELD_METHOD_USER_MAP_CACHE_NAME);
+        Cache<Long[]> ruleIdsOfMethodUserMapping = applicationContext.getBean(CacheManager.class).getCache(Constant.FIELD_METHOD_RULES_MAP_CACHE_NAME);
         Cache<String> rules = applicationContext.getBean(CacheManager.class).getCache(Constant.FIELD_RULES_CACHE_NAME);
         if(isNull(ruleIdsOfMethodUserMapping) || isNull(rules)){
-            logger.error("HAP通用数据权限：权限设置没有加入缓存，"+Constant.FIELD_METHOD_USER_MAP_CACHE_NAME+":"
+            logger.error("HAP通用数据权限：权限设置没有加入缓存，"+Constant.FIELD_METHOD_RULES_MAP_CACHE_NAME +":"
                     +isNull(ruleIdsOfMethodUserMapping)+","+Constant.FIELD_RULES_CACHE_NAME+":"+isNull(rules));
         }else {//处理规则的应用
             BoundSql boundSql = statement.getBoundSql(args[1]);
@@ -88,7 +88,7 @@ public class DataPermissionInterceptor implements Interceptor {
             String roleId = roleId_L.toString();
 
 
-            Long[] targetRuleIds = ruleIdsOfMethodUserMapping.getValue(CacheUtils.getRuleIdsOfUserMethodMap(statement.getId(), userId));
+            Long[] targetRuleIds = ruleIdsOfMethodUserMapping.getValue(CacheUtils.getMappermethodRulesKey(statement.getId()));
             if(isNull(targetRuleIds) || targetRuleIds.length < 1){//无需应用规则
                 return invocation.proceed();
             }
@@ -226,7 +226,7 @@ public class DataPermissionInterceptor implements Interceptor {
         //fetch rules sql list
         for(Long ruleId : ruleIds){
             if(!isNull(ruleId)){
-                String tempSql = allRulesInCache.getValue(CacheUtils.getRuleId(ruleId.toString()));
+                String tempSql = allRulesInCache.getValue(CacheUtils.getRuleKey(ruleId.toString()));
                 if(tempSql.contains(FIELD_USER_ID) || tempSql.contains(FIELD_ROLE_ID)){
                     ruleList.add(tempSql.replace(FIELD_USER_ID,userId).replace(FIELD_ROLE_ID,roleId));
                 }
