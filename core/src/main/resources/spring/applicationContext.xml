@@ -46,7 +46,7 @@
         <property name="plugins">
             <array>
                 <bean class="com.hand.hap.core.interceptor.RequestContextInterceptor"/>
-                <bean class="Hap_extend.core.dataPermission.interceptor.DataPermissionInterceptor"/>
+                <bean class="hap.extend.core.dataPermission.interceptor.DataPermissionInterceptor"/>
                 <bean class="com.hand.hap.core.interceptor.MultiLanguageInterceptor"/>
                 <bean class="com.hand.hap.core.interceptor.SecurityTokenInterceptor"/>
                 <bean class="com.hand.hap.core.interceptor.OvnInterceptor"/>
