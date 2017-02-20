@@ -1,4 +1,4 @@
-package Hap_extend.core.operation.scanner;
+package hap.extend.core.operation.scanner;
 
 /**
  * Created by liuneng on 2017/2/20.

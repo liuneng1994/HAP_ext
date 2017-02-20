@@ -1,12 +1,12 @@
-package Hap_extend.core.operation.strategy.impl;
+package hap.extend.core.operation.strategy.impl;
 
-import Hap_extend.core.operation.component.HtmlComponent;
-import Hap_extend.core.operation.strategy.ComponentPermissionStrategy;
+import hap.extend.core.operation.component.HtmlComponent;
+import hap.extend.core.operation.strategy.ComponentPermissionStrategy;
 
 /**
  * Created by liuneng on 2017/2/20.
  */
-public class GridPermissionStrategy implements ComponentPermissionStrategy {
+public class ButtonComponentStrategy implements ComponentPermissionStrategy {
     @Override
     public String getPermissionCtrlCode(HtmlComponent component) {
         return null;

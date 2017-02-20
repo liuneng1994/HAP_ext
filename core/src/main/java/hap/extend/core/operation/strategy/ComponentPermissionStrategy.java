@@ -1,8 +1,6 @@
-package Hap_extend.core.operation.strategy;
+package hap.extend.core.operation.strategy;
 
-import Hap_extend.core.operation.component.HtmlComponent;
-
-/**
+import hap.extend.core.operation.component.HtmlComponent; /**
  * Created by liuneng on 2017/2/20.
  */
 
