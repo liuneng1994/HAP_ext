@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hap.extend.core.dataPermission.mapper.RuleMapper" >
+    <resultMap id="BaseResultMap" type="hap.extend.core.dataPermission.dto.Rule" extends="com.hand.hap.mapper.StdMapper.STD" >
+        <id column="rule_id" property="ruleId" jdbcType="DECIMAL" />
+        <result column="rule_sql" property="ruleSql" jdbcType="string" />
+        <result column="rule_name" property="ruleName" jdbcType="string" />
+    </resultMap>
+</mapper>
