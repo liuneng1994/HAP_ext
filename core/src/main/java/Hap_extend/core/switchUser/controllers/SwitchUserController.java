@@ -1,4 +1,4 @@
-package HapSwitchUser.core.switchUser.controllers;
+package Hap_extend.core.switchUser.controllers;
 
 import com.hand.hap.account.dto.User;
 import com.hand.hap.account.service.IRole;
@@ -55,8 +55,11 @@ public class SwitchUserController extends BaseController{
         User newUser = fetchUserById(targetUserId,requestContext);
         switchToTarget(targetUserId,newUser.getUserName(), session,requestContext);
         //set source user to session
-        session.setAttribute(FIELD_SOURCE_USER_ID,oldUserId);
-        session.setAttribute(FIELD_SOURCE_USER_NAME,oldUserName);
+        if(null == session.getAttribute(FIELD_SOURCE_USER_ID)){
+            session.setAttribute(FIELD_SOURCE_USER_ID,oldUserId);
+            session.setAttribute(FIELD_SOURCE_USER_NAME,oldUserName);
+        }
+
         //redirect to home page
         return new ResponseData(true);
     }

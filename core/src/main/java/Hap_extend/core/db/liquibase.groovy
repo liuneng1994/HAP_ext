@@ -1,9 +1,10 @@
+package Hap_extend.core.db
 //package HapSwitchUser.core.db
 
 import com.hand.hap.liquibase.MigrationHelper
 
 //表结构
-databaseChangeLog(logicalFilePath: "HapSwitchUser/core/db/liquibase.groovy") {
+databaseChangeLog(logicalFilePath: "Hap_extend/core/db/liquibase.groovy") {
     def migrationHelper = MigrationHelper.getInstance()
     migrationHelper.dbmigrate.delegate = delegate
     //上面的内容不需要改动,三个参数的含义分别是
@@ -19,6 +20,6 @@ databaseChangeLog(logicalFilePath: "HapSwitchUser/core/db/liquibase.groovy") {
         dbType = "sqlserver";
     }
     // 现在支持自动根据 db.url 参数检测数据库类型
-    migrationHelper.dbmigrate(dbType,["com/hand/hap","HapSwitchUser/core"] ,["table", "data", "patch"])
+    migrationHelper.dbmigrate(dbType,["com/hand/hap","Hap_extend/core"] ,["table", "data", "patch"])
 
 }

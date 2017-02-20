@@ -2,9 +2,9 @@
 <!--suppress MavenModelInspection -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>HapSwitchUser</artifactId>
-        <groupId>HapSwitchUser</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <artifactId>Hap_extend</artifactId>
+        <groupId>Hap_extend</groupId>
+        <version>${Hap_extend.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core</artifactId>
@@ -12,6 +12,13 @@
     <name>core</name>
     <url>http://maven.apache.org</url>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.github.jsqlparser/jsqlparser -->
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -112,9 +119,9 @@
                         <version>${hap.version}</version>
                     </dependency>
                     <dependency>
-                        <groupId>HapSwitchUser</groupId>
+                        <groupId>Hap_extend</groupId>
                         <artifactId>core-db</artifactId>
-                        <version>1.0-SNAPSHOT</version>
+                        <version>${Hap_extend.version}</version>
                     </dependency>
 
                 </dependencies>
@@ -137,7 +144,7 @@
                         <id>update</id>
                         <phase>process-resources</phase>
                         <configuration>
-                            <changeLogFile>HapSwitchUser/core/db/liquibase.groovy</changeLogFile>
+                            <changeLogFile>Hap_extend/core/db/liquibase.groovy</changeLogFile>
                             <driver>${db.driver}</driver>
                             <url>${db.url}</url>
                             <username>${db.user}</username>
