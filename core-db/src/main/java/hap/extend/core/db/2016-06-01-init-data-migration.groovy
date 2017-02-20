@@ -1,4 +1,4 @@
-package Hap_extend.core.db
+package hap.extend.core.db
 
 
 import com.hand.hap.liquibase.MigrationHelper

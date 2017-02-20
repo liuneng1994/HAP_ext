@@ -1,17 +1,16 @@
-package Hap_extend.core.dataPermission.interceptor;
+package hap.extend.core.dataPermission.interceptor;
 
-import Hap_extend.core.dataPermission.utils.CacheUtils;
-import Hap_extend.core.dataPermission.utils.Constant;
+import hap.extend.core.dataPermission.utils.CacheUtils;
+import hap.extend.core.dataPermission.utils.Constant;
 import com.hand.hap.cache.Cache;
 import com.hand.hap.cache.CacheManager;
 import com.hand.hap.core.IRequest;
+import com.hand.hap.core.impl.RequestHelper;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.executor.statement.RoutingStatementHandler;
-import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.*;
@@ -40,7 +39,7 @@ import java.util.stream.Collectors;
 //        @Signature(type = Executor.class, method = "createCacheKey", args = { MappedStatement.class, Object.class,
 //                RowBounds.class, BoundSql.class }),
 //        @Signature(type = StatementHandler.class, method = "parameterize", args = { Statement.class }) })
-@Intercepts(@Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}))
+@Intercepts(@Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}))//第二个参数是封装了sql的参数对象
 public class DataPermissionInterceptor implements Interceptor {
     private static Logger logger = LoggerFactory.getLogger(DataPermissionInterceptor.class);
 
@@ -53,6 +52,7 @@ public class DataPermissionInterceptor implements Interceptor {
     private static final String FIELD_USER_ID = "#userId#";
     private static final String FIELD_ROLE_ID = "#roleId#";
     private static final String FIELD_SQL_AND = "AND";
+    private static final String FIELD_SQL_OR = "OR";
     private static final String FIELD_SQL_WHERE = "WHERE";
 
     @Autowired
@@ -60,9 +60,16 @@ public class DataPermissionInterceptor implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
+        IRequest request = RequestHelper.getCurrentRequest(true);
+        Long userId_L = request.getUserId();
+        Long roleId_L = request.getRoleId();
+        if(isNull(userId_L) || userId_L < 0){
+            return invocation.proceed();
+        }
+
         final Object[] args = invocation.getArgs();
-        MappedStatement statement = (MappedStatement) args[0];
-        logger.debug("\n\n\n拦截的sql id------------------------"+statement.getId());
+        MappedStatement statement = (MappedStatement) args[0];//在当前类的开头使用注解规定需要注入的参数
+//        logger.debug("\n\n\n拦截的sql id------------------------"+statement.getId());
 
         Cache<Long[]> ruleIdsOfMethodUserMapping = applicationContext.getBean(CacheManager.class).getCache(Constant.FIELD_METHOD_USER_MAP_CACHE_NAME);
         Cache<String> rules = applicationContext.getBean(CacheManager.class).getCache(Constant.FIELD_RULES_CACHE_NAME);
@@ -70,20 +77,15 @@ public class DataPermissionInterceptor implements Interceptor {
             logger.error("HAP通用数据权限：权限设置没有加入缓存，"+Constant.FIELD_METHOD_USER_MAP_CACHE_NAME+":"
                     +isNull(ruleIdsOfMethodUserMapping)+","+Constant.FIELD_RULES_CACHE_NAME+":"+isNull(rules));
         }else {//处理规则的应用
-            RoutingStatementHandler statementHandler = (RoutingStatementHandler) invocation.getTarget();
-
-            StatementHandler handler = (StatementHandler) readField(statementHandler, FIELD_DELEGATE);
-//            MappedStatement mappedStatement = (MappedStatement) readField(handler, FIELD_MAPPEDSTATEMENT);
-            BoundSql boundSql = handler.getBoundSql();
+            BoundSql boundSql = statement.getBoundSql(args[1]);
             String oldSql = boundSql.getSql();
             Assert.notNull(oldSql,"需要执行的sql不能为null");
             Assert.isTrue(oldSql.length() > 0,"需要执行的sql不能为空串");
 
-            IRequest request = (IRequest) boundSql.getAdditionalParameter(FIELD_IREQUEST);
             Assert.notNull(request);
 
-            String userId = request.getUserId().toString();
-            String roleId = request.getRoleId().toString();
+            String userId = userId_L.toString();
+            String roleId = roleId_L.toString();
 
 
             Long[] targetRuleIds = ruleIdsOfMethodUserMapping.getValue(CacheUtils.getRuleIdsOfUserMethodMap(statement.getId(), userId));
@@ -110,9 +112,50 @@ public class DataPermissionInterceptor implements Interceptor {
         return invocation.proceed();
     }
 
+//    @Override
+//    public Object intercept(Invocation invocation) throws Throwable {
+//        IRequest request = RequestHelper.getCurrentRequest(true);
+//        Long userId_L = request.getUserId();
+//        Long roleId_L = request.getRoleId();
+//        if(isNull(userId_L) || userId_L < 0){
+//            return invocation.proceed();
+//        }
+//
+//        final Object[] args = invocation.getArgs();
+//        MappedStatement statement = (MappedStatement) args[0];
+//        logger.debug("\n\n\n拦截的sql id------------------------"+statement.getId());
+//
+//        BoundSql boundSql = statement.getBoundSql(args[1]);
+//        String oldSql = boundSql.getSql();
+//        Assert.notNull(oldSql,"需要执行的sql不能为null");
+//        Assert.isTrue(oldSql.length() > 0,"需要执行的sql不能为空串");
+//
+//
+////        Assert.notNull(request);
+////
+////        String userId = request.getUserId().toString();
+////        String roleId = request.getRoleId().toString();
+//
+//        //提取原先sql的where
+//        Select select = (Select) CCJSqlParserUtil.parse(oldSql);
+//        logger.debug("拦截的sql------------------------\r\n"+oldSql);
+//        Expression where = ((PlainSelect) select.getSelectBody()).getWhere();
+//        Expression expression = null;
+//        //将需要的sql拼接上
+//        if(isNull(where) || where.toString().length() < 1){
+//            expression = CCJSqlParserUtil.parseCondExpression("1=1");
+//        }else {
+//            expression = CCJSqlParserUtil.parseCondExpression(where.toString() + " " + FIELD_SQL_AND + " 1=1");
+//        }
+//        ((PlainSelect) select.getSelectBody()).setWhere(expression);
+//        logger.debug("改造后的sql------------------------\r\n"+select.toString());
+//        writeDeclaredField(boundSql, FIELD_SQL, select.toString());
+//        return invocation.proceed();
+//    }
+
     @Override
     public Object plugin(Object target) {
-        logger.debug("\n\n\n进入plugin method------------------------");
+//        logger.debug("\n\n\n进入plugin method------------------------");
         if (target instanceof Executor) {
             return Plugin.wrap(target, this);
         }

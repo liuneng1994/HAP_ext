@@ -1,4 +1,4 @@
-package Hap_extend.core.switchUser.controllers;
+package hap.extend.core.switchUser.controllers;
 
 import com.hand.hap.account.dto.User;
 import com.hand.hap.account.service.IRole;
@@ -118,5 +118,9 @@ public class SwitchUserController extends BaseController{
         Assert.notNull(usersInDb);
         Assert.notEmpty(usersInDb);
         return usersInDb.get(0);
+    }
+
+    private void testInterceptor(){
+
     }
 }
