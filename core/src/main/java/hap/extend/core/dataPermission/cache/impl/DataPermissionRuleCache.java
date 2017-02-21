@@ -1,12 +1,14 @@
 package hap.extend.core.dataPermission.cache.impl;
 
 import com.hand.hap.cache.impl.HashStringRedisCache;
+import hap.extend.core.dataPermission.dto.Rule;
 import hap.extend.core.dataPermission.mapper.RuleMapper;
 import hap.extend.core.dataPermission.utils.CacheUtils;
 import hap.extend.core.dataPermission.utils.LangUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static hap.extend.core.dataPermission.utils.LangUtils.*;
 
 import java.util.Map;
 
@@ -41,15 +43,16 @@ public class DataPermissionRuleCache extends HashStringRedisCache<String> {
 
     @SuppressWarnings("unchecked")
     protected void initLoad() {
+        logger.debug("\n\n\n---------------进入初始化数据权限：rule---------\n\n\n");
         try (SqlSession sqlSession = getSqlSessionFactory().openSession()) {
             sqlSession.select(querySqlId, (resultContext) -> {
-                Map<String, Object> value = (Map<String, Object>) resultContext.getResultObject();
-                Object ruleIdObj = value.get("RULE_ID");
-                Object ruleSqlObj = value.get("RULE_SQL");
-                if(LangUtils.isNotNull(ruleIdObj) && LangUtils.isNotNull(ruleSqlObj)){
-                    Long ruleId = (Long) ruleIdObj;
-                    String ruleSql = (String) ruleSqlObj;
-                    setValue(CacheUtils.getRuleKey(ruleId.toString()), ruleSql);
+                Rule rule = (Rule) resultContext.getResultObject();
+                if(isNotNull(rule)){
+                    Long ruleId = rule.getRuleId();
+                    String ruleSql = rule.getRuleSql();
+                    if(LangUtils.isNotNull(ruleId) && LangUtils.isNotNull(ruleSql)){
+                        setValue(CacheUtils.getRuleKey(ruleId.toString()), ruleSql);
+                    }
                 }
             });
         } catch (Throwable e) {

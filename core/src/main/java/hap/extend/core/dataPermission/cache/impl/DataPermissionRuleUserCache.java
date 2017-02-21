@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import static hap.extend.core.dataPermission.utils.LangUtils.*;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -48,17 +47,20 @@ public class DataPermissionRuleUserCache extends HashStringRedisCache<String> {
         Set<String> keySets = new HashSet<>();
         try (SqlSession sqlSession = getSqlSessionFactory().openSession()) {
             sqlSession.select(querySqlId, (resultContext) -> {
-                Map<String, Object> value = (Map<String, Object>) resultContext.getResultObject();
-                Object ruleIdObj = value.get("RULE_ID");
-                Object userIdObj = value.get("USER_ID");
-                Object isIncludeObj = value.get("IS_INCLUDE");
-                if(isNotNull(ruleIdObj) && isNotNull(userIdObj) && isNotNull(isIncludeObj)){
-                    //判断是否是非法字符
-                    boolean flag = RuleUser.isExclude(isIncludeObj.toString()) || RuleUser.isInclude(isIncludeObj.toString());
-                    if(flag){
-                        keySets.add(CacheUtils.getRuleUserKey(ruleIdObj.toString(),userIdObj.toString(),RuleUser.isInclude(isIncludeObj.toString())));
+                RuleUser value = (RuleUser) resultContext.getResultObject();
+                if(isNotNull(value)){
+                    Long ruleId = value.getRuleId();
+                    Long userId = value.getUserId();
+                    String isInclude = value.getIsInclude();
+                    if(isNotNull(ruleId) && isNotNull(userId) && isNotNull(isInclude)){
+                        //判断是否是非法字符
+                        boolean flag = RuleUser.isExclude(isInclude) || RuleUser.isInclude(isInclude);
+                        if(flag){
+                            keySets.add(CacheUtils.getRuleUserKey(ruleId.toString(),userId.toString(),RuleUser.isInclude(isInclude.toString())));
+                        }
                     }
                 }
+
             });
             keySets.parallelStream().forEach((v)->setValue(v, Constant.VALUE_RULE_USER));
         } catch (Throwable e) {

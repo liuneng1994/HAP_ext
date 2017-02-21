@@ -6,6 +6,7 @@ import com.hand.hap.system.dto.BaseDTO;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * HAP扩展功能之数据屏蔽：权限规则
@@ -14,6 +15,7 @@ import javax.persistence.Id;
  *
  * @author yazheng.yang@hand-china.com
  */
+@Table(name = "hapextend_rules")
 public class Rule extends BaseDTO {
     @Id
     @GeneratedValue(generator = GENERATOR_TYPE)

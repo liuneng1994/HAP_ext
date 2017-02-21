@@ -1,7 +1,9 @@
 package hap.extend.core.dataPermission.cache.impl;
 
 import com.hand.hap.cache.impl.HashStringRedisCache;
+import hap.extend.core.dataPermission.dto.RuleMappermethod;
 import hap.extend.core.dataPermission.mapper.RuleMappermethodMapper;
+import hap.extend.core.dataPermission.utils.CacheUtils;
 import hap.extend.core.dataPermission.utils.LangUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import static hap.extend.core.dataPermission.utils.LangUtils.*;
 
 /**
  * mapper方法对应需要应用的规则id（数据库表中的rule_id）数组
@@ -19,7 +22,7 @@ import java.util.Set;
  *
  * @author yazheng.yang@hand-china.com
  */
-public class DataPermissionRuleMethodCache  extends HashStringRedisCache<Long[]> {
+public class DataPermissionRuleMethodCache extends HashStringRedisCache<Long[]> {
 
     private static final String querySqlId = RuleMappermethodMapper.class.getName()+".selectAll";
     private final Logger logger = LoggerFactory.getLogger(DataPermissionRuleMethodCache.class);
@@ -46,20 +49,24 @@ public class DataPermissionRuleMethodCache  extends HashStringRedisCache<Long[]>
         Map<String, Set<Long>> methodRules = new HashMap<>();
         try (SqlSession sqlSession = getSqlSessionFactory().openSession()) {
             sqlSession.select(querySqlId, (resultContext) -> {
-                Map<String, Object> value = (Map<String, Object>) resultContext.getResultObject();
-                Object ruleIdObj = value.get("RULE_ID");
-                Object methodObj = value.get("MAPPER_METHOD");
-                if(LangUtils.isNotNull(ruleIdObj) && LangUtils.isNotNull(methodObj)){
-                    Set<Long> sets = methodRules.get(ruleIdObj.toString());
-                    if(LangUtils.isNull(sets)){
-                        sets = new HashSet<Long>();
-                        methodRules.put(ruleIdObj.toString(),sets);
+                RuleMappermethod value = (RuleMappermethod) resultContext.getResultObject();
+
+                if(isNotNull(value)){
+                    Long ruleId = value.getRuleId();
+                    Long mapperMethod = value.getMapperMethod();
+
+                    if(LangUtils.isNotNull(ruleId) && LangUtils.isNotNull(mapperMethod)){
+                        Set<Long> sets = methodRules.get(mapperMethod.toString());
+                        if(LangUtils.isNull(sets)){
+                            sets = new HashSet<Long>();
+                            methodRules.put(mapperMethod.toString(),sets);
+                        }
+                        sets.add(ruleId);
                     }
-                    sets.add((Long)methodObj);
                 }
             });
 
-            methodRules.forEach((k, v) -> setValue(k, v.toArray(new Long[v.size()])));
+            methodRules.forEach((k, v) -> setValue(CacheUtils.getMappermethodRulesKey(k), v.toArray(new Long[v.size()])));
         } catch (Throwable e) {
             if (logger.isErrorEnabled()) {
                 logger.error("init mappermethod_rule cache exception: ", e);
