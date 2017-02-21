@@ -6,6 +6,7 @@ import com.hand.hap.cache.Cache;
 import com.hand.hap.cache.CacheManager;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.core.impl.RequestHelper;
+import hap.extend.core.dataPermission.utils.LangUtils;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.select.PlainSelect;
@@ -24,10 +25,7 @@ import org.springframework.util.Assert;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Created by yyz on 2017/2/14.
@@ -64,54 +62,78 @@ public class DataPermissionInterceptor implements Interceptor {
         Long userId_L = request.getUserId();
         Long roleId_L = request.getRoleId();
         if(isNull(userId_L) || userId_L < 0){
-            return invocation.proceed();
+            return jumpIntercept(invocation);
         }
 
         final Object[] args = invocation.getArgs();
         MappedStatement statement = (MappedStatement) args[0];//在当前类的开头使用注解规定需要注入的参数
 //        logger.debug("\n\n\n拦截的sql id------------------------"+statement.getId());
 
-        Cache<Long[]> ruleIdsOfMethodUserMapping = applicationContext.getBean(CacheManager.class).getCache(Constant.FIELD_METHOD_RULES_MAP_CACHE_NAME);
-        Cache<String> rules = applicationContext.getBean(CacheManager.class).getCache(Constant.FIELD_RULES_CACHE_NAME);
-        if(isNull(ruleIdsOfMethodUserMapping) || isNull(rules)){
-            logger.error("HAP通用数据权限：权限设置没有加入缓存，"+Constant.FIELD_METHOD_RULES_MAP_CACHE_NAME +":"
-                    +isNull(ruleIdsOfMethodUserMapping)+","+Constant.FIELD_RULES_CACHE_NAME+":"+isNull(rules));
-        }else {//处理规则的应用
-            BoundSql boundSql = statement.getBoundSql(args[1]);
-            String oldSql = boundSql.getSql();
-            Assert.notNull(oldSql,"需要执行的sql不能为null");
-            Assert.isTrue(oldSql.length() > 0,"需要执行的sql不能为空串");
-
-            Assert.notNull(request);
-
-            String userId = userId_L.toString();
-            String roleId = roleId_L.toString();
-
-
-            Long[] targetRuleIds = ruleIdsOfMethodUserMapping.getValue(CacheUtils.getMappermethodRulesKey(statement.getId()));
-            if(isNull(targetRuleIds) || targetRuleIds.length < 1){//无需应用规则
-                return invocation.proceed();
-            }
-
-            String sqlToAppend = handleRuleList(userId, roleId, targetRuleIds, rules);//规则的sql
-
-            //提取原先sql的where
-            Select select = (Select) CCJSqlParserUtil.parse(oldSql);
-            Expression where = ((PlainSelect) select.getSelectBody()).getWhere();
-            Expression expression = null;
-            //将需要的sql拼接上
-            if(isNull(where) || where.toString().length() < 1){
-                expression = CCJSqlParserUtil.parseCondExpression(sqlToAppend);
-            }else {
-                expression = CCJSqlParserUtil.parseCondExpression(where.toString() + " " + FIELD_SQL_AND + " " + sqlToAppend);
-            }
-            ((PlainSelect) select.getSelectBody()).setWhere(expression);
-
-            writeDeclaredField(boundSql, FIELD_SQL, select.toString());
+        //cache:rule ids applied upon this method
+        Cache<Long[]> ruleIdsOfMethodMappingCache = applicationContext.getBean(CacheManager.class).getCache(Constant.FIELD_METHOD_RULES_MAP_CACHE_NAME);
+        //cache:rule、user,whether this user is to apply rule
+        Cache<String> ruleUserMappingCache = applicationContext.getBean(CacheManager.class).getCache(Constant.FIELD_RULE_USER_CACHE_NAME);
+        //cache:rules
+        Cache<String> rulesCache = applicationContext.getBean(CacheManager.class).getCache(Constant.FIELD_RULES_CACHE_NAME);
+        if(isNull(ruleIdsOfMethodMappingCache) || isNull(ruleUserMappingCache) || isNull(rulesCache)){
+            logger.error("\nHAP通用数据权限：权限设置没有加入缓存\n");
+            logger.error("\n+++++++++++++++++++++++++++++++++++++++\n");
+            logger.error("缓存："+Constant.FIELD_RULES_CACHE_NAME+",added:"+isNull(rulesCache));
+            logger.error("缓存："+Constant.FIELD_RULE_USER_CACHE_NAME+",added:"+!isNull(ruleUserMappingCache));
+            logger.error("缓存："+Constant.FIELD_METHOD_RULES_MAP_CACHE_NAME+",added:"+!isNull(ruleIdsOfMethodMappingCache));
+            logger.error("\n+++++++++++++++++++++++++++++++++++++++\n");
+            return jumpIntercept(invocation);
         }
+        Long[] ruleIds = ruleIdsOfMethodMappingCache.getValue(CacheUtils.getMappermethodRulesKey(statement.getId()));
+        if(isNull(ruleIds)){
+            return jumpIntercept(invocation);
+        }
+
+        //fetch final rule ids to applied upon this method ,this user
+        Set<Long> filteredRuleIds = new HashSet<>();
+        for (Long ruleId : ruleIds){
+            String excludeValue = ruleUserMappingCache.getValue(CacheUtils.getRuleUserKey(ruleId.toString(), userId_L.toString(), false));
+            if(LangUtils.isNotNull(excludeValue)){
+                continue;
+            }
+            String includeValue = ruleUserMappingCache.getValue(CacheUtils.getRuleUserKey(ruleId.toString(),userId_L.toString(),true));
+            if(LangUtils.isNotNull(includeValue)){
+                filteredRuleIds.add(ruleId);
+            }
+        }
+        if(filteredRuleIds.isEmpty()){
+            return jumpIntercept(invocation);
+        }
+        String conditionSql = handleRuleList(userId_L.toString(), roleId_L.toString(), filteredRuleIds, rulesCache);
+        if(isNull(conditionSql)){
+            return jumpIntercept(invocation);
+        }
+        //apply rules below
+        BoundSql boundSql = statement.getBoundSql(args[1]);
+        String oldSql = boundSql.getSql();
+        Assert.notNull(oldSql,"需要执行的sql不能为null");
+        Assert.isTrue(oldSql.length() > 0,"需要执行的sql不能为空串");
+
+        //extract where fragment of old sql
+        Select select = (Select) CCJSqlParserUtil.parse(oldSql);
+        Expression where = ((PlainSelect) select.getSelectBody()).getWhere();
+        Expression expression = null;
+        //append condition in where fragment
+        if(isNull(where) || where.toString().length() < 1){
+            expression = CCJSqlParserUtil.parseCondExpression(conditionSql);
+        }else {
+            expression = CCJSqlParserUtil.parseCondExpression(where.toString() + " " + FIELD_SQL_AND + " " + conditionSql);
+        }
+        ((PlainSelect) select.getSelectBody()).setWhere(expression);
+
+        writeDeclaredField(boundSql, FIELD_SQL, select.toString());
+
         return invocation.proceed();
     }
 
+    private Object jumpIntercept(Invocation invocation) throws Throwable {
+        return invocation.proceed();
+    }
 //    @Override
 //    public Object intercept(Invocation invocation) throws Throwable {
 //        IRequest request = RequestHelper.getCurrentRequest(true);
@@ -214,32 +236,30 @@ public class DataPermissionInterceptor implements Interceptor {
         return field.get(target);
     }
 
-    private String handleRuleList(final String userId, final String roleId, Long[] ruleIds,Cache<String> allRulesInCache){
-        Assert.notNull(ruleIds);
-        if(ruleIds.length < 1){
+    private String handleRuleList(final String userId, final String roleId, Set<Long> ruleIds,Cache<String> allRulesInCache){
+        if(null == ruleIds || ruleIds.size() < 1){
             return null;
         }
         if(isNull(allRulesInCache)){
             return null;
         }
-        List<String> ruleList = new ArrayList<>();
+        Set<String> rulesSet = new HashSet<>();
         //fetch rules sql list
         for(Long ruleId : ruleIds){
             if(!isNull(ruleId)){
                 String tempSql = allRulesInCache.getValue(CacheUtils.getRuleKey(ruleId.toString()));
                 if(tempSql.contains(FIELD_USER_ID) || tempSql.contains(FIELD_ROLE_ID)){
-                    ruleList.add(tempSql.replace(FIELD_USER_ID,userId).replace(FIELD_ROLE_ID,roleId));
+                    rulesSet.add(tempSql.replace(FIELD_USER_ID,userId).replace(FIELD_ROLE_ID,roleId));
                 }
             }
         }
 
         StringBuilder stringBuilder = new StringBuilder("(");
         boolean isFirst = true;
-        List<String> collect = ruleList.parallelStream().distinct().collect(Collectors.toList());
-        if(isNull(collect) || collect.size()<1){
+        if(rulesSet.isEmpty()){
             return null;
         }
-        for(String rule : collect){
+        for(String rule : rulesSet){
             if(isFirst){
                 stringBuilder.append("("+rule+")");
                 isFirst = false;
