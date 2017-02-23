@@ -40,7 +40,7 @@ public class RuleMappermethodController extends BaseController {
         ruleMappermethod.setRuleId(returnNullIfLessThanZero(ruleId));
         ruleMappermethod.setMapperMethod(returnNullIfEmpty(mapperMethod));
 
-        List<RuleMappermethod> ruleUserList = ruleMappermethodService.select(requestContext, ruleMappermethod, page, pageSize);
+        List<RuleMappermethod> ruleUserList = ruleMappermethodService.selectByRuleMappermethod(requestContext, ruleMappermethod, page, pageSize);
         return new ResponseData(ruleUserList);
     }
 
