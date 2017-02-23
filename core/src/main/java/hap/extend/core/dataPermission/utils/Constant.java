@@ -17,6 +17,8 @@ public final class Constant {
 
     /** redis缓存中键值对表hap_extend.data_permission的key前缀 */
     public static final String FIELD_METHOD_RULE_MAP_PREFIX="RULES_";
+    /** redis缓存中键值对表hap_extend.data_permission的key后缀，为了防止与redis中关键字冲突 */
+    public static final String FIELD_METHOD_RULE_MAP_SURFIX="_TAILS";
     /** redis缓存中键值对表hap_extend.rules的key前缀 */
     public static final String FIELD_RULE_ID_PREFIX="RULE_";
     /** redis缓存中键值对表hap_extend.rule_user的key前缀 */
