@@ -119,13 +119,18 @@ public class DataPermissionInterceptor implements Interceptor {
         Expression where = ((PlainSelect) select.getSelectBody()).getWhere();
         Expression expression = null;
         //append condition in where fragment
-        if(isNull(where) || where.toString().length() < 1){
-            expression = CCJSqlParserUtil.parseCondExpression(conditionSql);
-        }else {
-            expression = CCJSqlParserUtil.parseCondExpression(where.toString() + " " + FIELD_SQL_AND + " " + conditionSql);
+        try{
+            if(isNull(where) || where.toString().length() < 1){
+                expression = CCJSqlParserUtil.parseCondExpression(conditionSql);
+            }else {
+                expression = CCJSqlParserUtil.parseCondExpression(where.toString() + " " + FIELD_SQL_AND + " " + conditionSql);
+            }
+            ((PlainSelect) select.getSelectBody()).setWhere(expression);
+        }catch (Exception e){
+            logger.error("data Permission：权限规则不合法(SQL片段:{}),\ndetail:{}",conditionSql,e.getMessage());
+            throw new Exception("data Permission：权限规则(SQL片段)不合法:"+conditionSql+"\ndetail:"+e.getMessage());
         }
-        ((PlainSelect) select.getSelectBody()).setWhere(expression);
-
+        logger.info("\n\nsql with data permission:\n{}\n\n",select.toString());
         writeDeclaredField(boundSql, FIELD_SQL, select.toString());
 
         return invocation.proceed();
@@ -250,6 +255,8 @@ public class DataPermissionInterceptor implements Interceptor {
                 String tempSql = allRulesInCache.getValue(CacheUtils.getRuleKey(ruleId.toString()));
                 if(tempSql.contains(FIELD_USER_ID) || tempSql.contains(FIELD_ROLE_ID)){
                     rulesSet.add(tempSql.replace(FIELD_USER_ID,userId).replace(FIELD_ROLE_ID,roleId));
+                }else {
+                    rulesSet.add(tempSql);
                 }
             }
         }
