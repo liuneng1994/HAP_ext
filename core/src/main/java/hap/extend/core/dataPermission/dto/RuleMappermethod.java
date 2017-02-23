@@ -22,13 +22,11 @@ public class RuleMappermethod extends BaseDTO {
     @Condition
     private Long ruleId;
     @Column(name = "mapper_method")
-    @Condition
-    private Long mapperMethod;
+    @Condition(operator = LIKE)
+    private String mapperMethod;
 
     @Transient
     private String ruleName;
-    @Transient
-    private String mapperMethodName;
 
     public Long getMapperId() {
         return mapperId;
@@ -46,11 +44,19 @@ public class RuleMappermethod extends BaseDTO {
         this.ruleId = ruleId;
     }
 
-    public Long getMapperMethod() {
+    public String getMapperMethod() {
         return mapperMethod;
     }
 
-    public void setMapperMethod(Long mapperMethod) {
+    public void setMapperMethod(String mapperMethod) {
         this.mapperMethod = mapperMethod;
+    }
+
+    public String getRuleName() {
+        return ruleName;
+    }
+
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
     }
 }

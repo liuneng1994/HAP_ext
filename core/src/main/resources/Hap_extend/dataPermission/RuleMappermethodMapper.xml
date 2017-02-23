@@ -5,10 +5,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="hap.extend.core.dataPermission.mapper.RuleMappermethodMapper" >
     <resultMap id="BaseResultMap" type="hap.extend.core.dataPermission.dto.RuleMappermethod" extends="com.hand.hap.mapper.StdMapper.STD" >
-        <id column="mapping_id" property="mappingId"/>
+        <id column="mapping_id" property="mapperId"/>
         <result column="rule_id" property="ruleId"/>
         <result column="mapper_method" property="mapperMethod"/>
-        <result column="mapper_method_name" property="mapperMethodName"/>
         <result column="rule_name" property="ruleName"/>
     </resultMap>
+
+    <select id="selectByRuleMappermethod" resultMap="BaseResultMap">
+        SELECT hapextend_rule_mappermethod.*,hapextend_rules.rule_name FROM
+        hapextend_rule_mappermethod
+        JOIN hapextend_rules ON hapextend_rule_mappermethod.rule_id=hapextend_rules.rule_id
+        <where>
+            <if test="mapperId != null and mapperId>0">
+                and hapextend_rule_mappermethod.mapping_id = #{mapperId,jdbcType=DECIMAL}
+            </if>
+            <if test="ruleId != null and ruleId>0">
+                and hapextend_rule_user.rule_id = #{ruleId,jdbcType=DECIMAL}
+            </if>
+            <if test="mapperMethod != null">
+                <bind name="pattern_mapperMethod" value="'%' + _parameter.mapperMethod + '%'" />
+                AND hapextend_rule_mappermethod.mapper_method like #{pattern_mapperMethod}
+            </if>
+            <if test="ruleName != null">
+                <bind name="pattern_ruleName" value="'%' + _parameter.ruleName + '%'" />
+                AND hapextend_rules.rule_name like #{pattern_ruleName}
+            </if>
+        </where>
+    </select>
 </mapper>
