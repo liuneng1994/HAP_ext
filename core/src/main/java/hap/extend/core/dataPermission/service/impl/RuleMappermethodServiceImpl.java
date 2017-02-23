@@ -28,7 +28,7 @@ import java.util.Set;
  * @author yazheng.yang@hand-china.com
  */
 @Service
-public class IRuleMappermethodServiceImpl extends BaseServiceImpl<RuleMappermethod> implements IRuleMappermethodService {
+public class RuleMappermethodServiceImpl extends BaseServiceImpl<RuleMappermethod> implements IRuleMappermethodService {
     @Autowired
     private DataPermissionRuleMethodCache ruleMethodCache;
     @Autowired
