@@ -23,7 +23,9 @@ import static hap.extend.core.dataPermission.utils.LangUtils.*;
  * @author yazheng.yang@hand-china.com
  */
 public class DataPermissionRuleMethodCache extends HashStringRedisCache<Long[]> {
-
+    {
+        setType(Long[].class);
+    }
     private static final String querySqlId = RuleMappermethodMapper.class.getName()+".selectAll";
     private final Logger logger = LoggerFactory.getLogger(DataPermissionRuleMethodCache.class);
 
@@ -35,7 +37,7 @@ public class DataPermissionRuleMethodCache extends HashStringRedisCache<Long[]> 
     }
 
     @Override
-    public Long[] getValue(String key) {
+    public Long[] getValue(final String key) {
         return super.getValue(key);
     }
 
@@ -53,13 +55,13 @@ public class DataPermissionRuleMethodCache extends HashStringRedisCache<Long[]> 
 
                 if(isNotNull(value)){
                     Long ruleId = value.getRuleId();
-                    Long mapperMethod = value.getMapperMethod();
+                    String mapperMethod = value.getMapperMethod();
 
                     if(LangUtils.isNotNull(ruleId) && LangUtils.isNotNull(mapperMethod)){
-                        Set<Long> sets = methodRules.get(mapperMethod.toString());
+                        Set<Long> sets = methodRules.get(mapperMethod);
                         if(LangUtils.isNull(sets)){
                             sets = new HashSet<Long>();
-                            methodRules.put(mapperMethod.toString(),sets);
+                            methodRules.put(mapperMethod,sets);
                         }
                         sets.add(ruleId);
                     }
@@ -72,5 +74,48 @@ public class DataPermissionRuleMethodCache extends HashStringRedisCache<Long[]> 
                 logger.error("init mappermethod_rule cache exception: ", e);
             }
         }
+    }
+
+    public boolean addValuesToKey(String key, Long ... values){
+        Long[] valuesInCache = getValue(key);
+        Set<Long> valuesToAdd = new HashSet<>();
+        for (Long v : values){
+            if(isNotNull(v) && v >= 0){
+                valuesToAdd.add(v);
+            }
+        }
+        if(isNull(valuesInCache)){
+            logger.debug("key {} is not exist,and will be added",key);
+            setValue(key,valuesToAdd.toArray(new Long[valuesToAdd.size()]));
+            return true;
+        }
+        for(Long v : valuesInCache){
+            valuesToAdd.add(v);
+        }
+        setValue(key,valuesToAdd.toArray(new Long[valuesToAdd.size()]));
+        return true;
+    }
+
+    public boolean removeValuesFromKey(String key, Long ... values){
+        Long[] valuesInCache = getValue(key);
+        if(isNull(valuesInCache) || isNull(values) || values.length < 1){
+            return true;
+        }
+
+        Set<Long> valuesToRemove = new HashSet<>();
+        Set<Long> newValues = new HashSet<>();
+        for (Long v : values){
+            if(isNotNull(v) && v >= 0){
+                valuesToRemove.add(v);
+            }
+        }
+
+        for(Long v : valuesInCache){
+            if(!valuesToRemove.contains(v)){
+                newValues.add(v);
+            }
+        }
+        setValue(key,newValues.toArray(new Long[newValues.size()]));
+        return true;
     }
 }
