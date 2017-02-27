@@ -15,12 +15,10 @@ import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static hap.extend.core.dataPermission.utils.LangUtils.isNotNull;
 import static hap.extend.core.dataPermission.utils.LangUtils.isNull;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by yyz on 2017/2/22.
@@ -34,17 +32,14 @@ public class RuleMappermethodServiceImpl extends BaseServiceImpl<RuleMappermetho
     @Autowired
     private RuleMappermethodMapper ruleMappermethodMapper;
 
-    /**
-     * special notice：not support for update for code logic
-     * @param request
-     * @param list
-     * @return
-     */
+
     @Override
     public List<RuleMappermethod> batchUpdate(IRequest request, List<RuleMappermethod> list) {
         IBaseService<RuleMappermethod> self = ((IBaseService<RuleMappermethod>) AopContext.currentProxy());
         Map<String,Set<Long>> addMap = new HashedMap();
         Map<String,Set<Long>> deleteMap = new HashedMap();
+        List<RuleMappermethod> afterUpdate = new ArrayList<>();
+        List<RuleMappermethod> beforeUpdate = new ArrayList<>();
 
         for (RuleMappermethod ruleMappermethod : list) {
             switch (ruleMappermethod.get__status()) {
@@ -58,7 +53,19 @@ public class RuleMappermethodServiceImpl extends BaseServiceImpl<RuleMappermetho
                     valueSet.add(ruleMappermethod.getRuleId());
                     break;
                 case DTOStatus.UPDATE:
-                    //not supported...
+                    RuleMappermethod condition = new RuleMappermethod();
+                    condition.setMapperId(ruleMappermethod.getMapperId());
+                    List<RuleMappermethod> inDb = self.select(request,condition,1,2);
+                    if(isNotNull(inDb) && !inDb.isEmpty()){
+                        beforeUpdate.add(inDb.get(0));
+                        afterUpdate.add(ruleMappermethod);
+                        if (useSelectiveUpdate()) {
+                            self.updateByPrimaryKeySelective(request, ruleMappermethod);
+                        } else {
+                            self.updateByPrimaryKey(request, ruleMappermethod);
+                        }
+                    }
+
                     break;
                 case DTOStatus.DELETE:
                     self.deleteByPrimaryKey(ruleMappermethod);
@@ -76,7 +83,8 @@ public class RuleMappermethodServiceImpl extends BaseServiceImpl<RuleMappermetho
         //avoid transaction problem:fear rollback
         addMap.forEach((key,value)->ruleMethodCache.addValuesToKey(CacheUtils.getMappermethodRulesKey(key),value.toArray(new Long[value.size()])));
         deleteMap.forEach((key,value)->ruleMethodCache.removeValuesFromKey(CacheUtils.getMappermethodRulesKey(key),value.toArray(new Long[value.size()])));
-
+        beforeUpdate.forEach(ruleMappermethod -> ruleMethodCache.removeValuesFromKey(CacheUtils.getMappermethodRulesKey(ruleMappermethod.getMapperMethod()),ruleMappermethod.getRuleId()));
+        afterUpdate.forEach(ruleMappermethod -> ruleMethodCache.addValuesToKey(CacheUtils.getMappermethodRulesKey(ruleMappermethod.getMapperMethod()),ruleMappermethod.getRuleId()));
         return list;
     }
 

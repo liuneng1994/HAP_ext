@@ -12,8 +12,11 @@ public final class CacheUtils {
      * @param ruleId
      * @return
      */
-    public static String getRuleKey(final String ruleId){
-        return Constant.FIELD_RULE_ID_PREFIX+ruleId;
+    public static String getRuleKey(final String ruleId, final boolean isIncludeType){
+        if(isIncludeType){
+            return Constant.FIELD_RULE_ID_PREFIX+ruleId+"_Y";
+        }
+        return Constant.FIELD_RULE_ID_PREFIX+ruleId+"_N";
     }
 
     /**
