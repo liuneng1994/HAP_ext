@@ -47,7 +47,9 @@
 NOTICE:禁止在规则SQL片段中包含与其他规则SQL之间逻辑操作符(AND、OR等)，确保每个规则是一个可以组成合法条件的SQL片段
        如：AND 1=1为不合法规则定义，需要去掉"AND",改为：1=1;
        条件中可以使用#userId#和#roleId#，这两个字符串将在sql解析的时候替换为当前查询的用户id和角色id;
-       支持在一个查询SQL上应用多个规则，规则之间是逻辑与的关系，应用的规则和原始查询语句中其他条件之间也是逻辑与的关系
+       支持在一个查询SQL上应用多个规则，规则之间是逻辑与的关系，应用的规则和原始查询语句中其他条件之间也是逻辑与的关系.
+       包含型Y/排斥型N：对于包含型规则，在规则用户页面中设置并且选项“进入包含名单”<b>选择Y</b>的用户将<b>受这个规则的约束</b>，其他用户不受约束；
+       对于排斥型，在规则用户页面中设置并且选项“进入包含名单”<b>选择N</b>的用户将<b>不受这个规则的约束</b>，其他用户受约束
 </code>
 </pre>
 </div>
@@ -137,6 +139,7 @@ NOTICE:禁止在规则SQL片段中包含与其他规则SQL之间逻辑操作符(
                             id: "ruleId",
                             fields: {
                                 ruleName:{type: 'string',validation: { required: true }},
+                                isIncludeType:{defaultValue:'Y',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'},
                                 ruleSql: {type: 'string',validation: { required: true }}
                             }
                         }
@@ -154,25 +157,33 @@ NOTICE:禁止在规则SQL片段中包含与其他规则SQL之间逻辑操作符(
                     refresh: true,
                     buttonCount: 10
                 },
-                columns: [{
-                    field: "ruleName",
-                    title: '规则名称',
-                    width: 100
-                }, {
-                    field: "ruleSql",
-                    title: '规则SQL',
-                    width: 200
-                },
-                {
-                    attributes: {style: "text-align:center;padding:0px"},
-                    field : "",
-                    title : '操作',
-                    width : 50,
-                    template: function (rowData) {
-                        parameter = "rules_grid";
-                        return '<a class="btn btn-danger" onclick="grid_del_btn_click(parameter,event)"><@spring.message "hap.delete"/></a>';
+                columns: [
+                    {
+                        field: "ruleName",
+                        title: '规则名称',
+                        width: 80
+                    },
+                    {
+                        attributes: {style: "text-align:center;"},
+                        field: "isIncludeType",
+                        title: '包含型Y/排斥型N',
+                        width: 50
+                    },
+                    {
+                        field: "ruleSql",
+                        title: '规则SQL',
+                        width: 200
+                    },
+                    {
+                        attributes: {style: "text-align:center;padding:0px"},
+                        field : "",
+                        title : '操作',
+                        width : 50,
+                        template: function (rowData) {
+                            parameter = "rules_grid";
+                            return '<a class="btn btn-danger" onclick="grid_del_btn_click(parameter,event)"><@spring.message "hap.delete"/></a>';
+                        }
                     }
-                }
                 ]
             });
         </script>
