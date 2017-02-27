@@ -50,8 +50,9 @@ public class DataPermissionRuleCache extends HashStringRedisCache<String> {
                 if(isNotNull(rule)){
                     Long ruleId = rule.getRuleId();
                     String ruleSql = rule.getRuleSql();
+                    String isIncludeType = rule.getIsIncludeType();
                     if(LangUtils.isNotNull(ruleId) && LangUtils.isNotNull(ruleSql)){
-                        setValue(CacheUtils.getRuleKey(ruleId.toString()), ruleSql);
+                        setValue(CacheUtils.getRuleKey(ruleId.toString(),Rule.isIncludeType(isIncludeType)), ruleSql);
                     }
                 }
             });

@@ -74,6 +74,13 @@ public class RuleMappermethodController extends BaseController {
         return new ResponseData(ruleUsers);
     }
 
+    @RequestMapping(value = "update", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData updateRuleUsers(@RequestBody List<RuleMappermethod> ruleUserList, BindingResult result, HttpServletRequest request) throws Exception {
+        List<RuleMappermethod> ruleUsers = ruleMappermethodService.batchUpdate(createRequestContext(request), ruleUserList);
+        return new ResponseData(ruleUsers);
+    }
+
     private String returnNullIfEmpty(String source){
         if(null == source || source.isEmpty()){
             return null;

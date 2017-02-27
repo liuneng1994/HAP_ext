@@ -44,6 +44,7 @@ public class RuleController extends BaseController {
 
 
         List<Rule> ruleList = ruleService.select(requestContext, rule, page, pageSize);
+//        List<Rule> ruleList = ruleService.select(requestContext, rule, pageSize, page);
         return new ResponseData(ruleList);
     }
 
