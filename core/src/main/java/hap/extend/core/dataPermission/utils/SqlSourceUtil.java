@@ -4,7 +4,6 @@ import com.github.pagehelper.sqlsource.OrderByStaticSqlSource;
 import com.github.pagehelper.sqlsource.PageDynamicSqlSource;
 import com.github.pagehelper.sqlsource.PageRawSqlSource;
 import com.github.pagehelper.sqlsource.PageStaticSqlSource;
-import com.lkkhpg.dsis.platform.vpd.exception.VpdParseErrorException;
 import net.sf.jsqlparser.JSQLParserException;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.mapping.ParameterMapping;
@@ -35,10 +34,9 @@ public final class SqlSourceUtil {
      * @param conditionSql
 //     * @param parameterObject 查询参数对象，一般是dto，这个对象的拦截器的注解上已经注入了（实际上是query方法的第二个参数）
      * @return
-     * @throws VpdParseErrorException
      * @throws JSQLParserException
      */
-    public static SqlSource covertSqlSource(SqlSource sqlSource, String conditionSql) throws VpdParseErrorException, JSQLParserException {
+    public static SqlSource covertSqlSource(SqlSource sqlSource, String conditionSql) throws JSQLParserException {
         if(isNull(sqlSource) || isNull(conditionSql) || conditionSql.isEmpty()){
             return sqlSource;
         }

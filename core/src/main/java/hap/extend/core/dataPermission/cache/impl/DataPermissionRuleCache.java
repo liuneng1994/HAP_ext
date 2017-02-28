@@ -43,7 +43,6 @@ public class DataPermissionRuleCache extends HashStringRedisCache<String> {
 
     @SuppressWarnings("unchecked")
     protected void initLoad() {
-        logger.debug("\n\n\n---------------进入初始化数据权限：rule---------\n\n\n");
         try (SqlSession sqlSession = getSqlSessionFactory().openSession()) {
             sqlSession.select(querySqlId, (resultContext) -> {
                 Rule rule = (Rule) resultContext.getResultObject();
