@@ -50,12 +50,16 @@ public class RuleServiceImpl extends BaseServiceImpl<Rule> implements IRuleServi
         for (Rule rule : list) {
             switch (rule.get__status()) {
                 case DTOStatus.ADD:
-                    ruleCache.setValue(CacheUtils.getRuleKey(rule.getRuleId().toString(),Rule.isIncludeType(rule.getIsIncludeType())),rule.getRuleSql());
+                    if(Rule.isEnable(rule.getEnableFlag())){
+                        ruleCache.setValue(CacheUtils.getRuleKey(rule.getRuleId().toString(),Rule.isIncludeType(rule.getIsIncludeType())),rule.getRuleSql());
+                    }
                     break;
                 case DTOStatus.UPDATE:
                     ruleCache.remove(CacheUtils.getRuleKey(rule.getRuleId().toString(),true));
                     ruleCache.remove(CacheUtils.getRuleKey(rule.getRuleId().toString(),false));
-                    ruleCache.setValue(CacheUtils.getRuleKey(rule.getRuleId().toString(),Rule.isIncludeType(rule.getIsIncludeType())),rule.getRuleSql());
+                    if(Rule.isEnable(rule.getEnableFlag())){
+                        ruleCache.setValue(CacheUtils.getRuleKey(rule.getRuleId().toString(),Rule.isIncludeType(rule.getIsIncludeType())),rule.getRuleSql());
+                    }
                     break;
                 case DTOStatus.DELETE:
                     ruleCache.remove(CacheUtils.getRuleKey(rule.getRuleId().toString(),true));

@@ -35,11 +35,9 @@ public class RuleController extends BaseController {
     public ResponseData getRules(HttpServletRequest request,
                                   @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
                                   @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                  @RequestParam(name = "ruleName", defaultValue = "") String ruleName,
                                   @RequestParam(name = "ruleSql", defaultValue = "") String ruleSql) {
         IRequest requestContext = createRequestContext(request);
         Rule rule = new Rule();
-        rule.setRuleName(returnNullIfEmpty(ruleName));
         rule.setRuleSql(returnNullIfEmpty(ruleSql));
 
 

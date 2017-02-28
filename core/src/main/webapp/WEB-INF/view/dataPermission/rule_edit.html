@@ -8,12 +8,6 @@
                         <div class="panel-body col-sm-offset-0">
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label style="width: 20%">规则名称</label>
-                                    <input type="text" style="width: 70%" data-bind="value:model.ruleName">
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="form-group">
                                     <label style="width: 20%">规则SQL</label>
                                     <input type="text" style="width:70%" data-bind="value:model.ruleSql">
                                 </div>
@@ -56,7 +50,7 @@ NOTICE:禁止在规则SQL片段中包含与其他规则SQL之间逻辑操作符(
         <script>
             var baseRuleUrl = "${base.contextPath}/hap_extend/data_permission/rule/";
             var viewModel = kendo.observable({
-                model:{ruleName:'',ruleSql:''},
+                model:{ruleSql:''},
                 createFunction: function(){
                     $('#rules_grid').data('kendoGrid').addRow();
                 },
@@ -138,8 +132,9 @@ NOTICE:禁止在规则SQL片段中包含与其他规则SQL之间逻辑操作符(
                         model: {
                             id: "ruleId",
                             fields: {
-                                ruleName:{type: 'string',validation: { required: true }},
+                                profileId:{type: 'int',validation: { required: true }},
                                 isIncludeType:{defaultValue:'Y',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'},
+                                enableFlag:{defaultValue:'Y',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'},
                                 ruleSql: {type: 'string',validation: { required: true }}
                             }
                         }
@@ -159,14 +154,20 @@ NOTICE:禁止在规则SQL片段中包含与其他规则SQL之间逻辑操作符(
                 },
                 columns: [
                     {
-                        field: "ruleName",
-                        title: '规则名称',
+                        field: "profileId",
+                        title: '用户配置',
                         width: 80
                     },
                     {
                         attributes: {style: "text-align:center;"},
                         field: "isIncludeType",
                         title: '包含型Y/排斥型N',
+                        width: 50
+                    },
+                    {
+                        attributes: {style: "text-align:center;"},
+                        field: "enableFlag",
+                        title: '是否启用',
                         width: 50
                     },
                     {
