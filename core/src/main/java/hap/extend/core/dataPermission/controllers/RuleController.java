@@ -35,14 +35,14 @@ public class RuleController extends BaseController {
     public ResponseData getRules(HttpServletRequest request,
                                   @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
                                   @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                  @RequestParam(name = "ruleSql", defaultValue = "") String ruleSql) {
+                                  @RequestParam(name = "ruleName", defaultValue = "") String ruleName,
+                                  @RequestParam(name = "description", defaultValue = "") String description) {
         IRequest requestContext = createRequestContext(request);
         Rule rule = new Rule();
-        rule.setRuleSql(returnNullIfEmpty(ruleSql));
-
+        rule.setRuleName(returnNullIfEmpty(ruleName));
+        rule.setDescription(returnNullIfEmpty(description));
 
         List<Rule> ruleList = ruleService.select(requestContext, rule, page, pageSize);
-//        List<Rule> ruleList = ruleService.select(requestContext, rule, pageSize, page);
         return new ResponseData(ruleList);
     }
 
@@ -78,7 +78,7 @@ public class RuleController extends BaseController {
      */
     @RequestMapping(value = "update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData updateThemes(@RequestBody List<Rule> ruleList, BindingResult result, HttpServletRequest request) throws Exception {
+    public ResponseData updateRules(@RequestBody List<Rule> ruleList, BindingResult result, HttpServletRequest request) throws Exception {
         List<Rule> rules = ruleService.batchUpdate(createRequestContext(request), ruleList);
         return new ResponseData(rules);
     }
