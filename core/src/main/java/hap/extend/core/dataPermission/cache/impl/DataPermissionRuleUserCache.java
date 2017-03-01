@@ -50,17 +50,12 @@ public class DataPermissionRuleUserCache extends HashStringRedisCache<String> {
                 RuleUser value = (RuleUser) resultContext.getResultObject();
                 if(isNotNull(value)){
                     Long ruleId = value.getRuleId();
-                    Long userId = value.getUserId();
-                    String isInclude = value.getIsInclude();
-                    if(isNotNull(ruleId) && isNotNull(userId) && isNotNull(isInclude)){
-                        //判断是否是非法字符
-                        boolean flag = RuleUser.isExclude(isInclude) || RuleUser.isInclude(isInclude);
-                        if(flag){
-                            keySets.add(CacheUtils.getRuleUserKey(ruleId.toString(),userId.toString(),RuleUser.isInclude(isInclude.toString())));
-                        }
+                    Long typeValue = value.getTypeId();
+                    String type = value.getAssignType();
+                    if(isNotNull(ruleId) && isNotNull(typeValue)){
+                        keySets.add(CacheUtils.getRuleUserKey(ruleId.toString(),type,typeValue.toString()));
                     }
                 }
-
             });
             keySets.parallelStream().forEach((v)->setValue(v, Constant.VALUE_RULE_USER));
         } catch (Throwable e) {
