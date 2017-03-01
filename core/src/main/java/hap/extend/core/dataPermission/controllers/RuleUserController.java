@@ -34,15 +34,13 @@ public class RuleUserController extends BaseController{
                                  @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
                                  @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
                                  @RequestParam(name = "ruleId", defaultValue = "-1") Long ruleId,
-                                 @RequestParam(name = "userId", defaultValue = "-1") Long userId,
-                                 @RequestParam(name = "userName", defaultValue = "") String userName,
-                                 @RequestParam(name = "ruleName", defaultValue = "") String ruleName) {
+                                 @RequestParam(name = "typeId", defaultValue = "-1") Long typeId,
+                                 @RequestParam(name = "assignType", defaultValue = "") String assignType) {
         IRequest requestContext = createRequestContext(request);
         RuleUser ruleUser = new RuleUser();
-        ruleUser.setUserId(returnNullIfLessThanZero(userId));
+        ruleUser.setTypeId(returnNullIfLessThanZero(typeId));
         ruleUser.setRuleId(returnNullIfLessThanZero(ruleId));
-        ruleUser.setRuleName(returnNullIfEmpty(ruleName));
-        ruleUser.setUserName(returnNullIfEmpty(userName));
+        ruleUser.setAssignType(returnNullIfEmpty(assignType));
 
         List<RuleUser> ruleUserList = ruleUserService.selectByRuleUser(requestContext, ruleUser, page, pageSize);
         return new ResponseData(ruleUserList);
