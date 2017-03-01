@@ -12,28 +12,56 @@ import javax.persistence.*;
  *
  * @author yazheng.yang@hand-china.com
  */
-@Table(name = "hapextend_rule_mappermethod")
+@Table(name = "HCOM_SQL_RULE_LINES")
 public class RuleMappermethod extends BaseDTO {
+    @Transient
+    public static final String VALUE_YES = "Y";
+    @Transient
+    public static final String VALUE_NO = "N";
+
     @Id
     @GeneratedValue(generator = GENERATOR_TYPE)
-    @Column(name = "mapping_id")
-    private Long mapperId;
-    @Column(name = "rule_id")
+    @Column(name = "LINE_ID")
+    private Long lineId;
+
+    @Column(name = "HEADER_ID",nullable = false)
+    private Long headerId;
+
+    @Column(name = "RULE_ID")
     @Condition
     private Long ruleId;
-    @Column(name = "mapper_method")
-    @Condition(operator = LIKE)
-    private String mapperMethod;
+
+    @Column(name = "ENABLE_FLAG")
+    @Condition
+    private String enableFlag;
 
     @Transient
     private String ruleName;
+    @Transient
+    private String sqlId;
 
-    public Long getMapperId() {
-        return mapperId;
+    public static boolean isEnable(String enableFlagStr){
+        return VALUE_YES.equals(enableFlagStr);
+    }
+    public static boolean isDisable(String enableFlagStr){
+        return VALUE_NO.equals(enableFlagStr);
     }
 
-    public void setMapperId(Long mapperId) {
-        this.mapperId = mapperId;
+
+    public Long getLineId() {
+        return lineId;
+    }
+
+    public void setLineId(Long lineId) {
+        this.lineId = lineId;
+    }
+
+    public Long getHeaderId() {
+        return headerId;
+    }
+
+    public void setHeaderId(Long headerId) {
+        this.headerId = headerId;
     }
 
     public Long getRuleId() {
@@ -44,12 +72,12 @@ public class RuleMappermethod extends BaseDTO {
         this.ruleId = ruleId;
     }
 
-    public String getMapperMethod() {
-        return mapperMethod;
+    public String getEnableFlag() {
+        return enableFlag;
     }
 
-    public void setMapperMethod(String mapperMethod) {
-        this.mapperMethod = mapperMethod;
+    public void setEnableFlag(String enableFlag) {
+        this.enableFlag = enableFlag;
     }
 
     public String getRuleName() {
@@ -58,5 +86,13 @@ public class RuleMappermethod extends BaseDTO {
 
     public void setRuleName(String ruleName) {
         this.ruleName = ruleName;
+    }
+
+    public String getSqlId() {
+        return sqlId;
+    }
+
+    public void setSqlId(String sqlId) {
+        this.sqlId = sqlId;
     }
 }

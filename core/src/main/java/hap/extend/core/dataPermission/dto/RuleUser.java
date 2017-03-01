@@ -12,52 +12,56 @@ import javax.persistence.*;
  *
  * @author yazheng.yang@hand-china.com
  */
-@Table(name = "hapextend_rule_user")
+@Table(name = "HCOM_DATA_RULE_ASSIGN")
 public class RuleUser extends BaseDTO {
     @Transient
-    public static final String VALUE_INCLUDE="Y";
+    public static final String TYPE_USER="USER";
     @Transient
-    public static final String VALUE_EXCLUDE="N";
+    public static final String TYPE_ROLE="ROLE";
 
     @Id
     @GeneratedValue(generator = GENERATOR_TYPE)
-    @Column(name = "mapping_id")
-    private Long mapperId;
-    @Column(name = "user_id")
+    @Column(name = "ASSIGN_ID")
+    private Long assignId;
+
+    /** 类别，目前有：用户和角色*/
+    @Column(name = "ASSIGN_TYPE")
     @Condition
-    private Long userId;
-    @Column(name = "rule_id")
+    private String assignType;
+
+    /** 类别具体值，可以是用户id、角色id*/
+    @Column(name = "TYPE_ID")
+    @Condition
+    private Long typeId;
+
+    @Column(name = "RULE_ID")
     @Condition
     private Long ruleId;
-    @Column(name = "is_include")
-    private String isInclude;
-
+    /** 类别值对应的名称，如用户名、角色名称 */
     @Transient
-    private String userName;
-    @Transient
-    private String ruleName;
+    private String typeIdName;
 
-    public static boolean isInclude(String isIncludeStr){
-        return VALUE_INCLUDE.equals(isIncludeStr);
+    public static boolean isUserType(String type){
+        return TYPE_USER.equals(type);
     }
-    public static boolean isExclude(String isExcludeStr){
-        return VALUE_EXCLUDE.equals(isExcludeStr);
+    public static boolean isRoleType(String type){
+        return TYPE_ROLE.equals(type);
     }
 
-    public Long getMapperId() {
-        return mapperId;
+    public Long getAssignId() {
+        return assignId;
     }
 
-    public void setMapperId(Long mapperId) {
-        this.mapperId = mapperId;
+    public void setAssignId(Long assignId) {
+        this.assignId = assignId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getTypeId() {
+        return typeId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setTypeId(Long typeId) {
+        this.typeId = typeId;
     }
 
     public Long getRuleId() {
@@ -68,27 +72,19 @@ public class RuleUser extends BaseDTO {
         this.ruleId = ruleId;
     }
 
-    public String getIsInclude() {
-        return isInclude;
+    public String getAssignType() {
+        return assignType;
     }
 
-    public void setIsInclude(String isInclude) {
-        this.isInclude = isInclude;
+    public void setAssignType(String assignType) {
+        this.assignType = assignType;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getTypeIdName() {
+        return typeIdName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getRuleName() {
-        return ruleName;
-    }
-
-    public void setRuleName(String ruleName) {
-        this.ruleName = ruleName;
+    public void setTypeIdName(String typeIdName) {
+        this.typeIdName = typeIdName;
     }
 }

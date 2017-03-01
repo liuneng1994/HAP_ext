@@ -18,12 +18,17 @@ public class Rule extends BaseDTO {
     public static final String VALUE_YES = "Y";
     @Transient
     public static final String VALUE_NO = "N";
+
     @Id
     @GeneratedValue(generator = GENERATOR_TYPE)
     @Column(name = "RULE_ID")
     private Long ruleId;
-    @Column(name = "PROFILE_ID",nullable = false)
-    private Long profileId;
+    @Column(name = "RULE_NAME", nullable = false)
+    @Condition(operator = LIKE)
+    private String ruleName;
+    @Column(name = "DESCRIPTION")
+    @Condition(operator = LIKE)
+    private String description;
     @Column(name = "RULE_SQL", nullable = false)
     @Condition(operator = LIKE)
     private String ruleSql;
@@ -68,19 +73,27 @@ public class Rule extends BaseDTO {
         return VALUE_YES.equals(enableFlag);
     }
 
-    public Long getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(Long profileId) {
-        this.profileId = profileId;
-    }
-
     public String getEnableFlag() {
         return enableFlag;
     }
 
     public void setEnableFlag(String enableFlag) {
         this.enableFlag = enableFlag;
+    }
+
+    public String getRuleName() {
+        return ruleName;
+    }
+
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
