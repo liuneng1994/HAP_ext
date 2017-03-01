@@ -1,5 +1,6 @@
 package hap.extend.core.dataPermission.interceptor;
 
+import hap.extend.core.dataPermission.dto.RuleUser;
 import hap.extend.core.dataPermission.utils.*;
 import com.hand.hap.cache.Cache;
 import com.hand.hap.cache.CacheManager;
@@ -74,17 +75,31 @@ public class DataPermissionInterceptor implements Interceptor {
         for (Long ruleId : ruleIds){
             //is include type
             String excludeRule = rulesCache.getValue(CacheUtils.getRuleKey(ruleId.toString(), false));
-            if(isNotNull(excludeRule)){
-                String excludeValue = ruleUserMappingCache.getValue(CacheUtils.getRuleUserKey(ruleId.toString(), userId_L.toString(), false));
-                if(isNotNull(excludeValue)){
-                    continue;
-                }else {
+            if(isNotNull(excludeRule)){//rule of exclude type
+                //role
+                String isThisRoleExcluded = ruleUserMappingCache.getValue(CacheUtils.getRuleUserKey(ruleId.toString(), RuleUser.TYPE_ROLE,roleId_L.toString()));
+                if(isNull(isThisRoleExcluded)){
                     filteredRuleKeys.add(CacheUtils.getRuleKey(ruleId.toString(), false));
+                    continue;
                 }
-            } else{
-                String includeValue = ruleUserMappingCache.getValue(CacheUtils.getRuleUserKey(ruleId.toString(),userId_L.toString(),true));
-                if(isNotNull(includeValue)){
+                //user
+                String isThisUserExcluded = ruleUserMappingCache.getValue(CacheUtils.getRuleUserKey(ruleId.toString(), RuleUser.TYPE_USER,userId_L.toString()));
+                if(isNull(isThisUserExcluded)){
+                    filteredRuleKeys.add(CacheUtils.getRuleKey(ruleId.toString(), false));
+                    continue;
+                }
+            } else{//rule of include type
+                //role
+                String isThisRoleIncluded = ruleUserMappingCache.getValue(CacheUtils.getRuleUserKey(ruleId.toString(),RuleUser.TYPE_ROLE,roleId_L.toString()));
+                if(isNotNull(isThisRoleIncluded)){
                     filteredRuleKeys.add(CacheUtils.getRuleKey(ruleId.toString(), true));
+                    continue;
+                }
+                //user
+                String isThisUserIncluded = ruleUserMappingCache.getValue(CacheUtils.getRuleUserKey(ruleId.toString(), RuleUser.TYPE_USER,userId_L.toString()));
+                if(isNotNull(isThisUserIncluded)){
+                    filteredRuleKeys.add(CacheUtils.getRuleKey(ruleId.toString(), true));
+                    continue;
                 }
             }
         }
@@ -157,6 +172,9 @@ public class DataPermissionInterceptor implements Interceptor {
         for(String key : ruleKeys){
             if(!isNull(key)){
                 String tempSql = allRulesInCache.getValue(key);
+                if(isNull(tempSql)){
+                    continue;
+                }
                 if(tempSql.contains(FIELD_USER_ID) || tempSql.contains(FIELD_ROLE_ID)){
                     rulesSet.add(tempSql.replace(FIELD_USER_ID,userId).replace(FIELD_ROLE_ID,roleId));
                 }else {
