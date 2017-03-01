@@ -4,6 +4,7 @@
 
     <properties>
         <Hap_extend.version>1.0-SNAPSHOT</Hap_extend.version>
+        <Hap_extend.dataPermission.core_artifactId>data_permission-core</Hap_extend.dataPermission.core_artifactId>
         <hap.version>3.0-SNAPSHOT</hap.version>
         <!--<hap.version>2.0-SNAPSHOT</hap.version>-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,8 +19,8 @@
         <skipTests>true</skipTests>
     </properties>
 
-    <groupId>Hap_extend</groupId>
-    <artifactId>Hap_extend</artifactId>
+    <groupId>hap.extend</groupId>
+    <artifactId>hap.extend</artifactId>
     <packaging>pom</packaging>
     <version>${Hap_extend.version}</version>
 
