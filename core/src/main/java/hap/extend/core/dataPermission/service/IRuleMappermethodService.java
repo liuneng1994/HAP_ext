@@ -13,5 +13,5 @@ import java.util.List;
  * @author yazheng.yang@hand-china.com
  */
 public interface IRuleMappermethodService  extends IBaseService<RuleMappermethod>, ProxySelf<IRuleService> {
-    List<RuleMappermethod> selectByRuleMappermethod(IRequest iRequest, RuleMappermethod ruleMappermethod, int pageNum, int pageSize);
+    List<RuleMappermethod> selectByRuleMappermethod(IRequest iRequest, RuleMappermethod ruleMappermethod, int page, int pageSize);
 }
