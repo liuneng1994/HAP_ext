@@ -37,6 +37,8 @@
             <artifactId>hap</artifactId>
             <type>war</type>
             <version>${hap.version}</version>
+            <!--&lt;!&ndash;用于导出中台标准组件&ndash;&gt;-->
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>com.hand</groupId>
@@ -49,6 +51,8 @@
             <groupId>com.hand</groupId>
             <artifactId>hap-db</artifactId>
             <version>${hap.version}</version>
+            <!--&lt;!&ndash;用于导出中台标准组件&ndash;&gt;-->
+            <!--<scope>provided</scope>-->
         </dependency>
     </dependencies>
     <build>
@@ -145,7 +149,7 @@
                         <id>update</id>
                         <phase>process-resources</phase>
                         <configuration>
-                            <changeLogFile>hap.extend/core/db/liquibase.groovy</changeLogFile>
+                            <changeLogFile>hap/extend/core/db/liquibase.groovy</changeLogFile>
                             <driver>${db.driver}</driver>
                             <url>${db.url}</url>
                             <username>${db.user}</username>
