@@ -107,6 +107,8 @@ public class DataPermissionInterceptor implements Interceptor {
             return jumpIntercept(invocation);
         }
         String conditionSql = handleRuleList(userId_L.toString(), roleId_L.toString(), filteredRuleKeys, rulesCache);
+        /** 应用customize 插件*/
+        conditionSql = handlePlugin(conditionSql);
         if(isNull(conditionSql)){
             return jumpIntercept(invocation);
         }
@@ -217,5 +219,27 @@ public class DataPermissionInterceptor implements Interceptor {
             return mapperMethodId.substring(0,mapperMethodId.length()-6);
         }
         return mapperMethodId;
+    }
+
+
+    /**
+     * callback plugin method, for usage of extending data permission
+     * @param conditionSql
+     * @return final sql condition
+     */
+    private String handlePlugin(String conditionSql){
+        DataPermissionPluginWrapper pluginWrapper = applicationContext.getBean(DataPermissionPluginWrapper.class);
+        String condition = conditionSql;
+        if(isNotNull(pluginWrapper)){
+            List<DataPermissionPlugin> plugins = pluginWrapper.getPlugins();
+            if(isNotNull(plugins) && !plugins.isEmpty()){
+                for(DataPermissionPlugin plugin : plugins){
+                    condition = plugin.handle(condition);
+                }
+                conditionSql = condition;
+            }
+        }
+
+        return conditionSql;
     }
 }
