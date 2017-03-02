@@ -50,7 +50,9 @@
                 <bean class="com.hand.hap.core.interceptor.SecurityTokenInterceptor"/>
                 <bean class="com.hand.hap.core.interceptor.OvnInterceptor"/>
                 <bean class="com.hand.hap.core.interceptor.AuditInterceptor"/>
+                <!--add by yyz-->
                 <bean class="hap.extend.core.dataPermission.interceptor.DataPermissionInterceptor"/>
+                <!--add end-->
                 <bean class="com.github.pagehelper.PageHelper"/>
 
             </array>
