@@ -11,5 +11,4 @@ import java.util.List;
  * @author yazheng.yang@hand-china.com
  */
 public interface RuleUserMapper extends Mapper<RuleUser> {
-    List<RuleUser> selectByRuleUser(RuleUser ruleUser);
 }

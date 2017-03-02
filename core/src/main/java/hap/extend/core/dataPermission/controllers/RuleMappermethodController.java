@@ -21,7 +21,7 @@ import java.util.List;
  * @author yazheng.yang@hand-china.com
  */
 @Controller
-@RequestMapping(value = "/hap_extend/data_permission/method_rule/")
+@RequestMapping(value = "/hap_extend/data_permission/method_rule_line/")
 public class RuleMappermethodController extends BaseController {
     private Logger logger = LoggerFactory.getLogger(RuleMappermethodController.class);
 
@@ -34,11 +34,12 @@ public class RuleMappermethodController extends BaseController {
                                  @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
                                  @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
                                  @RequestParam(name = "ruleId", defaultValue = "-1") Long ruleId,
+                                 @RequestParam(name = "headerId", defaultValue = "-1") Long headerId,
                                  @RequestParam(name = "mapperMethod", defaultValue = "") String mapperMethod) {
         IRequest requestContext = createRequestContext(request);
         RuleMappermethod ruleMappermethod = new RuleMappermethod();
         ruleMappermethod.setRuleId(returnNullIfLessThanZero(ruleId));
-        ruleMappermethod.setMapperMethod(returnNullIfEmpty(mapperMethod));
+        ruleMappermethod.setHeaderId(returnNullIfLessThanZero(headerId));
 
         List<RuleMappermethod> ruleUserList = ruleMappermethodService.selectByRuleMappermethod(requestContext, ruleMappermethod, page, pageSize);
         return new ResponseData(ruleUserList);

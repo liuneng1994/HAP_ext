@@ -2,12 +2,13 @@
 <!--suppress MavenModelInspection -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>Hap_extend</artifactId>
-        <groupId>Hap_extend</groupId>
+        <artifactId>hap.extend</artifactId>
+        <groupId>hap.extend</groupId>
         <version>${Hap_extend.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>core</artifactId>
+    <!--<artifactId>core</artifactId>-->
+    <artifactId>${Hap_extend.dataPermission.core_artifactId}</artifactId>
     <packaging>war</packaging>
     <name>core</name>
     <url>http://maven.apache.org</url>
@@ -36,6 +37,8 @@
             <artifactId>hap</artifactId>
             <type>war</type>
             <version>${hap.version}</version>
+            <!--&lt;!&ndash;用于导出中台标准组件&ndash;&gt;-->
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>com.hand</groupId>
@@ -48,6 +51,8 @@
             <groupId>com.hand</groupId>
             <artifactId>hap-db</artifactId>
             <version>${hap.version}</version>
+            <!--&lt;!&ndash;用于导出中台标准组件&ndash;&gt;-->
+            <!--<scope>provided</scope>-->
         </dependency>
     </dependencies>
     <build>
@@ -119,7 +124,7 @@
                         <version>${hap.version}</version>
                     </dependency>
                     <dependency>
-                        <groupId>Hap_extend</groupId>
+                        <groupId>hap.extend</groupId>
                         <artifactId>core-db</artifactId>
                         <version>${Hap_extend.version}</version>
                     </dependency>
@@ -144,7 +149,7 @@
                         <id>update</id>
                         <phase>process-resources</phase>
                         <configuration>
-                            <changeLogFile>Hap_extend/core/db/liquibase.groovy</changeLogFile>
+                            <changeLogFile>hap/extend/core/db/liquibase.groovy</changeLogFile>
                             <driver>${db.driver}</driver>
                             <url>${db.url}</url>
                             <username>${db.user}</username>

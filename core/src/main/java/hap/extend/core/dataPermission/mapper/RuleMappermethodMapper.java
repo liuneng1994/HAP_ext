@@ -11,5 +11,8 @@ import java.util.List;
  * @author yazheng.yang@hand-china.com
  */
 public interface RuleMappermethodMapper extends Mapper<RuleMappermethod> {
+    /** 查询所有映射关系，并将头行结构中头部的SQL ID放进去*/
+    List<RuleMappermethod> selectAllMapping();
+
     List<RuleMappermethod> selectByRuleMappermethod(RuleMappermethod ruleMappermethod);
 }

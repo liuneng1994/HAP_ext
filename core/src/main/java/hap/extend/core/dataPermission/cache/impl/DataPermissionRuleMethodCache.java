@@ -26,7 +26,7 @@ public class DataPermissionRuleMethodCache extends HashStringRedisCache<Long[]> 
     {
         setType(Long[].class);
     }
-    private static final String querySqlId = RuleMappermethodMapper.class.getName()+".selectAll";
+    private static final String querySqlId = RuleMappermethodMapper.class.getName()+".selectAllMapping";
     private final Logger logger = LoggerFactory.getLogger(DataPermissionRuleMethodCache.class);
 
 
@@ -55,15 +55,18 @@ public class DataPermissionRuleMethodCache extends HashStringRedisCache<Long[]> 
 
                 if(isNotNull(value)){
                     Long ruleId = value.getRuleId();
-                    String mapperMethod = value.getMapperMethod();
+                    String mapperMethod = value.getSqlId();
+                    String enableFlag = value.getEnableFlag();
 
-                    if(LangUtils.isNotNull(ruleId) && LangUtils.isNotNull(mapperMethod)){
+                    if(LangUtils.isNotNull(ruleId) && LangUtils.isNotNull(mapperMethod) && isNotNull(enableFlag)){
                         Set<Long> sets = methodRules.get(mapperMethod);
                         if(LangUtils.isNull(sets)){
                             sets = new HashSet<Long>();
                             methodRules.put(mapperMethod,sets);
                         }
-                        sets.add(ruleId);
+                        if(RuleMappermethod.isEnable(enableFlag)){
+                            sets.add(ruleId);
+                        }
                     }
                 }
             });
