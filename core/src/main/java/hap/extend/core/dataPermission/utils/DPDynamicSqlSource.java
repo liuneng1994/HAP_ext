@@ -25,22 +25,24 @@ public class DPDynamicSqlSource extends DynamicSqlSource {
     private SqlNode rootSqlNode;
     /** 条件SQL片段*/
     private String conditionSql;
+    private ThreadLocal<String> threadLocal;
 
-    public DPDynamicSqlSource(Configuration configuration, SqlNode rootSqlNode,String conditionSql) {
+    public DPDynamicSqlSource(Configuration configuration, SqlNode rootSqlNode, String conditionSql,ThreadLocal<String> threadLocal) {
         super(configuration, rootSqlNode);
         this.configuration = configuration;
         this.rootSqlNode = rootSqlNode;
         this.conditionSql = conditionSql;
+        this.threadLocal = threadLocal;
     }
 
     @Override
     public BoundSql getBoundSql(Object parameterObject) {
         BoundSql boundSql = super.getBoundSql(parameterObject);
-        if(isNotNull(conditionSql)){
-            String sql = boundSql.getSql();//old sql
+        String sql = boundSql.getSql();//old sql
+        if(isNotNull(threadLocal) && isNotNull(threadLocal.get())){
             String newSql = null;
             try {
-                newSql = SqlUtil.addConditionToSql(sql, conditionSql);
+                newSql = SqlUtil.addConditionToSql(sql, threadLocal.get());
                 newSql = replaceLimit(newSql);
             } catch (JSQLParserException e) {
                 e.printStackTrace();
@@ -48,6 +50,9 @@ public class DPDynamicSqlSource extends DynamicSqlSource {
             }
             MetaObject metaObject = SystemMetaObject.forObject(boundSql);
             metaObject.setValue("sql", newSql);
+        }else {
+            MetaObject metaObject = SystemMetaObject.forObject(boundSql);
+            metaObject.setValue("sql", sql);
         }
         return boundSql;
     }
