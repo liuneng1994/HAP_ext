@@ -42,7 +42,6 @@ public class MapperMethodServiceImpl  extends BaseServiceImpl<MapperMethod> impl
                     self.insertSelective(request, mapperMethod);
                     break;
                 case DTOStatus.UPDATE:
-                    //FIXME bug：当头更新的时候，需要对所有行都进行更新
                     //TODO 增加unique数据库约束 规则ID+ID+类别
                     MapperMethod condition = new MapperMethod();
                     condition.setHeaderId(mapperMethod.getHeaderId());

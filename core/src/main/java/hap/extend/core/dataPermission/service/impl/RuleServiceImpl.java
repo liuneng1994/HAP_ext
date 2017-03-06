@@ -12,6 +12,7 @@ import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,12 +28,17 @@ public class RuleServiceImpl extends BaseServiceImpl<Rule> implements IRuleServi
     @Override
     public List<Rule> batchUpdate(IRequest request, List<Rule> list) {
         IBaseService<Rule> self = ((IBaseService<Rule>) AopContext.currentProxy());
+        List<Rule> deleteList = new ArrayList<>();
+        List<Rule> addList = new ArrayList<>();
         for (Rule rule : list) {
             switch (rule.get__status()) {
                 case DTOStatus.ADD:
                     self.insertSelective(request, rule);
+                    addList.add(rule);
                     break;
                 case DTOStatus.UPDATE:
+                    deleteList.add(rule);
+                    addList.add(rule);
                     if (useSelectiveUpdate()) {
                         self.updateByPrimaryKeySelective(request, rule);
                     } else {
@@ -40,6 +46,7 @@ public class RuleServiceImpl extends BaseServiceImpl<Rule> implements IRuleServi
                     }
                     break;
                 case DTOStatus.DELETE:
+                    deleteList.add(rule);
                     self.deleteByPrimaryKey(rule);
                     break;
                 default:
@@ -47,28 +54,12 @@ public class RuleServiceImpl extends BaseServiceImpl<Rule> implements IRuleServi
             }
         }
         //avoid transaction problem:fear rollback
-        for (Rule rule : list) {
-            switch (rule.get__status()) {
-                case DTOStatus.ADD:
-                    if(Rule.isEnable(rule.getEnableFlag())){
-                        ruleCache.setValue(CacheUtils.getRuleKey(rule.getRuleId().toString(),Rule.isIncludeType(rule.getIsIncludeType())),rule.getRuleSql());
-                    }
-                    break;
-                case DTOStatus.UPDATE:
-                    ruleCache.remove(CacheUtils.getRuleKey(rule.getRuleId().toString(),true));
-                    ruleCache.remove(CacheUtils.getRuleKey(rule.getRuleId().toString(),false));
-                    if(Rule.isEnable(rule.getEnableFlag())){
-                        ruleCache.setValue(CacheUtils.getRuleKey(rule.getRuleId().toString(),Rule.isIncludeType(rule.getIsIncludeType())),rule.getRuleSql());
-                    }
-                    break;
-                case DTOStatus.DELETE:
-                    ruleCache.remove(CacheUtils.getRuleKey(rule.getRuleId().toString(),true));
-                    ruleCache.remove(CacheUtils.getRuleKey(rule.getRuleId().toString(),false));
-                    break;
-                default:
-                    break;
-            }
-        }
+        deleteList.forEach(rule -> {
+            ruleCache.remove(CacheUtils.getRuleKey(rule.getRuleId().toString(),true));
+            ruleCache.remove(CacheUtils.getRuleKey(rule.getRuleId().toString(),false));
+        });
+        addList.forEach(rule -> ruleCache.setValue(CacheUtils.getRuleKey(rule.getRuleId().toString(),Rule.isIncludeType(rule.getIsIncludeType())),rule.getRuleSql()));
+
         return list;
     }
 }

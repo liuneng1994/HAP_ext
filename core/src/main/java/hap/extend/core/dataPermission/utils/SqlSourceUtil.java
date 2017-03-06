@@ -36,8 +36,8 @@ public final class SqlSourceUtil {
      * @return
      * @throws JSQLParserException
      */
-    public static SqlSource covertSqlSource(SqlSource sqlSource, String conditionSql) throws JSQLParserException {
-        if(isNull(sqlSource) || isNull(conditionSql) || conditionSql.isEmpty()){
+    public static SqlSource covertSqlSource(SqlSource sqlSource, String conditionSql,ThreadLocal<String> threadLocal) throws JSQLParserException {
+        if(isNull(sqlSource)){
             return sqlSource;
         }
 
@@ -64,7 +64,7 @@ public final class SqlSourceUtil {
             Configuration configuration = (Configuration) metaObject2.getValue("configuration");
             SqlNode rootSqlNode = (SqlNode) metaObject2.getValue("rootSqlNode");
             // 替换新的sql源
-            DPDynamicSqlSource vpdDynamicSqlSource = new DPDynamicSqlSource(configuration, rootSqlNode, conditionSql);
+            DPDynamicSqlSource vpdDynamicSqlSource = new DPDynamicSqlSource(configuration, rootSqlNode, conditionSql, threadLocal);
             result = vpdDynamicSqlSource;
         } else if (sqlSource instanceof StaticSqlSource || sqlSource instanceof OrderByStaticSqlSource
                 || sqlSource instanceof PageStaticSqlSource) {
@@ -91,7 +91,7 @@ public final class SqlSourceUtil {
             Configuration configuration = (Configuration) metaObject2.getValue("configuration");
             SqlNode rootSqlNode = (SqlNode) metaObject2.getValue("rootSqlNode");
             DPPageDynamicSqlSource vpdPageDynamicSqlSource = new DPPageDynamicSqlSource(
-                    configuration, rootSqlNode, conditionSql);
+                    configuration, rootSqlNode, conditionSql,threadLocal);
             result = vpdPageDynamicSqlSource;
         }
         if (logger.isInfoEnabled()) {
