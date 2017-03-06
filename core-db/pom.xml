@@ -3,7 +3,8 @@
     <parent>
         <artifactId>hap.extend</artifactId>
         <groupId>hap.extend</groupId>
-        <version>${Hap_extend.version}</version>
+        <!--<version>${Hap_extend.version}</version>-->
+        <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

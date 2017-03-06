@@ -33,6 +33,7 @@ public class DataPermissionRuleMethodCache extends HashStringRedisCache<Long[]> 
     @Override
     public void init() {
         strSerializer = getRedisTemplate().getStringSerializer();
+        clear();
         initLoad();
     }
 

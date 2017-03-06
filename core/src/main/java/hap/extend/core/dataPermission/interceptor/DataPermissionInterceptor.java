@@ -6,6 +6,7 @@ import com.hand.hap.cache.Cache;
 import com.hand.hap.cache.CacheManager;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.core.impl.RequestHelper;
+import org.apache.commons.collections.list.TransformedList;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
@@ -16,6 +17,7 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import java.util.*;
@@ -54,6 +56,7 @@ public class DataPermissionInterceptor implements Interceptor {
         final Object[] args = invocation.getArgs();
         MappedStatement statement = (MappedStatement) args[0];//在当前类的开头使用注解规定需要注入的参数
         String sqlId = statement.getId();
+        logger.info("\ndata permission:is going to handle(userId,roleId,sqlId)=({},{},{})\n",userId_L,roleId_L,sqlId);
         sqlId = extractMapperMethod(sqlId);
         initCacheObj();
         if(isNull(ruleIdsOfMethodMappingCache) || isNull(ruleUserMappingCache) || isNull(rulesCache)){
@@ -107,16 +110,21 @@ public class DataPermissionInterceptor implements Interceptor {
             return jumpIntercept(invocation);
         }
         String conditionSql = handleRuleList(userId_L.toString(), roleId_L.toString(), filteredRuleKeys, rulesCache);
-        if(isNull(conditionSql)){
-            return jumpIntercept(invocation);
-        }
+        /** 应用customize 插件*/
+        conditionSql = handlePlugin(conditionSql);
+//        if(isNull(conditionSql)){//now null has special meaning
+//            conditionSql="";
+//            return jumpIntercept(invocation);
+//        }
 //        //apply rules below
 //        BoundSql boundSql = statement.getBoundSql(args[1]);
 //        String oldSql = boundSql.getSql();
 //        Assert.notNull(oldSql,"需要执行的sql不能为null");
 //        Assert.isTrue(oldSql.length() > 0,"需要执行的sql不能为空串");
+        ThreadLocal<String> threadLocal = new ThreadLocal<>();
+        threadLocal.set(conditionSql);
         SqlSource sqlSource = statement.getSqlSource();
-        SqlSource newSqlSource1 = SqlSourceUtil.covertSqlSource(sqlSource, conditionSql);
+        SqlSource newSqlSource1 = SqlSourceUtil.covertSqlSource(sqlSource, conditionSql,threadLocal);
         MetaObject msObject = SystemMetaObject.forObject(statement);
         msObject.setValue("sqlSource", newSqlSource1);
 
@@ -217,5 +225,33 @@ public class DataPermissionInterceptor implements Interceptor {
             return mapperMethodId.substring(0,mapperMethodId.length()-6);
         }
         return mapperMethodId;
+    }
+
+
+    /**
+     * callback plugin method, for usage of extending data permission.
+     * if doesn't setting external plugin, just ignore;
+     * @param conditionSql
+     * @return final sql condition
+     */
+    private String handlePlugin(String conditionSql){
+        DataPermissionPluginWrapper pluginWrapper = null;
+        try {
+            pluginWrapper = applicationContext.getBean(DataPermissionPluginWrapper.class);
+        }catch (NoSuchBeanDefinitionException e){
+            logger.info("apply no external plugin for data permission");
+        }
+        if(isNotNull(pluginWrapper)){
+            String condition = conditionSql;
+            List<DataPermissionPlugin> plugins = pluginWrapper.getPlugins();
+            if(isNotNull(plugins) && !plugins.isEmpty()){
+                for(DataPermissionPlugin plugin : plugins){
+                    condition = plugin.handle(condition);
+                }
+                conditionSql = condition;
+            }
+        }
+
+        return conditionSql;
     }
 }

@@ -27,6 +27,7 @@ public class DataPermissionRuleCache extends HashStringRedisCache<String> {
     @Override
     public void init() {
         strSerializer = getRedisTemplate().getStringSerializer();
+        clear();
         initLoad();
     }
 

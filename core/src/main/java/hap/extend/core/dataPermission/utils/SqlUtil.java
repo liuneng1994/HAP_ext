@@ -29,6 +29,9 @@ public final class SqlUtil {
      * @throws JSQLParserException
      */
     public static String addConditionToSql(final String oldSql, final String conditionSql) throws JSQLParserException {
+        if(isNull(conditionSql)){
+            return oldSql;
+        }
         Select select = (Select) CCJSqlParserUtil.parse(oldSql);
         Expression where = ((PlainSelect) select.getSelectBody()).getWhere();
         Expression expression = null;
