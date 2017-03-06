@@ -60,17 +60,6 @@
         <property name="configLocation" value="classpath:mybatis-configuration.xml"/>
     </bean>
 
-    <!--add by yyz -->
-    <bean id="dataPermissionDemoPlugin" class="hap.extend.core.dataPermission.interceptor.DemoPlugin"/>
-    <bean id="dataPermissionPluginWrapper" class="hap.extend.core.dataPermission.interceptor.DataPermissionPluginWrapper">
-        <property name="plugins">
-            <list>
-                <ref bean="dataPermissionDemoPlugin"/>
-            </list>
-        </property>
-    </bean>
-    <!--add end-->
-
     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg index="0" name="sqlSessionFactory" ref="sqlSessionFactory"/>
     </bean>
