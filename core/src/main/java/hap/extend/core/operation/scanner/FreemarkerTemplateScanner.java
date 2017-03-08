@@ -17,7 +17,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Created by liuneng on 2017/2/20.
+ * Freemarker模板文件组件扫描
  */
 @Component
 public class FreemarkerTemplateScanner implements Scanner{

@@ -14,10 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by liuneng on 2017/2/21.
- */
-
-/**
  * 将freemarker模板文件转换为合法html
  */
 @Component
@@ -36,8 +32,9 @@ public class FreemarkerTemplateConverter implements TemplateConverter {
         reader.lines().forEach(line -> {
             for (Marker marker: markers) {
                 if (marker.isMarker(line)) {
-                    htmlBuilder.append(marker.getReplacement(line));
-                    return;
+                    line = marker.getReplacement(line);
+//                    htmlBuilder.append(marker.getReplacement(line));
+//                    return;
                 }
             }
             htmlBuilder.append(line);
