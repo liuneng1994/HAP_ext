@@ -11,7 +11,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Created by liuneng on 2017/2/21.
+ * 用于从HTML中解析出组件的ID以及组件类型.
+ *
+ * <pre>
+ *主要思路：从解析的dom对象中获取ID，对其进行解析(字符串截取)
+ * </pre>
  */
 public class ElementIdVisitor extends VisitorSupport implements ComponentCollector{
     private List<HtmlComponent> components = new ArrayList<>();
@@ -34,6 +38,7 @@ public class ElementIdVisitor extends VisitorSupport implements ComponentCollect
         return components;
     }
 
+    //TODO 后期需要修改这个规则，使用下划线进行分隔
     private String getComponentType(String id) {
         String[] strs = id.split("[A-Z]");
         return strs[0];

@@ -5,7 +5,7 @@ import hap.extend.core.operation.component.HtmlComponent;
 import java.util.List;
 
 /**
- * Created by liuneng on 2017/2/21.
+ * 页面组件收集器
  */
 public interface ComponentCollector {
     List<HtmlComponent> getComponents();
