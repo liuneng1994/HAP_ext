@@ -92,18 +92,19 @@
         rownumber: true,
         editable:true,
         edit:function (e) {
-//            console.log(e);
-//            console.log(e.model);
+            console.log(e);
+            console.log(e.model);
             window.parent.myEvent = e;
             //通过e.container[0].cellIndex获取列的下标，
             //通过e.container.children().attr("readonly","readonly")设置为只读，无法编辑
             //通过grid.setOptions({key:value})覆盖处于grid第一阶梯的属性，如editable
         },
-        columns: [{
+        columns: [
+            {
             field: "employeeCode",
             title: '员工编号',
             width: 100
-        }, {
+            }, {
             field: "employeeName",
             title: '员工姓名',
             editable:false,
@@ -126,13 +127,16 @@
             title : '测试',
             width : 50,
             template: function (rowData) {
-                parameter = "rules_grid";
-                return '<a class="btn btn-danger" onclick="grid_btn_click()">测试</a>';
+                return '<a name="btnTest" class="btn btn-danger" onclick="grid_btn_click()">测试</a>';
             }
         }]
     });
 
+
     function grid_btn_click() {
+        $.each($("a[name='btnTest']"), function (key, value) {
+            $(value).attr("disabled","disabled");
+        });
         kendo.ui.showConfirmDialog({
             title:$l('hap.tip.info'),
             message: "测试"
