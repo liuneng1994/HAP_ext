@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hap.extend.core.operation.mapper.JsMapper" >
+    <resultMap id="BaseResultMap" type="hap.extend.core.operation.dto.Js" extends="com.hand.hap.mapper.StdMapper.STD" >
+        <id column="JS_ID" property="jsId"/>
+        <result column="RESOURCE_ID" property="resourceId"/>
+        <result column="JS_NAME" property="jsName"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="JS_SCRIPT" property="jsScript"/>
+        <result column="ENABLE_FLAG" property="enableFlag"/>
+    </resultMap>
+</mapper>
