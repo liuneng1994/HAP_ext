@@ -13,7 +13,9 @@ $(document).ready(function(){
         success: function (data) {
             console.log(data);
             if(!!data && !!data.rows && data.rows.length>0){
-                eval(data.rows[0]["attribute1"]);
+                // eval(data.rows[0]["attribute1"]);
+                eval("hideColumn_1();");
+                console.log("执行完毕");
             }
         },
         async:false,
