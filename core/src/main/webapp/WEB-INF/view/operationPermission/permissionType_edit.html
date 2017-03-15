@@ -30,7 +30,22 @@
         var baseUrl = "${base.contextPath}/hap_extend/operation_permission/permission_type/";
         var themes_data;
         //获取传递过来的数据
-        var resourceId_param = "${RequestParameters.resourceId}";
+        var pageUri_param = "${RequestParameters.page_uri}";
+        var resourceId_param = 10001;
+        $.ajax({
+            type: 'POST',
+            url: _basePath+"/sys/resource/query" ,
+            data:{url:pageUri_param},
+            success: function (data) {
+                if(!!data && !!data.rows && data.rows.length>0){
+                    resourceId_param=data.rows[0].resourceId;
+                }else {
+                    new Error("illegal access");
+                }
+            },
+            async:false,
+            dataType: "json"
+        });
         var viewModel = kendo.observable({
             model : {
                 resourceId:resourceId_param
@@ -391,7 +406,7 @@
                         template:function (rowData) {
                             if(!!rowData.assignId){
                                 var html = "<button  class='btn btn-warning'onclick='showAssignJsWin(\""
-                                        + rowData.assignId+"\",\""
+                                        + rowData.resourceId+"\",\""
                                         + rowData.assignId
                                         + "\")'"
 //                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
