@@ -12,4 +12,17 @@
         <result column="JS_SCRIPT" property="jsScript"/>
         <result column="ENABLE_FLAG" property="enableFlag"/>
     </resultMap>
+
+    <!--<select id="selectPageJsByRole" resultMap="BaseResultMap">-->
+        <!--SELECT HCOM_RES_JS.*-->
+        <!--FROM HCOM_RES_JS js JOIN HCOM_RES_PRIV_ASSIGN pt ON (js.RESOURCE_ID=pt.RESOURCE_ID AND pt.ASSIGN_TYPE="ROLE" AND pt.TYPE_ID=#{roleId})-->
+
+        <!--SELECT * FROM HCOM_RES_JS js WHERE js.JS_ID IN-->
+        <!--(SELECT jsassign.JS_ID FROM HCOM_RES_JS_ASSIGN jsassign WHERE jsassign.ENABLE_FLAG="Y" AND jsassign.ASSIGN_ID IN-->
+          <!--(SELECT pt.ASSIGN_ID FROM HCOM_RES_PRIV_ASSIGN pt WHERE )-->
+        <!--)-->
+
+    <!--</select>-->
+
+
 </mapper>
