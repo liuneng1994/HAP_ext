@@ -2,10 +2,8 @@
  * Created by yyz on 2017/3/8.
  */
 $(document).ready(function(){
-    // console.log(_basePath);
-    // console.log(window.location.pathname);
-    var _opt_pms_filePath = window.location.pathname.substring(_basePath.length);
-    // console.log(_opt_pms_filePath);
+    var _opt_pms_filePath = window.location.pathname.substring(_basePath.length+1);
+    console.log(_opt_pms_filePath);
     $.ajax({
         type: 'POST',
         url: _basePath+"/hap_extend/operation_permission/query" ,
@@ -13,9 +11,10 @@ $(document).ready(function(){
         success: function (data) {
             console.log(data);
             if(!!data && !!data.rows && data.rows.length>0){
-                // eval(data.rows[0]["attribute1"]);
-                eval("hideColumn_1();");
-                console.log("执行完毕");
+                console.log(data.rows[0]["attribute1"]);
+                eval(data.rows[0]["attribute1"]);
+                // eval("hideColumn_1();");
+                // console.log("执行完毕");
             }
         },
         async:false,
