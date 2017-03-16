@@ -8,5 +8,5 @@ import com.hand.hap.core.IRequest;
  * @author yazheng.yang@hand-china.com
  */
 public interface IOperationPermissionService {
-    public String fetchApplyRules(String filePath, IRequest requestContext);
+    public String fetchApplyRules(String uriStr, IRequest requestContext);
 }
