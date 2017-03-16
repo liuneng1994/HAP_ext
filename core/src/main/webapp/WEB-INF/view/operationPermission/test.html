@@ -128,16 +128,16 @@
             title : '测试',
             width : 50,
             template: function (rowData) {
-                return '<a name="btnTest" class="btn btn-danger" onclick="grid_btn_click()">测试</a>';
+                return '<a name="btnTest" OP_PMS_name="btnForTest" class="btn btn-danger" onclick="grid_btn_click()">测试</a>';
             }
         }]
     });
 
 
     function grid_btn_click() {
-        $.each($("a[name='btnTest']"), function (key, value) {
-            $(value).attr("disabled","disabled");
-        });
+//        $.each($("a[name='btnTest']"), function (key, value) {
+//            $(value).attr("disabled","disabled");
+//        });
         kendo.ui.showConfirmDialog({
             title:$l('hap.tip.info'),
             message: "测试"
