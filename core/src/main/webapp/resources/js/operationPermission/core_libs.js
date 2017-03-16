@@ -1,4 +1,5 @@
 /**
+ * Forbidden modifying,all right reserved.
  * Created on 2017/3/10.
  * @author young
  */
@@ -39,9 +40,40 @@ function gridUtils_forbidEditWholeGrid(param_gridDivId) {
  * switch off editing mode of columns
  * @author young
  * @param param_gridDivId
- * @param param_columnIdsArray array,example:[0,1,2].index starts from 0.
+ * @param param_columnIndexArray array,example:[0,1,2].index starts from 0.
  */
-function gridUtils_forbidEditColumns(param_gridDivId, param_columnIdsArray) {
+function gridUtils_forbidEditColumns(param_gridDivId, param_columnIndexArray) {
+    var _thisGrid = gridUtils_gridFromDivId(param_gridDivId);
+    _thisGrid.OP_PMS_forbidEditColumns=[];
+    $.each(param_columnIndexArray, function (key, ele) {
+        _thisGrid.OP_PMS_forbidEditColumns.push(ele);
+    });
+    gridUtils_setTopLevelOptions(param_gridDivId,"edit",function (e) {
+        var localGrid = gridUtils_gridFromDivId(param_gridDivId);
+        if(!localGrid || !localGrid.OP_PMS_forbidEditColumns){
+            return;
+        }else if(localGrid.OP_PMS_forbidEditColumns===[]){
+            return;
+        }else {
+            var nowIndex = e.container[0].cellIndex;
+            if(localGrid.OP_PMS_forbidEditColumns.indexOf(nowIndex) > -1){
+                e.container.children().attr("readonly","readonly");
+                // e.container.children().attr("disabled","disabled");//need no consider for nested or customized editor
+                e.container.children().click(function (event) {
+                    event.preventDefault();
+                });
+            }
+        }
+    });
+}
+
+/**
+ * hide columns of given indexes.
+ * @param param_gridDivId
+ * @param param_columnIndexArray array of column index,the index start from 0.
+ */
+function gridUtils_hideColumns(param_gridDivId, param_columnIndexArray) {
+    console.log(param_columnIndexArray);
     var _thisGrid = gridUtils_gridFromDivId(param_gridDivId);
     var columns = _thisGrid.columns;
     var totalWidth = _thisGrid.table[0].clientWidth;
@@ -49,7 +81,7 @@ function gridUtils_forbidEditColumns(param_gridDivId, param_columnIdsArray) {
     var counter = -1;
     $.each(columns, function (key, ele) {
         counter ++;
-        if(param_columnIdsArray.indexOf(counter) > -1){
+        if(param_columnIndexArray.indexOf(counter) > -1){
             ele["hap_ext_op_permission"]="hide";
         }else if(!ele["hap_ext_op_permission"]){
             totalWeight += ele["width"];
@@ -62,17 +94,18 @@ function gridUtils_forbidEditColumns(param_gridDivId, param_columnIdsArray) {
         }
     });
 
-    $.each(param_columnIdsArray, function (key, _index) {
-        window.parent.grid.hideColumn(_index);
+    $.each(param_columnIndexArray, function (key, _index) {
+        _thisGrid.hideColumn(_index);
     });
 }
+
 /**
  * flexible controller of nested components applied in grid cell
  * @author young
  * @param param_htmlTagName html tag name,such as:a、input、button
  * @param param_tagAttributeName tag attribute name,such as:name、class;you can define your own attribute as well,for example:OP_PMS_name
  * @param param_tagAttributeValue value of tag attribute
- * @param param_callbackFunction js callback function,for example: function(ele){ele.attr("disabled","disabled");}
+ * @param param_callbackFunction js callback function,for example: function(ele){ele.attr("disabled","disabled");}，ele is a js object which will be injected automatically represented for this nested obj
  */
 function gridUtils_controlNestedComponents(param_htmlTagName, param_tagAttributeName, param_tagAttributeValue, param_callbackFunction) {
     var temp = param_htmlTagName+"["+param_tagAttributeName+"='"+param_tagAttributeValue+"']";
@@ -90,6 +123,8 @@ function gridUtils_disableButtonInColumn(param_tagAttributeValue) {
     gridUtils_controlNestedComponents("a","OP_PMS_name",param_tagAttributeValue,
         function (ele) {
             ele.attr("disabled","disabled");
+            ele.unbind();
+            ele.prop("onclick",null);
             ele.click(function (event) {
                 event.preventDefault();
             });
