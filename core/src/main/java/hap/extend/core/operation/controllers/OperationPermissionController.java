@@ -4,6 +4,8 @@ import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.BaseDTO;
 import com.hand.hap.system.dto.ResponseData;
+import hap.extend.core.operation.service.IOperationPermissionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +25,8 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "/hap_extend/operation_permission/")
 public class OperationPermissionController extends BaseController {
+    @Autowired
+    private IOperationPermissionService operationPermissionService;
 
     @RequestMapping(value = "query", method = RequestMethod.POST)
     @ResponseBody
@@ -31,9 +35,10 @@ public class OperationPermissionController extends BaseController {
         IRequest requestContext = createRequestContext(request);
         List<BaseDTO> list = new ArrayList<>();
         BaseDTO dataCarrier = new BaseDTO();
-        String s = "function disableCpn(cpn_id) {\n" +
-                "    $(\"#\"+cpn_id).attr(\"disabled\",true);\n" +
-                "}\ndisableCpn(\"btn_test\");";
+//        String s = "function disableCpn(cpn_id) {\n" +
+//                "    $(\"#\"+cpn_id).attr(\"disabled\",true);\n" +
+//                "}\ndisableCpn(\"btn_test\");";
+        String s = operationPermissionService.fetchApplyRules(filePath,requestContext);
         dataCarrier.setAttribute1(s);
         list.add(dataCarrier);
         return new ResponseData(list);
