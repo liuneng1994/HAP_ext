@@ -11,17 +11,11 @@ $(document).ready(function(){
         success: function (data) {
             console.log(data);
             if(!!data && !!data.rows && data.rows.length>0){
-                console.log(data.rows[0]["attribute1"]);
-                eval(data.rows[0]["attribute1"]);
-                // eval("hideColumn_1();");
-                // console.log("执行完毕");
+                console.log(data.rows[0]["name"]);
+                eval(data.rows[0]["name"]);
             }
         },
         async:false,
         dataType: "json"
     });
 });
-//
-// function disableCpn(cpn_id) {
-//     $("#"+cpn_id).attr("disabled",true);
-// }
