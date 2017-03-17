@@ -22,7 +22,7 @@
         <span class="btn btn-warning" onclick="collapse()"  style="float:left;margin-right:5px;"><@spring.message "hap.collapse"/></span>
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
-    <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+    <div class="pull-right" hidden id="query-form" style="padding-bottom:10px;">
         <div style="float:left;margin-right:5px;">
             <input type="text" id="role" style="width:150px;" placeholder='<@spring.message "function.parentfunctionid"/>'  data-bind="value:model.roleId,text:model.roleName">
             <script>
