@@ -1,13 +1,18 @@
 package hap.extend.core.operation.service.impl;
 
 import com.hand.hap.core.IRequest;
+import com.hand.hap.function.dto.Function;
 import com.hand.hap.function.dto.Resource;
+import com.hand.hap.function.mapper.FunctionMapper;
+import com.hand.hap.function.mapper.ResourceMapper;
 import com.hand.hap.function.service.IResourceService;
 import hap.extend.core.operation.dto.Js;
 import hap.extend.core.operation.dto.JsAssign;
+import hap.extend.core.operation.dto.PageNode;
 import hap.extend.core.operation.dto.PermissionType;
 import hap.extend.core.operation.mapper.JsAssignMapper;
 import hap.extend.core.operation.mapper.JsMapper;
+import hap.extend.core.operation.mapper.PageNodeMapper;
 import hap.extend.core.operation.mapper.PermissionTypeMapper;
 import hap.extend.core.operation.service.IOperationPermissionService;
 
@@ -40,6 +45,13 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
     private JsAssignMapper jsAssignMapper;
     @Autowired
     private JsMapper jsMapper;
+
+    @Autowired
+    private PageNodeMapper pageNodeMapper;
+    @Autowired
+    private FunctionMapper functionMapper;
+    @Autowired
+    private ResourceMapper resourceMapper;
 
     @Override
     public String fetchApplyRules(String uriStr, IRequest requestContext) {
@@ -96,5 +108,36 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
         });
         sb.append("\n}\n HAP_EXT_OPM_appliedOP();");
         return sb.toString();
+    }
+
+    @Override
+    public List<PageNode> fetchAllPageNodes(IRequest request) {
+        List<Function> functions = functionMapper.selectAll();
+        List<PageNode> pageNodes = new ArrayList<>();
+        functions.forEach(fun->{
+            PageNode pageNode = new PageNode();
+            pageNode.setFunctionId(fun.getFunctionId());
+            pageNode.setFunctionName(fun.getFunctionName());
+
+            //init resource message
+            if(isNotNull(fun.getResourceId())){
+                //fill resource msg from DB
+
+            }else {
+
+            }
+            //find if exist resource of this function
+            //TODO filter self
+
+
+            //find parent
+            if(isNotNull(fun.getParentFunctionId())){
+
+            }else {
+
+            }
+            pageNodes.contains(fun)
+        });
+        return pageNodeMapper.selectAllPageNode();
     }
 }
