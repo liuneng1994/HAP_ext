@@ -202,7 +202,7 @@
             {
                 attributes: {style: "text-align:center;padding:2px"},
                 field : "",
-                title : '<@spring.message "hap_extend.data_permission.rule.title_rule_dispatch_rule"/>',
+                title : 'JS维护',
                 width : 50,
                 template : function(item) {
                     if(!!item.url){
@@ -210,7 +210,7 @@
                                 + item.url
                                 + "\")'"
 //                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
-                                + ">规则维护"
+                                + ">JS维护"
                                 + "</button>";
                         return html;
                     }else{
@@ -222,11 +222,11 @@
             {
                 attributes: {style: "text-align:center;padding:2px"},
                 field : "",
-                title : '<@spring.message "hap_extend.data_permission.rule.title_rule_dispatch_rule"/>',
+                title : '组件维护',
                 width : 50,
                 template : function(item) {
                     if(!!item.url){
-                        var html = "<button  class='btn btn-success'onclick='showDispatchRuleToUserWindow(\""
+                        var html = "<button  class='btn btn-success'onclick='showManageComponentWin(\""
                                 + item.url
                                 + "\")'"
 //                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
@@ -242,7 +242,7 @@
             {
                 attributes: {style: "text-align:center;padding:2px"},
                 field : "",
-                title : '<@spring.message "hap_extend.data_permission.rule.title_rule_dispatch_rule"/>',
+                title : '权限分配',
                 width : 50,
                 template : function(item) {
                     if(!!item.url){
@@ -327,6 +327,10 @@
                     content : 'permissionType_edit.html?page_uri='
                     + pageUri_param
                 }).data("kendoWindow").maximize().open();
+    }
+
+    function showManageComponentWin(pageUri_param) {
+
     }
 </script>
 </body>
