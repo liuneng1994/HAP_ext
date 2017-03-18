@@ -5,6 +5,7 @@ import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.BaseDTO;
 import com.hand.hap.system.dto.ResponseData;
 import hap.extend.core.operation.dto.DataCarrier;
+import hap.extend.core.operation.dto.PageNode;
 import hap.extend.core.operation.service.IOperationPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,7 @@ public class OperationPermissionController extends BaseController {
         IRequest requestContext = createRequestContext(request);
         List<BaseDTO> list = new ArrayList<>();
         DataCarrier dataCarrier = new DataCarrier();
+        List<PageNode> pageNodes = operationPermissionService.fetchAllPageNodes(requestContext);
 //        String s = "function disableCpn(cpn_id) {\n" +
 //                "    $(\"#\"+cpn_id).attr(\"disabled\",true);\n" +
 //                "}\ndisableCpn(\"btn_test\");";
