@@ -1,0 +1,333 @@
+<#--
+* description: 页面权限控制总界面
+* version: 1.0
+* -->
+<#include "../include/header.html">
+<body>
+<script type="text/javascript">
+    viewModel = kendo.observable({
+        model : {
+            roleId: ${Session.roleId}
+        },
+        queryResource : function(e) {
+            $('#grid').data('kendoTreeList').dataSource.read();
+        }
+    });
+</script>
+<div id="dialog"></div>
+
+<div id="page-content">
+    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+        <span class="btn btn-primary" onclick="expand()" style="float:left;margin-right:5px;"><@spring.message "hap.expand"/></span>
+        <span class="btn btn-warning" onclick="collapse()"  style="float:left;margin-right:5px;"><@spring.message "hap.collapse"/></span>
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+    <div class="pull-right" hidden id="query-form" style="padding-bottom:10px;">
+        <div style="float:left;margin-right:5px;">
+            <input type="text" id="role" style="width:150px;" placeholder='<@spring.message "function.parentfunctionid"/>'  data-bind="value:model.roleId,text:model.roleName">
+            <script>
+                $("#role").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "LOV_ROLE")})
+            </script>
+        </div>
+        <span class="btn btn-primary" id="query"  data-bind="click:queryResource" type="submit"><@spring.message "hap.query"/></span>
+
+        <div style="clear:both"></div>
+    </div>
+    <script>kendo.bind($('#query-form'), viewModel);</script>
+    <div style="clear:both">
+        <div id="grid"></div>
+        <div id="manageJsWin_divId"></div>
+        <div id="manageComponentWin_divId"></div>
+        <div id="managePermissionTypeWin_divId"></div>
+    </div>
+</div>
+
+
+<script type="text/x-kendo-template" id="resourceitem">
+    # if (!data.hasChildren) { #
+    <a href="\\#" onclick="assignResourceItem(' + item.id + ')"><@spring.message "hap.edit"/></a>
+    # } #
+</script>
+
+<script type="text/javascript">
+    $('#query-form input').keydown(function (e) {
+        if (e.keyCode == 13) {
+            e.target.blur();
+            viewModel.queryResource(e);
+        }
+    });
+
+    function treelist(arr,childrens,parentId){
+        for(var i =0;i<childrens.length;i++){
+            childrens[i].parentId=parentId;
+            childrens[i].hasChildren=true;
+            arr.push(childrens[i])
+            if(childrens[i].children){
+                treelist(arr,childrens[i].children,childrens[i].id);
+            }else{
+                childrens[i].hasChildren=false;
+            }
+        }
+    }
+
+
+    // $(document).ready(function() {
+
+    function assignResourceItem(id) {
+        var fd = treeList.dataSource.data();
+        var dialog =  $("#dialog").kendoWindow({
+            actions: [ "Maximize", "Minimize", "Close"],
+            width: 720,
+            height: 550,
+            title: '<@spring.message "job.schedulenewjob"/>',
+            visible: false,
+            iframe: true,
+            content: 'sys_role_resource_item_kendoui.html?functionId=' + id + '&roleId=' + fd.roleId
+        }).data("kendoWindow");
+        dialog.center().open();
+    }
+
+
+
+    $.ajax({
+        url    : '${base.contextPath}/sys/role/query',
+        data   : {
+            roleId : ${Session.roleId}
+        },
+        success: function (json) {
+            if (json.success) {
+                var row = json.rows[0] || {};
+                viewModel.model.set("roleName",row.roleName);
+            }
+        }
+    });
+
+
+    var crudServiceBaseUrl = '${base.contextPath}/sys/rolefunction',
+            dataSource = new kendo.data.TreeListDataSource({
+                transport : {
+                    read : {
+                        url : crudServiceBaseUrl+ "/query",
+                        type : "POST",
+                        dataType : "json"
+                    },
+                    parameterMap : function(options,type) {
+                        if (type !== "read"	&& options.models) {
+                            var datas = options.models
+                            if (type == 'create'|| type == 'update') {
+                                datas = options.models.map(function(data) {
+                                    data['__status'] = (type == 'create' ? 'add' : 'update');
+                                    return data;
+                                })
+                            }
+                            return kendo.stringify(datas);
+                        } else if (type === "read") {
+                            var map = viewModel.model.toJSON();
+                            for ( var k in map) {
+                                if (map[k] === ''|| map[k] === null|| map[k] === undefined)
+                                    delete map[k]
+                            }
+                            return map;
+                        }
+
+                    }
+                },
+                requestEnd : function(e) {
+                    var response = e.response;
+                    if(!response)
+                        return;
+                    var datas = [];
+                    treelist(datas, response.rows||[],null);
+                    response.rows = datas;
+                },
+                batch   : true,
+                schema  : {
+                    data  : 'rows',
+                    model : {
+                        id      : "id",
+                        parentId:'parentId',
+                        fields  : {
+                            url : {type : "string"},
+                            text: {type :"string"}
+                        } ,
+                        expanded: true
+                    }
+                },
+                change: function propagate(e) {
+                    var node = e.items && e.items[0];
+                    var propagatedField = "ischecked";
+
+                    if (!node || e.field != propagatedField) {
+                        return;
+                    }
+
+                    this.unbind("change", propagate);
+                    function update(dataSource, nodes, field, state) {
+                        for (var i = 0; i < nodes.length; i++) {
+                            nodes[i].set(field, state);
+                            update(dataSource, dataSource.childNodes(nodes[i]), field, state);
+                        }
+                    }
+
+                    update(this, this.childNodes(node), propagatedField, node[propagatedField]);
+
+                    this.bind("change", propagate);
+                }
+            });
+
+    var treeList  = $("#grid").kendoTreeList({
+        dataSource : dataSource,
+        navigatable : false,
+        height :  "100%",
+        resizable : false,
+        scrollable : true,
+        editable : false,
+        columns : [
+            {
+                field : "text",
+                title : '<@spring.message "function.functionname"/>',
+                width : 150,
+                headerAttributes: {
+                    style  : "text-align: center"
+                }
+            },
+            {
+                field : "url",
+                title : '<@spring.message "hap.comment"/>',
+                width : 200,
+                headerAttributes: {
+                    style  : "text-align: center"
+                }
+            },
+            {
+                attributes: {style: "text-align:center;padding:2px"},
+                field : "",
+                title : '<@spring.message "hap_extend.data_permission.rule.title_rule_dispatch_rule"/>',
+                width : 50,
+                template : function(item) {
+                    if(!!item.url){
+                        var html = "<button  class='btn btn-info'onclick='showManageJsWin(\""
+                                + item.url
+                                + "\")'"
+//                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
+                                + ">规则维护"
+                                + "</button>";
+                        return html;
+                    }else{
+//                        return "<button  class='btn btn-info' disabled='disabled'><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/></button>";
+                        return "";
+                    }
+                }
+            },
+            {
+                attributes: {style: "text-align:center;padding:2px"},
+                field : "",
+                title : '<@spring.message "hap_extend.data_permission.rule.title_rule_dispatch_rule"/>',
+                width : 50,
+                template : function(item) {
+                    if(!!item.url){
+                        var html = "<button  class='btn btn-success'onclick='showDispatchRuleToUserWindow(\""
+                                + item.url
+                                + "\")'"
+//                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
+                                + ">组件维护"
+                                + "</button>";
+                        return html;
+                    }else{
+//                        return "<button  class='btn btn-success' disabled='disabled'><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/></button>";
+                        return "";
+                    }
+                }
+            },
+            {
+                attributes: {style: "text-align:center;padding:2px"},
+                field : "",
+                title : '<@spring.message "hap_extend.data_permission.rule.title_rule_dispatch_rule"/>',
+                width : 50,
+                template : function(item) {
+                    if(!!item.url){
+                        var html = "<button  class='btn btn-warning'onclick='showManagePermissionTypeWin(\""
+                                + item.url
+                                + "\")'"
+//                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
+                                + ">权限分配"
+                                + "</button>";
+                        return html;
+                    }else{
+//                        return "<button  class='btn btn-warning' disabled='disabled'><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/></button>";
+                        return "";
+                    }
+                }
+            }
+        ],
+        dataBound: function() {
+            var view = this.dataSource.view();
+            this.items().each(function(index, row) {
+                kendo.bind(row, view[index]);
+            });
+        }
+    }).data("kendoTreeList");
+
+    function expand(){
+        var tree=treeList.dataSource.data();
+        for(var i=0;i<tree.length;i++){
+            if(tree[i].hasChildren){
+                treeList.expand(tree[i]);
+            }
+        }
+    }
+    function collapse(){
+        var tree=treeList.dataSource.data();
+        for(var i=0;i<tree.length;i++){
+            if(tree[i].hasChildren){
+                treeList.collapse(tree[i]);
+            }
+        }
+    }
+    //	});
+
+
+    var grid = $("#grid").parent();
+    var avaHeight = $(window).height() - grid.offset().top - 10
+    grid.outerHeight(avaHeight)
+    $("#grid").data('kendoTreeList').resize();
+    $(window).resize(function () {
+        var grid = $("#grid").parent();
+        var avaHeight = $(window).height() - grid.offset().top - 10
+        grid.outerHeight(avaHeight)
+        $("#grid").data('kendoTreeList').resize();
+    });
+
+
+    function showManageJsWin(pageUri_param) {
+        $("#manageJsWin_divId").kendoWindow(
+            {
+                actions : ["Close" ],
+                width : 600,
+                height : 450,
+                title : 'JS控制代码管理',
+                visible : false,
+                iframe : true,
+                modal: true,
+                content : 'js_edit.html?page_uri='
+                + pageUri_param
+//            }).data("kendoWindow").center().open();
+            }).data("kendoWindow").maximize().open();
+    }
+    function showManagePermissionTypeWin(pageUri_param) {
+        $("#managePermissionTypeWin_divId").kendoWindow(
+                {
+                    actions : ["Close" ],
+                    width : 600,
+                    height : 450,
+                    title : '权限类别管理',
+                    visible : false,
+                    iframe : true,
+                    modal: true,
+                    content : 'permissionType_edit.html?page_uri='
+                    + pageUri_param
+                }).data("kendoWindow").maximize().open();
+    }
+</script>
+</body>
+</html>
