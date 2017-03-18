@@ -401,7 +401,7 @@
                     },
                     {
                         'field':'',
-                        'title':'分配规则',
+                        'title':'JS分配',
                         'width':30,
                         template:function (rowData) {
                             if(!!rowData.assignId){
@@ -410,12 +410,12 @@
                                         + rowData.assignId
                                         + "\")'"
 //                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
-                                        + ">规则分配"
+                                        + ">JS分配"
                                         + "</button>";
                                 return html;
                             }else{
 //                                return "<button  class='btn btn-warning' disabled='disabled'><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/></button>";
-                                return "<button  class='btn btn-warning' disabled='disabled'>规则分配</button>";
+                                return "<button  class='btn btn-warning' disabled='disabled'>JS分配</button>";
                             }
                         }
                     },
@@ -456,7 +456,7 @@
                 actions : ["Close" ],
                 width : 600,
                 height : 450,
-                title : '规则分配',
+                title : 'JS分配',
                 visible : false,
                 iframe : true,
                 modal: true,
