@@ -2,8 +2,10 @@ package hap.extend.core.operation.service.impl;
 
 import com.hand.hap.core.IRequest;
 import com.hand.hap.function.dto.Function;
+import com.hand.hap.function.dto.FunctionResource;
 import com.hand.hap.function.dto.Resource;
 import com.hand.hap.function.mapper.FunctionMapper;
+import com.hand.hap.function.mapper.FunctionResourceMapper;
 import com.hand.hap.function.mapper.ResourceMapper;
 import com.hand.hap.function.service.IResourceService;
 import hap.extend.core.operation.dto.Js;
@@ -52,6 +54,8 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
     private FunctionMapper functionMapper;
     @Autowired
     private ResourceMapper resourceMapper;
+    @Autowired
+    private FunctionResourceMapper functionResourceMapper;
 
     @Override
     public String fetchApplyRules(String uriStr, IRequest requestContext) {
@@ -114,30 +118,61 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
     public List<PageNode> fetchAllPageNodes(IRequest request) {
         List<Function> functions = functionMapper.selectAll();
         List<PageNode> pageNodes = new ArrayList<>();
+        List<PageNode> topLevelNodes = new ArrayList<>();
+//        functions.parallelStream().forEach(fun->{
         functions.forEach(fun->{
             PageNode pageNode = new PageNode();
             pageNode.setFunctionId(fun.getFunctionId());
             pageNode.setFunctionName(fun.getFunctionName());
+            pageNode.setResourceId(fun.getResourceId());
+
+            pageNode.setId(fun.getFunctionId());
+            if(isNull(fun.getParentFunctionId())){//top level
+                pageNode.setSequence(fun.getFunctionSequence());
+                topLevelNodes.add(pageNode);
+                pageNode.setParentId(null);
+            }else {
+                pageNodes.add(pageNode);
+                pageNode.setParentId(fun.getParentFunctionId());
+            }
+            pageNode.setText(fun.getFunctionName());
 
             //init resource message
             if(isNotNull(fun.getResourceId())){
                 //fill resource msg from DB
-
-            }else {
-
+                Resource resource = resourceMapper.selectByPrimaryKey(fun.getResourceId());
+                if(isNotNull(resource)){
+                    pageNode.setUrl(resource.getUrl());
+                    pageNode.setResourceName(resource.getName());
+                }
             }
-            //find if exist resource of this function
-            //TODO filter self
-
-
-            //find parent
-            if(isNotNull(fun.getParentFunctionId())){
-
-            }else {
-
+            //find if exist resources of this function
+            FunctionResource functionResource = new FunctionResource();
+            functionResource.setFunctionId(fun.getFunctionId());
+            List<FunctionResource> functionResources = functionResourceMapper.select(functionResource);
+            if(isNotNull(functionResources)){
+                Long base = 100000*(isNull(pageNode.getParentId())? 0:pageNode.getParentId());
+//                functionResources.parallelStream().forEach(rs->{
+                functionResources.forEach(rs->{
+                    //filter self
+                    if(!rs.getResourceId().equals(fun.getResourceId())){
+                        Resource resource_f = resourceMapper.selectByPrimaryKey(rs.getResourceId());
+                        if(isNotNull(resource_f)){
+                            PageNode child = new PageNode();
+                            child.setResourceId(rs.getResourceId());
+                            child.setParentId(pageNode.getId());
+                            child.setId(base+rs.getResourceId());
+                            child.setUrl(resource_f.getUrl());
+                            child.setResourceName(resource_f.getName());
+                            child.setText(resource_f.getName());
+                            pageNodes.add(child);
+                        }
+                    }
+                });
             }
-            pageNodes.contains(fun)
         });
-        return pageNodeMapper.selectAllPageNode();
+        List<PageNode> results = topLevelNodes.parallelStream().sorted((n1, n2) -> Long.compare(n1.getSequence(), n2.getSequence())).collect(Collectors.toList());
+        results.addAll(pageNodes);
+        return results;
     }
 }

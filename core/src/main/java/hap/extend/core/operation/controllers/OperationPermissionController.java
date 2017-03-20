@@ -37,7 +37,6 @@ public class OperationPermissionController extends BaseController {
         IRequest requestContext = createRequestContext(request);
         List<BaseDTO> list = new ArrayList<>();
         DataCarrier dataCarrier = new DataCarrier();
-        List<PageNode> pageNodes = operationPermissionService.fetchAllPageNodes(requestContext);
 //        String s = "function disableCpn(cpn_id) {\n" +
 //                "    $(\"#\"+cpn_id).attr(\"disabled\",true);\n" +
 //                "}\ndisableCpn(\"btn_test\");";
@@ -47,4 +46,12 @@ public class OperationPermissionController extends BaseController {
         return new ResponseData(list);
     }
 
+
+    @RequestMapping(value = "queryPageNodes", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData getPageNodes(HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+        List<PageNode> pageNodes = operationPermissionService.fetchAllPageNodes(requestContext);
+        return new ResponseData(pageNodes);
+    }
 }
