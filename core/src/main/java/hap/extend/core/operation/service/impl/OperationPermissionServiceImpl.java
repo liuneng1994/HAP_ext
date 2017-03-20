@@ -117,24 +117,26 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
     @Override
     public List<PageNode> fetchAllPageNodes(IRequest request) {
         List<Function> functions = functionMapper.selectAll();
-        List<PageNode> pageNodes_children = new ArrayList<>();
         List<PageNode> pageNodes = new ArrayList<>();
-        functions.parallelStream().forEach(fun->{
-//        functions.forEach(fun->{
+        List<PageNode> topLevelNodes = new ArrayList<>();
+//        functions.parallelStream().forEach(fun->{
+        functions.forEach(fun->{
             PageNode pageNode = new PageNode();
             pageNode.setFunctionId(fun.getFunctionId());
             pageNode.setFunctionName(fun.getFunctionName());
             pageNode.setResourceId(fun.getResourceId());
-            if(isNull(fun.getParentFunctionId())){
-                pageNode.setId(fun.getFunctionId());
+
+            pageNode.setId(fun.getFunctionId());
+            if(isNull(fun.getParentFunctionId())){//top level
+                pageNode.setSequence(fun.getFunctionSequence());
+                topLevelNodes.add(pageNode);
                 pageNode.setParentId(null);
-                pageNodes.add(pageNode);
             }else {
-                pageNode.setId(fun.getFunctionId());
+                pageNodes.add(pageNode);
                 pageNode.setParentId(fun.getParentFunctionId());
-                pageNode.setParentFunctionId(fun.getParentFunctionId());
-                pageNodes_children.add(pageNode);
             }
+            pageNode.setText(fun.getFunctionName());
+
             //init resource message
             if(isNotNull(fun.getResourceId())){
                 //fill resource msg from DB
@@ -148,11 +150,10 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
             FunctionResource functionResource = new FunctionResource();
             functionResource.setFunctionId(fun.getFunctionId());
             List<FunctionResource> functionResources = functionResourceMapper.select(functionResource);
-            List<PageNode> children = new ArrayList<PageNode>();
             if(isNotNull(functionResources)){
                 Long base = 100000*(isNull(pageNode.getParentId())? 0:pageNode.getParentId());
-                functionResources.parallelStream().forEach(rs->{
-//                functionResources.forEach(rs->{
+//                functionResources.parallelStream().forEach(rs->{
+                functionResources.forEach(rs->{
                     //filter self
                     if(!rs.getResourceId().equals(fun.getResourceId())){
                         Resource resource_f = resourceMapper.selectByPrimaryKey(rs.getResourceId());
@@ -163,25 +164,15 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
                             child.setId(base+rs.getResourceId());
                             child.setUrl(resource_f.getUrl());
                             child.setResourceName(resource_f.getName());
-                            children.add(child);
+                            child.setText(resource_f.getName());
+                            pageNodes.add(child);
                         }
                     }
                 });
             }
-            if(isNull(pageNode.getChildren())){
-                pageNode.setChildren(new ArrayList<PageNode>());
-            }
-            pageNode.getChildren().addAll(children);
         });
-        //find parent
-        pageNodes_children.parallelStream().forEach(child->{
-            List<PageNode> parents = pageNodes.parallelStream().filter(parent -> child.getParentFunctionId().equals(parent.getFunctionId())).limit(1).collect(Collectors.toList());
-            if(isNotNull(parents) && !parents.isEmpty()){
-                PageNode parent = parents.get(0);
-                parent.getChildren().add(child);
-            }
-        });
-
-        return pageNodes;
+        List<PageNode> results = topLevelNodes.parallelStream().sorted((n1, n2) -> Long.compare(n1.getSequence(), n2.getSequence())).collect(Collectors.toList());
+        results.addAll(pageNodes);
+        return results;
     }
 }
