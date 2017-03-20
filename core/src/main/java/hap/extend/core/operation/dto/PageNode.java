@@ -24,7 +24,13 @@ public class PageNode extends BaseDTO {
     private String url;
     private List<PageNode> children;
     private List<PageNode> children_temp1;
+    /** FunctionResource list*/
     private List<PageNode> children_temp2;
+    private Long parentFunctionId;
+
+    /** designed for listView specially*/
+    private Long id;
+    private Long parentId;
 
 
     public Long getFunctionId() {
@@ -115,5 +121,29 @@ public class PageNode extends BaseDTO {
     @Override
     public int hashCode() {
         return isNull(functionId)?-1:functionId.intValue();
+    }
+
+    public Long getParentFunctionId() {
+        return parentFunctionId;
+    }
+
+    public void setParentFunctionId(Long parentFunctionId) {
+        this.parentFunctionId = parentFunctionId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 }
