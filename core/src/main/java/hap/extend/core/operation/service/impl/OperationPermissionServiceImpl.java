@@ -2,8 +2,10 @@ package hap.extend.core.operation.service.impl;
 
 import com.hand.hap.core.IRequest;
 import com.hand.hap.function.dto.Function;
+import com.hand.hap.function.dto.FunctionResource;
 import com.hand.hap.function.dto.Resource;
 import com.hand.hap.function.mapper.FunctionMapper;
+import com.hand.hap.function.mapper.FunctionResourceMapper;
 import com.hand.hap.function.mapper.ResourceMapper;
 import com.hand.hap.function.service.IResourceService;
 import hap.extend.core.operation.dto.Js;
@@ -52,6 +54,8 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
     private FunctionMapper functionMapper;
     @Autowired
     private ResourceMapper resourceMapper;
+    @Autowired
+    private FunctionResourceMapper functionResourceMapper;
 
     @Override
     public String fetchApplyRules(String uriStr, IRequest requestContext) {
@@ -113,31 +117,71 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
     @Override
     public List<PageNode> fetchAllPageNodes(IRequest request) {
         List<Function> functions = functionMapper.selectAll();
+        List<PageNode> pageNodes_children = new ArrayList<>();
         List<PageNode> pageNodes = new ArrayList<>();
-        functions.forEach(fun->{
+        functions.parallelStream().forEach(fun->{
+//        functions.forEach(fun->{
             PageNode pageNode = new PageNode();
             pageNode.setFunctionId(fun.getFunctionId());
             pageNode.setFunctionName(fun.getFunctionName());
-
+            pageNode.setResourceId(fun.getResourceId());
+            if(isNull(fun.getParentFunctionId())){
+                pageNode.setId(fun.getFunctionId());
+                pageNode.setParentId(null);
+                pageNodes.add(pageNode);
+            }else {
+                pageNode.setId(fun.getFunctionId());
+                pageNode.setParentId(fun.getParentFunctionId());
+                pageNode.setParentFunctionId(fun.getParentFunctionId());
+                pageNodes_children.add(pageNode);
+            }
             //init resource message
             if(isNotNull(fun.getResourceId())){
                 //fill resource msg from DB
-
-            }else {
-
+                Resource resource = resourceMapper.selectByPrimaryKey(fun.getResourceId());
+                if(isNotNull(resource)){
+                    pageNode.setUrl(resource.getUrl());
+                    pageNode.setResourceName(resource.getName());
+                }
             }
-            //find if exist resource of this function
-            //TODO filter self
-
-
-            //find parent
-            if(isNotNull(fun.getParentFunctionId())){
-
-            }else {
-
+            //find if exist resources of this function
+            FunctionResource functionResource = new FunctionResource();
+            functionResource.setFunctionId(fun.getFunctionId());
+            List<FunctionResource> functionResources = functionResourceMapper.select(functionResource);
+            List<PageNode> children = new ArrayList<PageNode>();
+            if(isNotNull(functionResources)){
+                Long base = 100000*(isNull(pageNode.getParentId())? 0:pageNode.getParentId());
+                functionResources.parallelStream().forEach(rs->{
+//                functionResources.forEach(rs->{
+                    //filter self
+                    if(!rs.getResourceId().equals(fun.getResourceId())){
+                        Resource resource_f = resourceMapper.selectByPrimaryKey(rs.getResourceId());
+                        if(isNotNull(resource_f)){
+                            PageNode child = new PageNode();
+                            child.setResourceId(rs.getResourceId());
+                            child.setParentId(pageNode.getId());
+                            child.setId(base+rs.getResourceId());
+                            child.setUrl(resource_f.getUrl());
+                            child.setResourceName(resource_f.getName());
+                            children.add(child);
+                        }
+                    }
+                });
             }
-            pageNodes.contains(fun)
+            if(isNull(pageNode.getChildren())){
+                pageNode.setChildren(new ArrayList<PageNode>());
+            }
+            pageNode.getChildren().addAll(children);
         });
-        return pageNodeMapper.selectAllPageNode();
+        //find parent
+        pageNodes_children.parallelStream().forEach(child->{
+            List<PageNode> parents = pageNodes.parallelStream().filter(parent -> child.getParentFunctionId().equals(parent.getFunctionId())).limit(1).collect(Collectors.toList());
+            if(isNotNull(parents) && !parents.isEmpty()){
+                PageNode parent = parents.get(0);
+                parent.getChildren().add(child);
+            }
+        });
+
+        return pageNodes;
     }
 }
