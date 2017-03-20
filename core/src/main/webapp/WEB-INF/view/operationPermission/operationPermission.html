@@ -59,9 +59,11 @@
 
     function treelist(arr,childrens,parentId){
         for(var i =0;i<childrens.length;i++){
-            childrens[i].parentId=parentId;
+//            childrens[i].id = childrens[i].functionId || childrens[i].resourceId;
+            childrens[i].text=childrens[i].functionName || childrens[i].resourceName;
+//            childrens[i].parentId=parentId;
             childrens[i].hasChildren=true;
-            arr.push(childrens[i])
+            arr.push(childrens[i]);
             if(childrens[i].children){
                 treelist(arr,childrens[i].children,childrens[i].id);
             }else{
@@ -88,73 +90,91 @@
     }
 
 
+//
+//    $.ajax({
+//        url    : '${base.contextPath}/sys/role/query',
+//        data   : {
+//            roleId : ${Session.roleId}
+//        },
+//        success: function (json) {
+//            if (json.success) {
+//                var row = json.rows[0] || {};
+//                viewModel.model.set("roleName",row.roleName);
+//            }
+//        }
+//    });
+//    $.ajax({
+//        url    : '${base.contextPath}/hap_extend/operation_permission/queryPageNodes',
+//        type: 'POST',
+//        success: function (json) {
+//            if (json.success) {
+//                console.log("pageNodes:");
+//                console.log(json);
+//            }
+//        }
+//    });
 
-    $.ajax({
-        url    : '${base.contextPath}/sys/role/query',
-        data   : {
-            roleId : ${Session.roleId}
-        },
-        success: function (json) {
-            if (json.success) {
-                var row = json.rows[0] || {};
-                viewModel.model.set("roleName",row.roleName);
-            }
-        }
-    });
-    $.ajax({
-        url    : '${base.contextPath}/hap_extend/operation_permission/queryPageNodes',
-        type: 'POST',
-        success: function (json) {
-            if (json.success) {
-                console.log("pageNodes:");
-                console.log(json);
-            }
-        }
-    });
 
+    var crudServiceBaseUrl = '${base.contextPath}/sys/rolefunction';
+    var pageNodeUrl = '${base.contextPath}/hap_extend/operation_permission/queryPageNodes';
 
-    var crudServiceBaseUrl = '${base.contextPath}/sys/rolefunction',
-            dataSource = new kendo.data.TreeListDataSource({
-                transport : {
-                    read : {
-                        url : crudServiceBaseUrl+ "/query",
-                        type : "POST",
-                        dataType : "json"
-                    },
-                    parameterMap : function(options,type) {
-                        if (type === "read") {
-                            var map = viewModel.model.toJSON();
-                            for ( var k in map) {
-                                if (map[k] === ''|| map[k] === null|| map[k] === undefined)
-                                    delete map[k]
+    var dataSource = new kendo.data.TreeListDataSource({
+            transport : {
+                read:function (args) {
+                    $.ajax({
+                        url    : pageNodeUrl,
+                        type: 'POST',
+                        success: function (data) {
+                            if (data.success) {
+                                console.log("pageNodes:");
+                                console.log(data);
+//                                var datas = [];
+                                treelist(datas, data.rows||[],null);
+//                                data.rows=datas;
+                                args.success(data);
                             }
-                            return map;
                         }
-
-                    }
-                },
-                requestEnd : function(e) {
-                    var response = e.response;
-                    if(!response)
-                        return;
-                    var datas = [];
-                    treelist(datas, response.rows||[],null);
-                    response.rows = datas;
-                },
-                batch   : true,
-                schema  : {
-                    data  : 'rows',
-                    model : {
-                        id      : "id",
-                        parentId:'parentId',
-                        fields  : {
-                            url : {type : "string"},
-                            text: {type :"string"}
-                        } ,
-                        expanded: true
-                    }
+                    });
                 }
-            });
+//                read : {
+//                    url : crudServiceBaseUrl+ "/query",
+//                    type : "POST",
+//                    dataType : "json"
+//                },
+//                parameterMap : function(options,type) {
+//                    if (type === "read") {
+//                        var map = viewModel.model.toJSON();
+//                        for ( var k in map) {
+//                            if (map[k] === ''|| map[k] === null|| map[k] === undefined)
+//                                delete map[k]
+//                        }
+//                        return map;
+//                    }
+//
+//                }
+            },
+//            requestEnd : function(e) {
+//                var response = e.response;
+//                if(!response)
+//                    return;
+//                var datas = [];
+//                treelist(datas, response.rows||[],null);
+//                response.rows = datas;
+//            },
+            batch   : true,
+            schema  : {
+                data  : 'rows',
+                model : {
+                    id      : "id",
+                    parentId:'parentId',
+                    fields  : {
+                        url : {type : "string"},
+                        text: {type :"string"}
+                    } ,
+                    expanded: true
+                }
+            }
+        });
 
     var treeList  = $("#grid").kendoTreeList({
         dataSource : dataSource,
