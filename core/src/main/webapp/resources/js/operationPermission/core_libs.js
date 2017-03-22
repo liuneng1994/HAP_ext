@@ -119,7 +119,7 @@ function gridUtils_controlNestedComponents(param_htmlTagName, param_tagAttribute
 }
 
 /**
- * disable buttons in single column
+ * disable buttons in single column(you can remove all buttons which is of same value of OP_PMS_name attribute actually)
  * @author young
  * @param param_tagAttributeValue value of "OP_PMS_name" attribute
  */
@@ -132,6 +132,22 @@ function gridUtils_disableButtonInColumn(param_tagAttributeValue) {
             ele.click(function (event) {
                 event.preventDefault();
             });
+        }
+    );
+}
+
+/**
+ * remove buttons in single column(you can remove all buttons which is of same value of OP_PMS_name attribute actually).
+ * <br>
+ *     notice:caution you that forbidden using in single column which contains single type button.
+ * @param param_tagAttributeValue
+ */
+function gridUtils_deleteButtonInColumn(param_tagAttributeValue) {
+    // this.parentNode.removeChild(this);
+    gridUtils_controlNestedComponents("a","OP_PMS_name",param_tagAttributeValue,
+        function (ele) {
+            // ele.parentNode.removeChild(ele);
+            ele.remove();
         }
     );
 }
