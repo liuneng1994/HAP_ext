@@ -150,6 +150,7 @@
     window.parent.grid = $("#grid").data("kendoGrid");
 
 
+
     $("#lov").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "user_lov")});
     kendo.bind($('#demo'), viewModel);
 
@@ -209,6 +210,7 @@
     }
 
     function hideColumn_1() {
+        gridUtils_forbidEditColumns("grid",[1,2,3,4]);
 //        console.log("grid对象\n");
 //        console.log(grid);
 //        console.log(grid.columns);
