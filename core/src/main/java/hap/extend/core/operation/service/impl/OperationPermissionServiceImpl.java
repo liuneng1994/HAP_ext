@@ -87,6 +87,7 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
         for(Long assignId : assignIds){
             JsAssign jsAssign = new JsAssign();
             jsAssign.setAssignId(assignId);
+            jsAssign.setEnableFlag(OPConstUtil.VALUE_YES);
             List<JsAssign> assigns = jsAssignMapper.select(jsAssign);
             jsIds.addAll(assigns.stream().map(assign->assign.getJsId()).collect(Collectors.toSet()));
         }
