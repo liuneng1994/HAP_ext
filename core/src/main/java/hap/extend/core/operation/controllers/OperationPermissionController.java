@@ -7,6 +7,8 @@ import com.hand.hap.system.dto.ResponseData;
 import hap.extend.core.operation.dto.DataCarrier;
 import hap.extend.core.operation.dto.PageNode;
 import hap.extend.core.operation.service.IOperationPermissionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,8 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "/hap_extend/operation_permission/")
 public class OperationPermissionController extends BaseController {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private IOperationPermissionService operationPermissionService;
 
@@ -41,6 +45,7 @@ public class OperationPermissionController extends BaseController {
 //                "    $(\"#\"+cpn_id).attr(\"disabled\",true);\n" +
 //                "}\ndisableCpn(\"btn_test\");";
         String s = operationPermissionService.fetchApplyRules(filePath,requestContext);
+        logger.debug("control js code:{}",s);
         dataCarrier.setName(s);
         list.add(dataCarrier);
         return new ResponseData(list);
