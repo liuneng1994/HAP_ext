@@ -307,7 +307,6 @@
                 var firstRow = $("#jsSelect_grid").data("kendoGrid").selectedDataItems()[0];
                 rowData.set("jsId",firstRow.jsId);
                 rowData.set("jsName",firstRow.jsName);
-                console.log("("+firstRow.userId+","+firstRow.userName+")");
                 jsSelectWin.close();
             });
             kendo.bind($('#selectJs-content'),jsSelect_viewModel);
