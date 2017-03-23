@@ -85,7 +85,7 @@
             {
                 attributes: {style: "text-align:center;padding:2px"},
                 field : "",
-                title : 'JS维护',
+                title : '<@spring.message "hap_extend.op_permission.title.js_maintain"/>',
                 width : 50,
                 template : function(item) {
                     if(!!item.resourceId){
@@ -93,7 +93,7 @@
                                 + item.resourceId
                                 + "\")'"
 //                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
-                                + ">JS维护"
+                                + "><@spring.message 'hap_extend.op_permission.title.js_maintain'/>"
                                 + "</button>";
                         return html;
                     }else{
@@ -105,7 +105,7 @@
 //            {
 //                attributes: {style: "text-align:center;padding:2px"},
 //                field : "",
-//                title : '组件维护',
+//                title : '<@spring.message "hap_extend.op_permission.title.component_maintain"/>',
 //                width : 50,
 //                template : function(item) {
 //                    if(!!item.resourceId){
@@ -113,7 +113,7 @@
 //                                + item.resourceId
 //                                + "\")'"
 ////                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
-//                                + ">组件维护"
+//                                + "><@spring.message 'hap_extend.op_permission.title.component_maintain'/>"
 //                                + "</button>";
 //                        return html;
 //                    }else{
@@ -125,7 +125,7 @@
             {
                 attributes: {style: "text-align:center;padding:2px"},
                 field : "",
-                title : '权限分配',
+                title : '<@spring.message "hap_extend.op_permission.title.auth_dispatch"/>',
                 width : 50,
                 template : function(item) {
                     if(!!item.resourceId){
@@ -133,7 +133,7 @@
                                 + item.resourceId
                                 + "\")'"
 //                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
-                                + ">权限分配"
+                                + "><@spring.message 'hap_extend.op_permission.title.auth_dispatch'/>"
                                 + "</button>";
                         return html;
                     }else{
@@ -188,7 +188,7 @@
                 actions : ["Close" ],
                 width : 600,
                 height : 450,
-                title : 'JS控制代码管理',
+                title : '<@spring.message "hap_extend.op_permission.title.js_code_management"/>',
                 visible : false,
                 iframe : true,
                 modal: true,
@@ -203,7 +203,7 @@
                     actions : ["Close" ],
                     width : 600,
                     height : 450,
-                    title : '权限类别管理',
+                    title : '<@spring.message "hap_extend.op_permission.title.auth_type_management"/>',
                     visible : false,
                     iframe : true,
                     modal: true,
@@ -213,7 +213,7 @@
     }
 
     function showManageComponentWin(pageUri_param) {
-
+//        hap_extend.op_permission.title.component_management
     }
 </script>
 </body>

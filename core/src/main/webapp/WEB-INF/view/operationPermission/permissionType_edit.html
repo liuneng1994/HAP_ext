@@ -375,7 +375,7 @@
                     },
                     {
                         'field':'description',
-                            'title':'描述',
+                            'title':'<@spring.message "hap_extend.op_permission.grid_title.description"/>',
                             'width':100
                     },
                     {
@@ -386,7 +386,7 @@
                     },
                     {
                         'field':'',
-                        'title':'JS分配',
+                        'title':'<@spring.message "hap_extend.op_permission.grid_title.js_assign"/>',
                         'width':30,
                         template:function (rowData) {
                             if(!!rowData.assignId){
@@ -395,7 +395,7 @@
                                         + rowData.assignId
                                         + "\")'"
 //                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
-                                        + ">JS分配"
+                                        + "><@spring.message 'hap_extend.op_permission.grid_title.js_assign'/>"
                                         + "</button>";
                                 return html;
                             }else{
@@ -406,7 +406,7 @@
                     },
                     {
                         attributes: {style: "text-align:center;padding:0px"},
-                        title: '<@spring.message "hap_extend.data_permission.rule.title_operation"/>',
+                        title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
                         command : [{
                             name:'remove',
                             template : function (rowData) {
@@ -441,7 +441,7 @@
                 actions : ["Close" ],
                 width : 600,
                 height : 450,
-                title : 'JS分配',
+                title : '<@spring.message "hap_extend.op_permission.grid_title.js_assign"/>',
                 visible : false,
                 iframe : true,
                 modal: true,

@@ -16,7 +16,10 @@ function gridUtils_gridFromDivId(param_divId) {
 }
 
 function gridUtils_setTopLevelOptions(param_gridDivId, param_key, param_value) {
-    gridUtils_gridFromDivId(param_gridDivId).setOptions({param_key:param_value});
+    var ops = {};
+    ops[""+param_key] = param_value;
+    // gridUtils_gridFromDivId(param_gridDivId).setOptions({param_key:param_value}); already fixed
+    gridUtils_gridFromDivId(param_gridDivId).setOptions(ops);
 }
 /**
  * allow user to edit the whole grid
@@ -49,6 +52,7 @@ function gridUtils_forbidEditColumns(param_gridDivId, param_columnIndexArray) {
         _thisGrid.OP_PMS_forbidEditColumns.push(ele);
     });
     gridUtils_setTopLevelOptions(param_gridDivId,"edit",function (e) {
+        // make compatible for old edit function if exists
         var localGrid = gridUtils_gridFromDivId(param_gridDivId);
         if(!localGrid || !localGrid.OP_PMS_forbidEditColumns){
             return;
@@ -58,7 +62,7 @@ function gridUtils_forbidEditColumns(param_gridDivId, param_columnIndexArray) {
             var nowIndex = e.container[0].cellIndex;
             if(localGrid.OP_PMS_forbidEditColumns.indexOf(nowIndex) > -1){
                 e.container.children().attr("readonly","readonly");
-                // e.container.children().attr("disabled","disabled");//need no consider for nested or customized editor
+                // e.container.children().attr("disabled","disabled");//need not consider for nested or customized editor
                 e.container.children().click(function (event) {
                     event.preventDefault();
                 });
@@ -115,7 +119,7 @@ function gridUtils_controlNestedComponents(param_htmlTagName, param_tagAttribute
 }
 
 /**
- * disable buttons in single column
+ * disable buttons in single column(you can remove all buttons which is of same value of OP_PMS_name attribute actually)
  * @author young
  * @param param_tagAttributeValue value of "OP_PMS_name" attribute
  */
@@ -128,6 +132,22 @@ function gridUtils_disableButtonInColumn(param_tagAttributeValue) {
             ele.click(function (event) {
                 event.preventDefault();
             });
+        }
+    );
+}
+
+/**
+ * remove buttons in single column(you can remove all buttons which is of same value of OP_PMS_name attribute actually).
+ * <br>
+ *     notice:caution you that forbidden using in single column which contains single type button.
+ * @param param_tagAttributeValue
+ */
+function gridUtils_deleteButtonInColumn(param_tagAttributeValue) {
+    // this.parentNode.removeChild(this);
+    gridUtils_controlNestedComponents("a","OP_PMS_name",param_tagAttributeValue,
+        function (ele) {
+            // ele.parentNode.removeChild(ele);
+            ele.remove();
         }
     );
 }

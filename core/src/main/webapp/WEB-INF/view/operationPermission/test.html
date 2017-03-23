@@ -1,7 +1,11 @@
 <#include "../include/header.html">
 <body>
 <script src="${base.contextPath}/resources/js/operationPermission/core_libs.js" charset="UTF-8"></script>
+<!--获取控制代码（应用控制代码推荐在页面的结束位置引用,引用的js文件为apply_op_permission.js）-->
 <script src="${base.contextPath}/resources/js/operationPermission/operationPermission.js" charset="UTF-8"></script>
+<!--关于预先提供的部分js函数封装的说明：这部分函数封装主要是适用于规范的hap开发过程中，
+grid中约定使用情况下的处理，对于不同的项目可以参照着实现；
+这一部分的代码不一定适用于所有项目-->
 <div>
     <div id="content-container">
         <div id="page-content">
@@ -150,6 +154,7 @@
     window.parent.grid = $("#grid").data("kendoGrid");
 
 
+
     $("#lov").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "user_lov")});
     kendo.bind($('#demo'), viewModel);
 
@@ -209,6 +214,7 @@
     }
 
     function hideColumn_1() {
+        gridUtils_forbidEditColumns("grid",[1,2,3,4]);
 //        console.log("grid对象\n");
 //        console.log(grid);
 //        console.log(grid.columns);
@@ -217,5 +223,7 @@
     }
     //$("#"+_gridDivId).data("kendoGrid").dataSource.options.fields可以获取全部field，包括自动行号
 </script>
+<script src="${base.contextPath}/resources/js/operationPermission/apply_op_permission.js" charset="UTF-8"></script>
+
 </body>
 </html>

@@ -152,7 +152,7 @@
                 [
                     {
                         'field': 'jsId',
-                        'title':'<@spring.message "hap_extend.data_permission.mappermethod.rule"/>',
+                        'title':'<@spring.message "hap_extend.op_permission.grid_title.name"/>',
                         'width': 100,
                         template: function (dataItem) {
                             return dataItem['jsName'] || ''
@@ -161,32 +161,11 @@
                             $('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly="readonly" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="showJsLov(event)" class="k-icon k-i-search">&nbsp;</a></span>')
                                     .appendTo(container);
 
-//
-//
-//                            console.log("lov的model");
-//                            console.log(options.model);
-
-//                            var lovContent=<@lov "HAP_EXTEND_JS_LOV"/>;
-////                            var appendStr = "<input id='lov_resourceId_input' name='resourceId' value='"+resourceId_param+"' type='hidden' style='width:100%'></div>";
-////                            var formStr = lovContent.form;
-////                            lovContent.form = formStr.substring(0,formStr.length-6)+appendStr;
-//                            var formItemMap = lovContent.formItemMap;
-//                            formItemMap.resourceId={
-//                                "type":"kendoMaskedTextBox"
-//                            };
-//                            options.model.data={resourceId:resourceId_param};
-//                            console.log(lovContent);
-//                            $('<input id="lovInput" name="' + options.field + '"/>')
-//                            .appendTo(container)
-//                            .kendoLov($.extend(lovContent, {
-//                                textField: 'jsName',
-//                                model: options.model
-//                            }));
                         }
                     },
                     {
                         'field':'description',
-                        'title':'描述',
+                        'title': '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
                         'width':100
                     },
                     {
@@ -197,7 +176,7 @@
                     },
                     {
                         attributes: {style: "text-align:center;padding:0px"},
-                        title: '<@spring.message "hap_extend.data_permission.rule.title_operation"/>',
+                        title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
                         command : [{
                             name:'remove',
                             template : function (rowData) {
@@ -312,12 +291,12 @@
                         [
                             {
                                 'field': 'jsName',
-                                'title':'名称',
+                                'title': '<@spring.message "hap_extend.op_permission.grid_title.name"/>',
                                 'width': "100px"
                             },
                             {
                                 'field': 'description',
-                                'title':'描述',
+                                'title': '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
                                 'width': "100px"
                             }
                         ],
@@ -328,7 +307,6 @@
                 var firstRow = $("#jsSelect_grid").data("kendoGrid").selectedDataItems()[0];
                 rowData.set("jsId",firstRow.jsId);
                 rowData.set("jsName",firstRow.jsName);
-                console.log("("+firstRow.userId+","+firstRow.userName+")");
                 jsSelectWin.close();
             });
             kendo.bind($('#selectJs-content'),jsSelect_viewModel);
