@@ -14,8 +14,9 @@ public final class OPConstUtil {
 
     public static final String VALUE_GRID_LEVEL = "GRID";
     public static final String VALUE_FORM_LEVEL = "FORM";
-    public static final String JS_FUNCTION_NAME_FORMAT = "%s_%s_%sFunction('%s','%s')";
-    public static final String JS_COMMON_FUNCTION_NAME_FORMAT = "COMMON_%s_%sFunction('%s','%s')";
+    public static final String JS_FUNCTION_NAME_FORMAT = "%s_%s_%sFunction";
+    public static final String JS_COMMON_FUNCTION_NAME_FORMAT = "COMMON_%s_%sFunction";
+    public static final String JS_CALLBACK_CODE_FORMAT = "if(!!%s){%s('%s','%s');}else {%s('%s','%s');}";
 
 
     public static boolean isEnable(String enableFlagStr){
@@ -30,23 +31,25 @@ public final class OPConstUtil {
      * @param level
      * @param cpnType
      * @param opType -- visible/require/readonly/disable
-     * @param htmlTagId
      * @return js function name
      */
-    public static String generateJsFunName(String level, String cpnType, String opType, String htmlTagId, String value){
-        return String.format(JS_FUNCTION_NAME_FORMAT, level, cpnType, opType, htmlTagId, value);
+    public static String generateJsFunName(String level, String cpnType, String opType){
+        return String.format(JS_FUNCTION_NAME_FORMAT, level, cpnType, opType);
     }
 
     /**
      * generate the common js function name of special format
      * @param level
      * @param opType -- visible/require/readonly/disable
-     * @param htmlTagId
      * @return js function name
      */
-    public static String generateJsCommonFunName(String level, String opType, String htmlTagId, String value){
-        return String.format(JS_COMMON_FUNCTION_NAME_FORMAT, level, opType, htmlTagId, value);
+    public static String generateJsCommonFunName(String level, String opType){
+        return String.format(JS_COMMON_FUNCTION_NAME_FORMAT, level, opType);
     }
 
-    
+    public static String generateJsCode(String level, String cpnType, String opType, String htmlTagId, String value){
+        String selfDefineJs = generateJsFunName(level,cpnType,opType);
+        String commonJs = generateJsCommonFunName(level,opType);
+        return String.format(JS_CALLBACK_CODE_FORMAT, selfDefineJs, selfDefineJs, htmlTagId, value, commonJs, htmlTagId, value);
+    }
 }
