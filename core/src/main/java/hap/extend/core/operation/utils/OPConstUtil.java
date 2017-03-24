@@ -16,7 +16,7 @@ public final class OPConstUtil {
     public static final String VALUE_FORM_LEVEL = "FORM";
     public static final String JS_FUNCTION_NAME_FORMAT = "%s_%s_%sFunction";
     public static final String JS_COMMON_FUNCTION_NAME_FORMAT = "COMMON_%s_%sFunction";
-    public static final String JS_CALLBACK_CODE_FORMAT = "if(!!%s){%s('%s','%s');}else {%s('%s','%s');}";
+    public static final String JS_CALLBACK_CODE_FORMAT = "if('undefined' != typeof(%s)){%s('%s','%s');}else {%s('%s','%s');}";
 
 
     public static boolean isEnable(String enableFlagStr){
@@ -47,6 +47,15 @@ public final class OPConstUtil {
         return String.format(JS_COMMON_FUNCTION_NAME_FORMAT, level, opType);
     }
 
+    /**
+     * generate js code for each component limited by each op type.
+     * @param level
+     * @param cpnType
+     * @param opType
+     * @param htmlTagId
+     * @param value
+     * @return
+     */
     public static String generateJsCode(String level, String cpnType, String opType, String htmlTagId, String value){
         String selfDefineJs = generateJsFunName(level,cpnType,opType);
         String commonJs = generateJsCommonFunName(level,opType);
