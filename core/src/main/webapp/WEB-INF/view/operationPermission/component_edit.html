@@ -94,6 +94,17 @@
             }
         });
     }
+
+
+    var level_dataSource = [
+        {"meaning": "GRID", "value": "GRID"},
+        {"meaning": "FORM", "value": "FORM"}
+    ];
+    var htmlTagAttr_dataSource = [
+        {"meaning": "ID", "value": "ID"},
+        {"meaning": "OP_PMS_NAME", "value": "OP_PMS_NAME"}
+    ];
+
     $("#components_grid").kendoGrid({
         dataSource: new kendo.data.DataSource({
             transport: {
@@ -140,9 +151,26 @@
                     fields: {
                         resourceId:{type: 'number',defaultValue:resourceId_param},
                         componentName:{type: 'string',validation: { required: true }},
-                        componentType:{type: 'string',validation: { required: true }},
+                        componentType:{type: 'string',validation: { required: true,
+                            componenttypevalidation: function (input) {
+                                if (input.is("[name='componentType']") && input.val() != "") {
+                                    input.attr("data-componenttypevalidation-msg", "需要以字母开头，由数字和字母构成");
+                                    return /^[A-Za-z][A-Za-z0-9]*$/.test(input.val());
+                                }
+                                return true;
+                            }
+                        }, defaultValue:"grid"},
                         level:{type: 'string',validation: { required: true },defaultValue:"GRID"},
-                        htmlTagId:{type: 'string',validation: { required: true }},
+                        htmlTagAttr:{type: 'string',validation: { required: true },defaultValue:"ID"},
+                        htmlTagAttrVal:{type: 'string',validation: { required: true,
+                            htmltagattrvalvalidation: function (input) {
+                                if (input.is("[name='htmlTagAttrVal']") && input.val() != "") {
+                                    input.attr("data-htmltagattrvalvalidation-msg", "需要以字母开头，由数字和字母构成");
+                                    return /^[A-Za-z][A-Za-z0-9]*$/.test(input.val());
+                                }
+                                return true;
+                            }
+                        }},
                         description:{type: 'string'},
                         enableFlag:{defaultValue:'Y',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'}
                     }
@@ -163,7 +191,26 @@
                 field: "level",
 //                title: '<@spring.message "hap_extend.op_permission.grid_title.name"/>',
                 title: '类别',
-                width: 80
+                width: 80,
+                template: function (dataItem) {
+                    return Hap.getCodeMeaning(level_dataSource, dataItem.level)
+                },
+                editor: function (container, options) {
+                    var rowData = options.model;
+                    $('<input required name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        dataTextField : "meaning",
+                        dataValueField: "value",
+                        dataSource    : level_dataSource,
+                        change: function (e) {
+                            var dataItem = this.dataItem(e.item);
+                            if("GRID"==dataItem["value"]){
+                                rowData.set("componentType","grid");
+                            }
+                        }
+                    });
+                }
             },
             {
                 field: "componentType",
@@ -177,9 +224,27 @@
                 width: 80
             },
             {
-                field: "htmlTagId",
+                field: "htmlTagAttr",
 //                title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
-                title: 'HTML标签id',
+                title: 'HTML标签属性',
+                width: 80,
+                template: function (dataItem) {
+                    return Hap.getCodeMeaning(htmlTagAttr_dataSource, dataItem.htmlTagAttr)
+                },
+                editor: function (container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        dataTextField : "meaning",
+                        dataValueField: "value",
+                        dataSource    : htmlTagAttr_dataSource
+                    });
+                }
+            },
+            {
+                field: "htmlTagAttrVal",
+//                title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
+                title: 'HTML标签属性值',
                 width: 80
             },
             {
@@ -187,12 +252,12 @@
                 title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
                 width: 80
             },
-            {
-                attributes: {style: "text-align:center;"},
-                'field': 'enableFlag',
-                'title':'<@spring.message "hap_extend.data_permission.rule.title_rule_enable"/>',
-                'width': 30
-            },
+//            {
+//                attributes: {style: "text-align:center;"},
+//                'field': 'enableFlag',
+//                'title':'<@spring.message "hap_extend.data_permission.rule.title_rule_enable"/>',
+//                'width': 30
+//            },
             {
                 attributes: {style: "text-align:center;padding:0px"},
                 field : "",
