@@ -158,61 +158,6 @@ grid中约定使用情况下的处理，对于不同的项目可以参照着实�
     $("#lov").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "user_lov")});
     kendo.bind($('#demo'), viewModel);
 
-    //约定下标从0开始
-    window.parent.hideGridColumn = function (_index) {
-        console.log("hello");
-        var columns = window.parent.grid.columns;
-        var totalWidth = window.parent.grid.table[0].clientWidth;
-        var totalWeight = 0;
-        var counter = -1;
-        console.log("开始输出所有权重:");
-        $.each(columns, function (key, ele) {
-            counter ++;
-            console.log(ele["width"]);
-            if(counter == _index){
-                ele["hap_ext_op_permission"]="hide";
-            }else if(!ele["hap_ext_op_permission"]){
-                totalWeight += ele["width"];
-            }
-        });
-
-        console.log("totalWidth:"+totalWidth);
-        console.log("totalWeight:"+totalWeight);
-        $.each(columns, function (key, ele) {
-            if(!ele["hap_ext_op_permission"]){
-                ele["width"] = (totalWidth/totalWeight)*ele["width"];
-            }
-        });
-
-        window.parent.grid.hideColumn(_index);
-    }
-
-    window.parent.batchHideGridColumns = function (_indexArray, _gridDivId) {
-        var _thisGrid = $("#"+_gridDivId).data("kendoGrid");
-        var columns = _thisGrid.columns;
-        var totalWidth = _thisGrid.table[0].clientWidth;
-        var totalWeight = 0;
-        var counter = -1;
-        $.each(columns, function (key, ele) {
-            counter ++;
-            if(_indexArray.indexOf(counter) > -1){
-                ele["hap_ext_op_permission"]="hide";
-            }else if(!ele["hap_ext_op_permission"]){
-                totalWeight += ele["width"];
-            }
-        });
-
-        $.each(columns, function (key, ele) {
-            if(!ele["hap_ext_op_permission"]){
-                ele["width"] = (totalWidth/totalWeight)*ele["width"];
-            }
-        });
-
-        $.each(_indexArray, function (key, _index) {
-            window.parent.grid.hideColumn(_index);
-        });
-    }
-
     function hideColumn_1() {
         gridUtils_forbidEditColumns("grid",[1,2,3,4]);
 //        console.log("grid对象\n");
