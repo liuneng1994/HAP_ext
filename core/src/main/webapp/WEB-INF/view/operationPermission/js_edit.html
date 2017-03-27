@@ -218,7 +218,9 @@
         ]
     });
     function jsCodeEditor(container, options) {
-        $('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="showJsCodeEditDialog(event)" class="k-icon k-i-search">&nbsp;</a></span>')
+//        $('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="showJsCodeEditDialog(event)" class="k-icon k-i-search">&nbsp;</a></span>')
+//                .appendTo(container);
+        $('<span class="k-textbox" style="width: 100%;" onclick="showJsCodeEditDialog(event)"><input readonly type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
                 .appendTo(container);
     };
 

@@ -38,6 +38,8 @@
                                 <div id="rules_grid" style="clear:both"></div>
                             </div>
                             <div id="dispatchRuleWindow"></div>
+                            <!-- 编辑SQL代码弹出框 -->
+                            <div id="sqlEditorWin"></div>
                         </div>
                     </div>
                 </div>
@@ -78,6 +80,26 @@ NOTICE:禁止在规则SQL片段中包含与其他规则SQL之间逻辑操作符(
             });
             kendo.bind($('#toolbar-btn'), viewModel);
             kendo.bind($('#page-content'),viewModel);
+
+            var sqlWin,sqlWinTemplate;
+            $(document).ready(function () {
+                <!--渲染sql代码弹出框-->
+                sqlWin = $("#sqlEditorWin").kendoWindow({
+                    width: "660px",
+                    height:"350px",
+                    resizable: true,
+                    modal: true,
+                    title: "SQL Editor",
+                    actions: [
+                        "Pin",
+                        "Minimize",
+                        "Maximize",
+                        "Close"
+                    ],
+                    visible: false
+                });
+                sqlWinTemplate = kendo.template($("#sqlEditorWin_template").html());
+            });
 
             //Grid行中的删除事件处理函数
             //参数：grid_div_id是kendoGrid那个div的id值;e:click事件
@@ -184,7 +206,9 @@ NOTICE:禁止在规则SQL片段中包含与其他规则SQL之间逻辑操作符(
                     {
                         field: "ruleSql",
                         title: '<@spring.message "hap_extend.data_permission.rule.title_rule_sql"/>',
-                        width: 200
+                        width: 200,
+                        editor:sqlCodeEditor,
+                        template:"#=ruleSql#"
                     },
                     {
                         attributes: {style: "text-align:center;padding:0px"},
@@ -231,6 +255,45 @@ NOTICE:禁止在规则SQL片段中包含与其他规则SQL之间逻辑操作符(
                         + ruleIdStr
                     }).data("kendoWindow").center().open();
             }
+
+
+
+            var thisRowData;
+            function sqlCodeEditor(container, options) {
+//                $('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="showSqlCodeEditDialog(event)" class="k-icon k-i-search">&nbsp;</a></span>')
+//                    .appendTo(container);
+                $('<span class="k-textbox" style="width: 100%;" onclick="showSqlCodeEditDialog(event)"><input readonly type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                    .appendTo(container);
+            };
+
+            function showSqlCodeEditDialog(event_param) {
+                thisRowData = $("#rules_grid").data("kendoGrid").dataItem($(event_param.target).closest("tr"));
+                $("#sqlEditorWin").data("kendoWindow").content(sqlWinTemplate);
+                $("#sqlEditorWin").data("kendoWindow").center().open();
+                if(!!thisRowData["ruleSql"]){
+                    $("#sqlTextarea").val(thisRowData["ruleSql"]);
+                }
+                else {
+                    $("#sqlTextarea").val("");
+                }
+            }
+            //编辑窗口确认方法
+            function saveSqlCode() {
+                thisRowData.set("ruleSql",$("#sqlTextarea").val());
+                closeSqlEditorWin();
+            }
+            function closeSqlEditorWin() {
+                $("#sqlEditorWin").data("kendoWindow").close();
+            }
+        </script>
+
+        <script type="text/x-kendo-template" id="sqlEditorWin_template">
+            <div>
+                <textarea rows="20" cols="88" id="sqlTextarea"></textarea>
+                <br/>
+                <button class="btn btn-success" onclick="saveSqlCode()"><@spring.message "hap.ok"/></button>
+                <button class="btn btn-success" onclick="closeSqlEditorWin()"><@spring.message "hap.cancel"/></button>
+            </div>
         </script>
     </div>
 </body>
