@@ -18,6 +18,10 @@ public final class OPConstUtil {
     public static final String JS_COMMON_FUNCTION_NAME_FORMAT = "COMMON_%s_%sFunction";
     public static final String JS_CALLBACK_CODE_FORMAT = "if('undefined' != typeof(%s)){%s('%s','%s');}else {%s('%s','%s');}";
 
+    public static final String HTML_TAG_ATTR_ID = "ID";
+    public static final String HTML_TAG_ATTR_OP_PMS_NAME = "OP_PMS_NAME";
+
+
 
     public static boolean isEnable(String enableFlagStr){
         return VALUE_YES.equals(enableFlagStr);
