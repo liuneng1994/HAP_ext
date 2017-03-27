@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static hap.extend.core.operation.utils.LangUtil.returnNullIfStrEmpty;
+
 /**
  * Created by yyz on 2017/3/13.
  *
@@ -35,8 +37,8 @@ public class PermissionTypeController extends BaseController {
         IRequest requestContext = createRequestContext(request);
         PermissionType permissionType = new PermissionType();
         permissionType.setResourceId(resourceId);
-        permissionType.setDescription(description);
-        permissionType.setAssignType(assignType);
+        permissionType.setDescription(returnNullIfStrEmpty(description));
+        permissionType.setAssignType(returnNullIfStrEmpty(assignType));
 
         List<PermissionType> permissionTypeList = permissionTypeService.selectByPermissionType(requestContext, permissionType, page, pageSize);
         return new ResponseData(permissionTypeList);
