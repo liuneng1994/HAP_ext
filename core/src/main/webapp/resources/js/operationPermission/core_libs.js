@@ -107,7 +107,7 @@ function gridUtils_hideColumns(param_gridDivId, param_columnIndexArray) {
  * flexible controller of nested components applied in grid cell
  * @author young
  * @param param_htmlTagName html tag name,such as:a、input、button
- * @param param_tagAttributeName tag attribute name,such as:name、class;you can define your own attribute as well,for example:OP_PMS_name
+ * @param param_tagAttributeName tag attribute name,such as:name、class;you can define your own attribute as well,for example:OP_PMS_NAME
  * @param param_tagAttributeValue value of tag attribute
  * @param param_callbackFunction js callback function,for example: function(ele){ele.attr("disabled","disabled");}，ele is a js object which will be injected automatically represented for this nested obj
  */
@@ -119,12 +119,12 @@ function gridUtils_controlNestedComponents(param_htmlTagName, param_tagAttribute
 }
 
 /**
- * disable buttons in single column(you can remove all buttons which is of same value of OP_PMS_name attribute actually)
+ * disable buttons in single column(you can remove all buttons which is of same value of OP_PMS_NAME attribute actually)
  * @author young
- * @param param_tagAttributeValue value of "OP_PMS_name" attribute
+ * @param param_tagAttributeValue value of "OP_PMS_NAME" attribute
  */
 function gridUtils_disableButtonInColumn(param_tagAttributeValue) {
-    gridUtils_controlNestedComponents("a","OP_PMS_name",param_tagAttributeValue,
+    gridUtils_controlNestedComponents("a","OP_PMS_NAME",param_tagAttributeValue,
         function (ele) {
             ele.attr("disabled","disabled");
             ele.unbind();
@@ -137,14 +137,14 @@ function gridUtils_disableButtonInColumn(param_tagAttributeValue) {
 }
 
 /**
- * remove buttons in single column(you can remove all buttons which is of same value of OP_PMS_name attribute actually).
+ * remove buttons in single column(you can remove all buttons which is of same value of OP_PMS_NAME attribute actually).
  * <br>
  *     notice:caution you that forbidden using in single column which contains single type button.
  * @param param_tagAttributeValue
  */
 function gridUtils_deleteButtonInColumn(param_tagAttributeValue) {
     // this.parentNode.removeChild(this);
-    gridUtils_controlNestedComponents("a","OP_PMS_name",param_tagAttributeValue,
+    gridUtils_controlNestedComponents("a","OP_PMS_NAME",param_tagAttributeValue,
         function (ele) {
             // ele.parentNode.removeChild(ele);
             ele.remove();
