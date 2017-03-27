@@ -102,26 +102,26 @@
                     }
                 }
             },
-//            {
-//                attributes: {style: "text-align:center;padding:2px"},
-//                field : "",
-//                title : '<@spring.message "hap_extend.op_permission.title.component_maintain"/>',
-//                width : 50,
-//                template : function(item) {
-//                    if(!!item.resourceId){
-//                        var html = "<button  class='btn btn-success'onclick='showManageComponentWin(\""
-//                                + item.resourceId
-//                                + "\")'"
-////                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
-//                                + "><@spring.message 'hap_extend.op_permission.title.component_maintain'/>"
-//                                + "</button>";
-//                        return html;
-//                    }else{
-////                        return "<button  class='btn btn-success' disabled='disabled'><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/></button>";
-//                        return "";
-//                    }
-//                }
-//            },
+            {
+                attributes: {style: "text-align:center;padding:2px"},
+                field : "",
+                title : '<@spring.message "hap_extend.op_permission.title.component_maintain"/>',
+                width : 50,
+                template : function(item) {
+                    if(!!item.resourceId){
+                        var html = "<button  class='btn btn-success'onclick='showManageComponentWin(\""
+                                + item.resourceId
+                                + "\")'"
+//                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
+                                + "><@spring.message 'hap_extend.op_permission.title.component_maintain'/>"
+                                + "</button>";
+                        return html;
+                    }else{
+//                        return "<button  class='btn btn-success' disabled='disabled'><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/></button>";
+                        return "";
+                    }
+                }
+            },
             {
                 attributes: {style: "text-align:center;padding:2px"},
                 field : "",
@@ -212,8 +212,20 @@
                 }).data("kendoWindow").maximize().open();
     }
 
-    function showManageComponentWin(pageUri_param) {
+    function showManageComponentWin(resourceId_p) {
 //        hap_extend.op_permission.title.component_management
+        $("#manageComponentWin_divId").kendoWindow(
+            {
+                actions : ["Close" ],
+                width : 600,
+                height : 450,
+                title : '<@spring.message "hap_extend.op_permission.title.component_management"/>',
+                visible : false,
+                iframe : true,
+                modal: true,
+                content : 'component_edit.html?resourceId_param='
+                + resourceId_p
+            }).data("kendoWindow").maximize().open();
     }
 </script>
 </body>
