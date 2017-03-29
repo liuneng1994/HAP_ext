@@ -47,6 +47,10 @@ public class PermissionType extends BaseDTO {
     @Condition
     private String enableFlag;
 
+    @Column(name = "ENABLE_JS",nullable = false)
+    @Condition
+    private String enableJs;
+
     public Long getAssignId() {
         return assignId;
     }
@@ -101,6 +105,14 @@ public class PermissionType extends BaseDTO {
 
     public void setAssignValueName(String assignValueName) {
         this.assignValueName = assignValueName;
+    }
+
+    public String getEnableJs() {
+        return enableJs;
+    }
+
+    public void setEnableJs(String enableJs) {
+        this.enableJs = enableJs;
     }
 
     public static boolean isUserType(String type){
