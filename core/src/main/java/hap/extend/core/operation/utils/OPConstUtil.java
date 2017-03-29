@@ -16,10 +16,15 @@ public final class OPConstUtil {
     public static final String VALUE_FORM_LEVEL = "FORM";
     public static final String JS_FUNCTION_NAME_FORMAT = "%s_%s_%sFunction";
     public static final String JS_COMMON_FUNCTION_NAME_FORMAT = "COMMON_%s_%sFunction";
-    public static final String JS_CALLBACK_CODE_FORMAT = "if('undefined' != typeof(%s)){%s('%s','%s');}else {%s('%s','%s');}";
+    public static final String JS_CALLBACK_CODE_FORMAT = "\nif('undefined' != typeof(%s)){%s('%s','%s','%s');}else {%s('%s','%s','%s');}\n";
 
     public static final String HTML_TAG_ATTR_ID = "ID";
     public static final String HTML_TAG_ATTR_OP_PMS_NAME = "OP_PMS_NAME";
+
+    public static final String CPN_CTR_FUN_TYPE_DISPLAY = "display";
+    public static final String CPN_CTR_FUN_TYPE_REQUIRED = "require";
+    public static final String CPN_CTR_FUN_TYPE_READONLY = "readonly";
+    public static final String CPN_CTR_FUN_TYPE_DISABLE = "disable";
 
 
 
@@ -56,13 +61,13 @@ public final class OPConstUtil {
      * @param level
      * @param cpnType
      * @param opType
-     * @param htmlTagId
-     * @param value
+     * @param htmlTagAttr
+     * @param htmlTagAttrVal
      * @return
      */
-    public static String generateJsCode(String level, String cpnType, String opType, String htmlTagId, String value){
+    public static String generateJsCode(String level, String cpnType, String opType, String htmlTagAttr, String htmlTagAttrVal, String yesOrNo){
         String selfDefineJs = generateJsFunName(level,cpnType,opType);
         String commonJs = generateJsCommonFunName(level,opType);
-        return String.format(JS_CALLBACK_CODE_FORMAT, selfDefineJs, selfDefineJs, htmlTagId, value, commonJs, htmlTagId, value);
+        return String.format(JS_CALLBACK_CODE_FORMAT, selfDefineJs, selfDefineJs, htmlTagAttr, htmlTagAttrVal, yesOrNo, commonJs, htmlTagAttr, htmlTagAttrVal, yesOrNo);
     }
 }
