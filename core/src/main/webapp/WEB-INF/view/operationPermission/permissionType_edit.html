@@ -123,6 +123,7 @@
                             assignValue: { type: 'int',validation: { required: true, nullable: false } },
                             assignValueName: { type: 'string' },
                             enableFlag:{defaultValue:'Y',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'},
+                            enableJs:{defaultValue:'N',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'},
                             description: { type: 'string' }
                         }
                     }
@@ -382,6 +383,12 @@
                         attributes: {style: "text-align:center;"},
                         'field': 'enableFlag',
                         'title':'<@spring.message "hap_extend.data_permission.rule.title_rule_enable"/>',
+                        'width': 30
+                    },
+                    {
+                        attributes: {style: "text-align:center;"},
+                        'field': 'enableJs',
+                        'title':'<@spring.message "hap_extend.op_permission.grid_title.enable_js_control"/>',
                         'width': 30
                     },
                     {
