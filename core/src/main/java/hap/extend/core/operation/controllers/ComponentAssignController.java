@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static hap.extend.core.operation.utils.LangUtil.returnNullIfStrEmpty;
+
 /**
  * Created by yyz on 17/3/24.
  */
@@ -29,13 +31,15 @@ public class ComponentAssignController extends BaseController {
                               @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
                               @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
                               @RequestParam(name = "assignId", defaultValue = "") Long assignId,
+                              @RequestParam(name = "componentName", defaultValue = "") String componentName,
                               @RequestParam(name = "description", defaultValue = "") String description) {
         IRequest requestContext = createRequestContext(request);
         ComponentAssign componentAssign = new ComponentAssign();
         componentAssign.setAssignId(assignId);
-        componentAssign.setDescription(description);
+        componentAssign.setComponentName(returnNullIfStrEmpty(componentName));
+        componentAssign.setDescription(returnNullIfStrEmpty(description));
 
-        List<ComponentAssign> componentAssignList = componentAssignService.select(requestContext, componentAssign, page, pageSize);
+        List<ComponentAssign> componentAssignList = componentAssignService.selectByComponentAssign(requestContext, componentAssign, page, pageSize);
         return new ResponseData(componentAssignList);
     }
 
