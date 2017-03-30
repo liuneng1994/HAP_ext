@@ -3,10 +3,7 @@ package hap.extend.core.operation.dto;
 import com.hand.hap.mybatis.annotation.Condition;
 import com.hand.hap.system.dto.BaseDTO;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * mount component to page;<br><br>
@@ -48,6 +45,9 @@ public class ComponentAssign extends BaseDTO {
     @Column(name = "ENABLE_FLAG",nullable = false)
     @Condition
     private String enableFlag;
+
+    @Transient
+    private String componentName;
 
 
     public Long getCpnAssignId() {
@@ -120,5 +120,13 @@ public class ComponentAssign extends BaseDTO {
 
     public void setEnableFlag(String enableFlag) {
         this.enableFlag = enableFlag;
+    }
+
+    public String getComponentName() {
+        return componentName;
+    }
+
+    public void setComponentName(String componentName) {
+        this.componentName = componentName;
     }
 }
