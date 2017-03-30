@@ -165,8 +165,8 @@
                         htmlTagAttrVal:{type: 'string',validation: { required: true,
                             htmltagattrvalvalidation: function (input) {
                                 if (input.is("[name='htmlTagAttrVal']") && input.val() != "") {
-                                    input.attr("data-htmltagattrvalvalidation-msg", "需要以字母开头，由数字和字母构成");
-                                    return /^[A-Za-z][A-Za-z0-9]*$/.test(input.val());
+                                    input.attr("data-htmltagattrvalvalidation-msg", "需要以字母开头，由字母、数字、下划线构成");
+                                    return /^[A-Za-z_][A-Za-z0-9_]*$/.test(input.val());
                                 }
                                 return true;
                             }
@@ -273,6 +273,7 @@
             }
         ]
     });
+    Hap.autoResizeGrid("#components_grid");
 
 </script>
 <div>

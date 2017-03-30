@@ -412,6 +412,26 @@
                         }
                     },
                     {
+                        'field':'',
+                        'title':'<@spring.message "hap_extend.op_permission.grid_title.component_assign"/>',
+                        'width':30,
+                        template:function (rowData) {
+                            if(!!rowData.assignId){
+                                var html = "<button  class='btn btn-warning'onclick='showAssignComponentWin(\""
+                                    + rowData.resourceId+"\",\""
+                                    + rowData.assignId
+                                    + "\")'"
+//                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
+                                    + "><@spring.message 'hap_extend.op_permission.grid_title.component_assign'/>"
+                                    + "</button>";
+                                return html;
+                            }else{
+//                                return "<button  class='btn btn-warning' disabled='disabled'><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/></button>";
+                                return "<button  class='btn btn-warning' disabled='disabled'>组件权限</button>";
+                            }
+                        }
+                    },
+                    {
                         attributes: {style: "text-align:center;padding:0px"},
                         title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
                         command : [{
@@ -456,6 +476,23 @@
                 + resourceId_p+"&assignId="+assignId_p
             }).data("kendoWindow").maximize().open();
         }
+
+        function showAssignComponentWin(resourceId_p,assignId_p) {
+            $("#assignJsWin_divId").kendoWindow(
+            {
+                actions : ["Close" ],
+                width : 600,
+                height : 450,
+                title : '<@spring.message "hap_extend.op_permission.grid_title.component_assign"/>',
+                visible : false,
+                iframe : true,
+                modal: true,
+                content : 'assign_component.html?resourceId='
+                + resourceId_p+"&assignId="+assignId_p
+            }).data("kendoWindow").maximize().open();
+        }
+
+
     </script>
 </div>
 </body>
