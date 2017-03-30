@@ -1,0 +1,232 @@
+<#--
+* description: 页面权限控制总界面
+* version: 1.0
+* -->
+<#include "../include/header.html">
+<body>
+<div id="page-content">
+    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+        <span class="btn btn-primary" onclick="expand()" style="float:left;margin-right:5px;"><@spring.message "hap.expand"/></span>
+        <span class="btn btn-warning" onclick="collapse()"  style="float:left;margin-right:5px;"><@spring.message "hap.collapse"/></span>
+    </div>
+    <div style="clear:both">
+        <div id="grid"></div>
+        <div id="manageJsWin_divId"></div>
+        <div id="manageComponentWin_divId"></div>
+        <div id="managePermissionTypeWin_divId"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    viewModel = kendo.observable({
+        model : {},
+        queryResource : function(e) {
+            $('#grid').data('kendoTreeList').dataSource.read();
+        }
+    });
+    kendo.bind($('#toolbar-btn'), viewModel);
+    // $(document).ready(function() {
+    var pageNodeUrl = '${base.contextPath}/hap_extend/operation_permission/queryPageNodes';
+
+    var dataSource = new kendo.data.TreeListDataSource({
+            transport : {
+                read:function (args) {
+                    $.ajax({
+                        url    : pageNodeUrl,
+                        type: 'POST',
+                        success: function (data) {
+                            if (data.success) {
+                                args.success(data);
+                            }
+                        }
+                    });
+                }
+            },
+            batch   : true,
+            schema  : {
+                data  : 'rows',
+                model : {
+                    id      : "id",
+                    parentId:'parentId',
+                    fields  : {
+                        url : {type : "string"},
+                        text: {type :"string"},
+                        resourceId:{type:"number"}
+                    } ,
+                    expanded: true
+                }
+            }
+        });
+
+    var treeList  = $("#grid").kendoTreeList({
+        dataSource : dataSource,
+        navigatable : false,
+        height :  "100%",
+        resizable : false,
+        scrollable : true,
+        editable : false,
+        columns : [
+            {
+                field : "text",
+                title : '<@spring.message "function.functionname"/>',
+                width : 150,
+                headerAttributes: {
+                    style  : "text-align: center"
+                }
+            },
+            {
+                field : "url",
+                title : '<@spring.message "hap.comment"/>',
+                width : 200,
+                headerAttributes: {
+                    style  : "text-align: center"
+                }
+            },
+            {
+                attributes: {style: "text-align:center;padding:2px"},
+                field : "",
+                title : '<@spring.message "hap_extend.op_permission.title.js_maintain"/>',
+                width : 50,
+                template : function(item) {
+                    if(!!item.resourceId){
+                        var html = "<button  class='btn btn-info'onclick='showManageJsWin(\""
+                                + item.resourceId
+                                + "\")'"
+//                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
+                                + "><@spring.message 'hap_extend.op_permission.title.js_maintain'/>"
+                                + "</button>";
+                        return html;
+                    }else{
+//                        return "<button  class='btn btn-info' disabled='disabled'><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/></button>";
+                        return "";
+                    }
+                }
+            },
+            {
+                attributes: {style: "text-align:center;padding:2px"},
+                field : "",
+                title : '<@spring.message "hap_extend.op_permission.title.component_maintain"/>',
+                width : 50,
+                template : function(item) {
+                    if(!!item.resourceId){
+                        var html = "<button  class='btn btn-success'onclick='showManageComponentWin(\""
+                                + item.resourceId
+                                + "\")'"
+//                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
+                                + "><@spring.message 'hap_extend.op_permission.title.component_maintain'/>"
+                                + "</button>";
+                        return html;
+                    }else{
+//                        return "<button  class='btn btn-success' disabled='disabled'><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/></button>";
+                        return "";
+                    }
+                }
+            },
+            {
+                attributes: {style: "text-align:center;padding:2px"},
+                field : "",
+                title : '<@spring.message "hap_extend.op_permission.title.auth_dispatch"/>',
+                width : 50,
+                template : function(item) {
+                    if(!!item.resourceId){
+                        var html = "<button  class='btn btn-warning'onclick='showManagePermissionTypeWin(\""
+                                + item.resourceId
+                                + "\")'"
+//                                + "><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/>"
+                                + "><@spring.message 'hap_extend.op_permission.title.auth_dispatch'/>"
+                                + "</button>";
+                        return html;
+                    }else{
+//                        return "<button  class='btn btn-warning' disabled='disabled'><@spring.message 'hap_extend.data_permission.rule.title_rule_dispatch_rule'/></button>";
+                        return "";
+                    }
+                }
+            }
+        ],
+        dataBound: function() {
+            var view = this.dataSource.view();
+            this.items().each(function(index, row) {
+                kendo.bind(row, view[index]);
+            });
+        }
+    }).data("kendoTreeList");
+
+    function expand(){
+        var tree=treeList.dataSource.data();
+        for(var i=0;i<tree.length;i++){
+            if(tree[i].hasChildren){
+                treeList.expand(tree[i]);
+            }
+        }
+    }
+    function collapse(){
+        var tree=treeList.dataSource.data();
+        for(var i=0;i<tree.length;i++){
+            if(tree[i].hasChildren){
+                treeList.collapse(tree[i]);
+            }
+        }
+    }
+    //	});
+
+
+    var grid = $("#grid").parent();
+    var avaHeight = $(window).height() - grid.offset().top - 10
+    grid.outerHeight(avaHeight)
+    $("#grid").data('kendoTreeList').resize();
+    $(window).resize(function () {
+        var grid = $("#grid").parent();
+        var avaHeight = $(window).height() - grid.offset().top - 10
+        grid.outerHeight(avaHeight)
+        $("#grid").data('kendoTreeList').resize();
+    });
+
+
+    function showManageJsWin(resourceId_p) {
+        $("#manageJsWin_divId").kendoWindow(
+            {
+                actions : ["Close" ],
+                width : 600,
+                height : 450,
+                title : '<@spring.message "hap_extend.op_permission.title.js_code_management"/>',
+                visible : false,
+                iframe : true,
+                modal: true,
+                content : 'js_edit.html?resourceId_param='
+                + resourceId_p
+//            }).data("kendoWindow").center().open();
+            }).data("kendoWindow").maximize().open();
+    }
+    function showManagePermissionTypeWin(resourceId_p) {
+        $("#managePermissionTypeWin_divId").kendoWindow(
+                {
+                    actions : ["Close" ],
+                    width : 600,
+                    height : 450,
+                    title : '<@spring.message "hap_extend.op_permission.title.auth_type_management"/>',
+                    visible : false,
+                    iframe : true,
+                    modal: true,
+                    content : 'permissionType_edit.html?resourceId_param='
+                    + resourceId_p
+                }).data("kendoWindow").maximize().open();
+    }
+
+    function showManageComponentWin(resourceId_p) {
+//        hap_extend.op_permission.title.component_management
+        $("#manageComponentWin_divId").kendoWindow(
+            {
+                actions : ["Close" ],
+                width : 600,
+                height : 450,
+                title : '<@spring.message "hap_extend.op_permission.title.component_management"/>',
+                visible : false,
+                iframe : true,
+                modal: true,
+                content : 'component_edit.html?resourceId_param='
+                + resourceId_p
+            }).data("kendoWindow").maximize().open();
+    }
+</script>
+</body>
+</html>

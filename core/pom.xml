@@ -9,7 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <!--<artifactId>core</artifactId>-->
-    <artifactId>${Hap_extend.dataPermission.core_artifactId}</artifactId>
+    <!--<artifactId>${Hap_extend.dataPermission.core_artifactId}</artifactId>-->
+    <artifactId>${Hap_extend.core_artifactId}</artifactId>
     <packaging>war</packaging>
     <name>core</name>
     <url>http://maven.apache.org</url>
@@ -20,7 +21,6 @@
             <artifactId>jsqlparser</artifactId>
             <version>0.9.5</version>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
