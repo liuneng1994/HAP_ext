@@ -53,7 +53,6 @@ public final class SqlSourceUtil {
             Configuration configuration = (Configuration) metaObject2.getValue("configuration");
             List<ParameterMapping> parameterMappings = (List<ParameterMapping>) metaObject2
                     .getValue("parameterMappings");
-//TODO 对于静态的SQL目前没有提供重置选项
             StaticSqlSource vpdSqlSource = new StaticSqlSource(configuration, newSql, parameterMappings);
 
             metaObject.setValue("sqlSource", vpdSqlSource);
@@ -68,7 +67,6 @@ public final class SqlSourceUtil {
             result = vpdDynamicSqlSource;
         } else if (sqlSource instanceof StaticSqlSource || sqlSource instanceof OrderByStaticSqlSource
                 || sqlSource instanceof PageStaticSqlSource) {
-//TODO 对于静态的SQL目前没有提供重置选项
             MetaObject metaObject = SystemMetaObject.forObject(sqlSource);
             String oldSql = (String) metaObject.getValue("sql");//old sql
             String newSql = SqlUtil.addConditionToSql(oldSql,conditionSql);

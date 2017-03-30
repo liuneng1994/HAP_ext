@@ -13,4 +13,11 @@ public final class LangUtil {
     public static boolean isNotNull(Object object){
         return null != object;
     }
+
+    public static String returnNullIfStrEmpty(String str){
+        if(isNull(str) || str.isEmpty()){
+            return null;
+        }
+        return str;
+    }
 }

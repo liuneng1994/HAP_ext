@@ -2,6 +2,7 @@ package hap.extend.core.operation.dto;
 
 import com.hand.hap.mybatis.annotation.Condition;
 import com.hand.hap.system.dto.BaseDTO;
+import hap.extend.core.operation.utils.OPConstUtil;
 
 import javax.persistence.*;
 
@@ -42,9 +43,20 @@ public class Component extends BaseDTO {
     @Condition(operator = LIKE)
     private String level;
 
-    @Column(name = "COMPONENTID_CODE",nullable = false)
-    @Condition(operator = LIKE)
-    private String htmlTagId;
+//    @Column(name = "COMPONENTID_CODE",nullable = false)
+//    @Condition(operator = LIKE)
+//    private String htmlTagId;
+
+    /** OP_PMS_NAME or ID now,uppercase.this is attribute of html tag
+     * @see OPConstUtil#HTML_TAG_ATTR_ID
+     * @see OPConstUtil#HTML_TAG_ATTR_OP_PMS_NAME
+     * */
+    @Column(name = "HTML_TAG_ATTR",nullable = false)
+    @Condition
+    private String htmlTagAttr;
+    @Column(name = "HTML_TAG_ATTR_VAL",nullable = false)
+    @Condition
+    private String htmlTagAttrVal;
 
     @Column(name = "ENABLE_FLAG",nullable = false)
     @Condition
@@ -102,17 +114,33 @@ public class Component extends BaseDTO {
         return level;
     }
 
+    public String getHtmlTagAttr() {
+        return htmlTagAttr;
+    }
+
+    public void setHtmlTagAttr(String htmlTagAttr) {
+        this.htmlTagAttr = htmlTagAttr;
+    }
+
+    public String getHtmlTagAttrVal() {
+        return htmlTagAttrVal;
+    }
+
+    public void setHtmlTagAttrVal(String htmlTagAttrVal) {
+        this.htmlTagAttrVal = htmlTagAttrVal;
+    }
+
     public void setLevel(String level) {
         this.level = level;
     }
 
-    public String getHtmlTagId() {
-        return htmlTagId;
-    }
-
-    public void setHtmlTagId(String htmlTagId) {
-        this.htmlTagId = htmlTagId;
-    }
+//    public String getHtmlTagId() {
+//        return htmlTagId;
+//    }
+//
+//    public void setHtmlTagId(String htmlTagId) {
+//        this.htmlTagId = htmlTagId;
+//    }
 
     public String getEnableFlag() {
         return enableFlag;
@@ -121,5 +149,6 @@ public class Component extends BaseDTO {
     public void setEnableFlag(String enableFlag) {
         this.enableFlag = enableFlag;
     }
+
 
 }

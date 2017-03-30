@@ -1,10 +1,9 @@
 <#--
-    * description: 规则管理（js控制代码管理）界面
+    * description: 页面组件管理界面
     * version: 1.0
     * -->
 <#include "../include/header.html">
 <body>
-<div>
 <div id="content-container">
     <div id="page-content">
         <div class="panel">
@@ -12,13 +11,13 @@
                 <div class="panel-body col-sm-offset-0">
                     <div class="col-sm-3">
                         <div class="form-group">
-                            <label style="width: 20%"><@spring.message "hap_extend.data_permission.rule.rule_name"/></label>
-                            <input type="text" style="width:70%" data-bind="value:model.jsName">
+                            <label style="width: 20%"><@spring.message "hap_extend.op_permission.name"/></label>
+                            <input type="text" style="width:70%" data-bind="value:model.componentName">
                         </div>
                     </div>
                     <div class="col-sm-3">
                         <div class="form-group">
-                            <label style="width: 20%"><@spring.message "hap_extend.data_permission.rule.rule_description"/></label>
+                            <label style="width: 20%"><@spring.message "hap_extend.op_permission.description"/></label>
                             <input type="text" style="width:70%" data-bind="value:model.description">
                         </div>
                     </div>
@@ -39,54 +38,31 @@
                         <span class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hap.cancel"/></span>
                     </div>
                     <div style="clear:both">
-                        <div id="rules_grid" style="clear:both"></div>
+                        <div id="components_grid" style="clear:both"></div>
                     </div>
-                    <!-- 编辑js代码弹出框 -->
-                    <div id="jsEditorWin"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script>
-    var baseRuleUrl = "${base.contextPath}/hap_extend/operation_permission/js/";
+    var baseRuleUrl = "${base.contextPath}/hap_extend/operation_permission/cpn/";
     //获取传递过来的数据
     var resourceId_param = "${RequestParameters.resourceId_param}";
 
-    var jsWin,jsWinTemplate;
-    $(document).ready(function () {
-        <!--渲染js代码弹出框-->
-        jsWin = $("#jsEditorWin").kendoWindow({
-            width: "660px",
-            height:"350px",
-            resizable: true,
-            modal: true,
-            title: "JS Editor",
-            actions: [
-                "Pin",
-                "Minimize",
-                "Maximize",
-                "Close"
-            ],
-            visible: false
-        });
-        jsWinTemplate = kendo.template($("#jsEditorWin_template").html());
-    });
-
     var viewModel = kendo.observable({
-        model:{jsName:'',description:'',resourceId:resourceId_param},
+        model:{componentName:'',description:'',resourceId:resourceId_param},
         createFunction: function(){
-            $('#rules_grid').data('kendoGrid').addRow();
+            $('#components_grid').data('kendoGrid').addRow();
         },
         saveFunction: function(){
-            $('#rules_grid').data('kendoGrid').saveChanges();
+            $('#components_grid').data('kendoGrid').saveChanges();
         },
         cancelFunction: function(e){
-            $('#rules_grid').data('kendoGrid').cancelChanges();
+            $('#components_grid').data('kendoGrid').cancelChanges();
         },
         queryFunction: function(e) {
-            $('#rules_grid').data('kendoGrid').dataSource.read();
+            $('#components_grid').data('kendoGrid').dataSource.read();
         },
         resetFunction: function (e) {
             var formData = viewModel.model.toJSON();
@@ -118,7 +94,18 @@
             }
         });
     }
-    $("#rules_grid").kendoGrid({
+
+
+    var level_dataSource = [
+        {"meaning": "GRID", "value": "GRID"},
+        {"meaning": "FORM", "value": "FORM"}
+    ];
+    var htmlTagAttr_dataSource = [
+        {"meaning": "ID", "value": "ID"},
+        {"meaning": "OP_PMS_NAME", "value": "OP_PMS_NAME"}
+    ];
+
+    $("#components_grid").kendoGrid({
         dataSource: new kendo.data.DataSource({
             transport: {
                 read: {
@@ -147,11 +134,6 @@
                 parameterMap: function(options, operation) {
                     //封装请求参数
                     if (operation !== "read" && options.models) {
-//                        $.each(options.models, function (i, r) {
-//                            if (type == 'create'){
-//                                r['resourceId'] = resourceId_param;
-//                            }
-//                        });
                         return kendo.stringify(Hap.prepareSubmitParameter(options, operation));
                     } else if (operation === "read") {
                         return Hap.prepareQueryParameter(viewModel.model.toJSON(), options)
@@ -165,12 +147,32 @@
                 data: 'rows',
                 total: 'total',
                 model: {
-                    id: "jsId",
+                    id: "componentId",
                     fields: {
                         resourceId:{type: 'number',defaultValue:resourceId_param},
-                        jsName:{type: 'string',validation: { required: true }},
+                        componentName:{type: 'string',validation: { required: true }},
+                        componentType:{type: 'string',validation: { required: true,
+                            componenttypevalidation: function (input) {
+                                if (input.is("[name='componentType']") && input.val() != "") {
+                                    input.attr("data-componenttypevalidation-msg", "需要以字母开头，由数字和字母构成");
+                                    return /^[A-Za-z][A-Za-z0-9]*$/.test(input.val());
+                                }
+                                return true;
+                            }
+                        }, defaultValue:"grid"},
+                        level:{type: 'string',validation: { required: true },defaultValue:"GRID"},
+                        htmlTagAttr:{type: 'string',validation: { required: true },defaultValue:"ID"},
+                        htmlTagAttrVal:{type: 'string',validation: { required: true,
+                            htmltagattrvalvalidation: function (input) {
+                                if (input.is("[name='htmlTagAttrVal']") && input.val() != "") {
+                                    input.attr("data-htmltagattrvalvalidation-msg", "需要以字母开头，由数字和字母构成");
+                                    return /^[A-Za-z][A-Za-z0-9]*$/.test(input.val());
+                                }
+                                return true;
+                            }
+                        }},
                         description:{type: 'string'},
-                        jsScript:{type: 'string'}
+                        enableFlag:{defaultValue:'Y',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'}
                     }
                 }
             }
@@ -186,8 +188,63 @@
         },
         columns: [
             {
-                field: "jsName",
+                field: "level",
+//                title: '<@spring.message "hap_extend.op_permission.grid_title.name"/>',
+                title: '类别',
+                width: 80,
+                template: function (dataItem) {
+                    return Hap.getCodeMeaning(level_dataSource, dataItem.level)
+                },
+                editor: function (container, options) {
+                    var rowData = options.model;
+                    $('<input required name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        dataTextField : "meaning",
+                        dataValueField: "value",
+                        dataSource    : level_dataSource,
+                        change: function (e) {
+                            var dataItem = this.dataItem(e.item);
+                            if("GRID"==dataItem["value"]){
+                                rowData.set("componentType","grid");
+                            }
+                        }
+                    });
+                }
+            },
+            {
+                field: "componentType",
+//                title: '<@spring.message "hap_extend.op_permission.grid_title.name"/>',
+                title: '具体类型',
+                width: 80
+            },
+            {
+                field: "componentName",
                 title: '<@spring.message "hap_extend.op_permission.grid_title.name"/>',
+                width: 80
+            },
+            {
+                field: "htmlTagAttr",
+//                title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
+                title: 'HTML标签属性',
+                width: 80,
+                template: function (dataItem) {
+                    return Hap.getCodeMeaning(htmlTagAttr_dataSource, dataItem.htmlTagAttr)
+                },
+                editor: function (container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        dataTextField : "meaning",
+                        dataValueField: "value",
+                        dataSource    : htmlTagAttr_dataSource
+                    });
+                }
+            },
+            {
+                field: "htmlTagAttrVal",
+//                title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
+                title: 'HTML标签属性值',
                 width: 80
             },
             {
@@ -195,21 +252,20 @@
                 title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
                 width: 80
             },
-            {
-                field: "jsScript",
-                title: '<@spring.message "hap_extend.op_permission.grid_title.js_code"/>',
-                width: 80,
-                editor:jsCodeEditor,
-                template:"#=jsScript#"
-            },
+//            {
+//                attributes: {style: "text-align:center;"},
+//                'field': 'enableFlag',
+//                'title':'<@spring.message "hap_extend.data_permission.rule.title_rule_enable"/>',
+//                'width': 30
+//            },
             {
                 attributes: {style: "text-align:center;padding:0px"},
                 field : "",
                 title : '<@spring.message "hap_extend.op_permission.grid_title.op"/>',
                 width : 50,
                 template: function (rowData) {
-                    if(!!rowData["jsId"]){
-                        parameter = "rules_grid";
+                    if(!!rowData["componentId"]){
+                        parameter = "components_grid";
                         return '<a class="btn btn-danger" onclick="grid_del_btn_click(parameter,event)"><@spring.message "hap.delete"/></a>';
                     }
                     return '<a class="btn btn-danger" disabled="disabled"><@spring.message "hap.delete"/></a>';
@@ -217,42 +273,7 @@
             }
         ]
     });
-    function jsCodeEditor(container, options) {
-//        $('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="showJsCodeEditDialog(event)" class="k-icon k-i-search">&nbsp;</a></span>')
-//                .appendTo(container);
-        $('<span class="k-textbox" style="width: 100%;" onclick="showJsCodeEditDialog(event)"><input readonly type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
-                .appendTo(container);
-    };
 
-    function showJsCodeEditDialog(event_param) {
-        thisRowData = $("#rules_grid").data("kendoGrid").dataItem($(event_param.target).closest("tr"));
-        $("#jsEditorWin").data("kendoWindow").content(jsWinTemplate);
-        $("#jsEditorWin").data("kendoWindow").center().open();
-        if(!!thisRowData["jsScript"]){
-            $("#jsTextarea").val(thisRowData["jsScript"]);
-        }
-        else {
-            $("#jsTextarea").val("");
-        }
-    }
-
-
-    //编辑窗口确认方法
-    function saveJsCode() {
-        thisRowData.set("jsScript",$("#jsTextarea").val());
-        closeJsEditorWin();
-    }
-    function closeJsEditorWin() {
-        $("#jsEditorWin").data("kendoWindow").close();
-    }
-</script>
-<script type="text/x-kendo-template" id="jsEditorWin_template">
-    <div>
-        <textarea rows="20" cols="88" id="jsTextarea"></textarea>
-        <br/>
-        <button class="btn btn-success" onclick="saveJsCode()"><@spring.message "hap.ok"/></button>
-        <button class="btn btn-success" onclick="closeJsEditorWin()"><@spring.message "hap.cancel"/></button>
-    </div>
 </script>
 <div>
 </body>

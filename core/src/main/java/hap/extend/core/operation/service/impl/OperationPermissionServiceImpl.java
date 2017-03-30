@@ -8,19 +8,14 @@ import com.hand.hap.function.mapper.FunctionMapper;
 import com.hand.hap.function.mapper.FunctionResourceMapper;
 import com.hand.hap.function.mapper.ResourceMapper;
 import com.hand.hap.function.service.IResourceService;
-import hap.extend.core.operation.dto.Js;
-import hap.extend.core.operation.dto.JsAssign;
-import hap.extend.core.operation.dto.PageNode;
-import hap.extend.core.operation.dto.PermissionType;
-import hap.extend.core.operation.mapper.JsAssignMapper;
-import hap.extend.core.operation.mapper.JsMapper;
-import hap.extend.core.operation.mapper.PageNodeMapper;
-import hap.extend.core.operation.mapper.PermissionTypeMapper;
+import hap.extend.core.operation.dto.*;
+import hap.extend.core.operation.mapper.*;
 import hap.extend.core.operation.service.IOperationPermissionService;
 
 import static hap.extend.core.operation.utils.LangUtil.isNotNull;
 import static hap.extend.core.operation.utils.LangUtil.isNull;
 
+import hap.extend.core.operation.service.Strategy;
 import hap.extend.core.operation.utils.OPConstUtil;
 import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,13 +44,16 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
     private JsMapper jsMapper;
 
     @Autowired
-    private PageNodeMapper pageNodeMapper;
-    @Autowired
     private FunctionMapper functionMapper;
     @Autowired
     private ResourceMapper resourceMapper;
     @Autowired
     private FunctionResourceMapper functionResourceMapper;
+    @Autowired
+    private ComponentAssignMapper componentAssignMapper;
+
+    @Autowired
+    private Strategy strategy;
 
     @Override
     public String fetchApplyRules(String uriStr, IRequest requestContext) {
@@ -71,6 +69,7 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
 
         //collect assign ids
         Set<Long> assignIds = new HashSet<>();
+        Set<Long> assignJsIds = new HashSet<>();
         for(Pair<String,Long> pair : typeList){
             PermissionType pt = new PermissionType();
             pt.setResourceId(resource.getResourceId());
@@ -81,19 +80,34 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
             if(isNull(pts) || pts.isEmpty()){
                 continue;
             }
-            assignIds.addAll(pts.stream().map(type -> type.getAssignId()).collect(Collectors.toSet()));
+            assignIds.addAll(pts.parallelStream().map(type -> type.getAssignId()).collect(Collectors.toSet()));
+            assignJsIds.addAll(pts.parallelStream().filter(assign -> OPConstUtil.isEnable(assign.getEnableJs())).map(type -> type.getAssignId()).collect(Collectors.toSet()));
         }
+
+        //构建 final js
+        StringBuilder sb = new StringBuilder();
+        sb.append("function HAP_EXT_OPM_appliedOP(){\n");
+
+        assignIds.parallelStream().forEach(assignId -> {
+            ComponentAssign cpnAssign = new ComponentAssign();
+            cpnAssign.setAssignId(assignId);
+            cpnAssign.setEnableFlag(OPConstUtil.VALUE_YES);
+            List<ComponentAssign> componentAssignList = componentAssignMapper.select(cpnAssign);
+            strategy.handle(componentAssignList,sb);
+        });
+
+        //collect js
         Set<Long> jsIds = new HashSet<>();
-        for(Long assignId : assignIds){
+        assignJsIds.parallelStream().forEach(assignId -> {
             JsAssign jsAssign = new JsAssign();
             jsAssign.setAssignId(assignId);
             jsAssign.setEnableFlag(OPConstUtil.VALUE_YES);
             List<JsAssign> assigns = jsAssignMapper.select(jsAssign);
-            jsIds.addAll(assigns.stream().map(assign->assign.getJsId()).collect(Collectors.toSet()));
-        }
+            jsIds.addAll(assigns.parallelStream().map(assign->assign.getJsId()).collect(Collectors.toSet()));
+        });
 
         List<Js> results = new ArrayList<>();
-        jsIds.forEach(jsId->{
+        jsIds.parallelStream().forEach(jsId->{
             Js js = new Js();
             js.setJsId(jsId);
             js.setEnableFlag(OPConstUtil.VALUE_YES);
@@ -102,12 +116,8 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
                 results.add(jses.get(0));
             }
         });
-        //TODO 判断是否需要应用组件规则（这部分对应于页面中不用编写js代码即可进行控制，目前暂不实现）
 
-        //构建 final js
-        StringBuilder sb = new StringBuilder();
-        sb.append("function HAP_EXT_OPM_appliedOP(){\n");
-        results.forEach(js -> {
+        results.parallelStream().forEach(js -> {
             sb.append("//applied:"+js.getJsName()+"\n");
             sb.append(js.getJsScript()+"\n");
         });
