@@ -22,6 +22,7 @@
                     </div>
                 </div>
                 <div id="assignJsWin_divId"></div>
+                <div id="assignCpnWin_divId"></div>
             </div>
         </div>
         <div id="selectThemeDetails"></div>
@@ -478,12 +479,12 @@
         }
 
         function showAssignComponentWin(resourceId_p,assignId_p) {
-            $("#assignJsWin_divId").kendoWindow(
+            $("#assignCpnWin_divId").kendoWindow(
             {
                 actions : ["Close" ],
                 width : 600,
                 height : 450,
-                title : '<@spring.message "hap_extend.op_permission.grid_title.component_assign"/>',
+                title : '<@spring.message "hap_extend.op_permission.title.component_assign"/>',//组件权限管理
                 visible : false,
                 iframe : true,
                 modal: true,
