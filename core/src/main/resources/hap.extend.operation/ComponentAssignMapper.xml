@@ -15,10 +15,11 @@
         <result column="REQUIRED" property="require"/>
         <result column="READ_ONLY" property="readonly"/>
         <result column="DISABLE" property="disable"/>
+        <result column="COMPONENT_TYPE" property="componentType"/>
     </resultMap>
 
     <select id="selectByComponentAssign" resultMap="BaseResultMap">
-        SELECT assign.*,cpn.COMPONENT_NAME AS COMPONENT_NAME
+        SELECT assign.*,cpn.COMPONENT_NAME AS COMPONENT_NAME,cpn.COMPONENT_TYPE AS COMPONENT_TYPE
         FROM HCOM_RES_COMPONENT_ASSIGN assign JOIN HCOM_RES_COMPONENT cpn ON assign.COMPONENT_ID=cpn.COMPONENT_ID
         <where>
             <if test="assignId != null and assignId>0">
