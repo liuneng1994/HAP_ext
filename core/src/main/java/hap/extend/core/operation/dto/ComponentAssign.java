@@ -48,6 +48,8 @@ public class ComponentAssign extends BaseDTO {
 
     @Transient
     private String componentName;
+    @Transient
+    private String componentType;
 
 
     public Long getCpnAssignId() {
@@ -128,5 +130,13 @@ public class ComponentAssign extends BaseDTO {
 
     public void setComponentName(String componentName) {
         this.componentName = componentName;
+    }
+
+    public String getComponentType() {
+        return componentType;
+    }
+
+    public void setComponentType(String componentType) {
+        this.componentType = componentType;
     }
 }
