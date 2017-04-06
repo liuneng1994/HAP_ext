@@ -7,7 +7,12 @@ $(document).ready(function(){
     var HAP_EXTEND_OPERATION_APPLY_FUNCTION_REFER;
 
     HAP_EXTEND_OPERATION_APPLY_FUNCTION_REFER = setInterval(function () {
-        eval(op_permission_code);
+        try{
+            eval(op_permission_code);
+        }catch (error){
+            HAP_EXTEND_OPERATION_APPLY_FUNCTION_POINTER=250;
+            console.error(error);
+        }
         HAP_EXTEND_OPERATION_APPLY_FUNCTION_POINTER ++;
         if(HAP_EXTEND_OPERATION_APPLY_FUNCTION_POINTER > 250){
             clearInterval(HAP_EXTEND_OPERATION_APPLY_FUNCTION_REFER);
