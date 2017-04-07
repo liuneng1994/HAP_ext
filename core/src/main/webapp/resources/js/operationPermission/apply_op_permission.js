@@ -9,9 +9,11 @@ $(document).ready(function(){
     HAP_EXTEND_OPERATION_APPLY_FUNCTION_REFER = setInterval(function () {
         try{
             eval(op_permission_code);
-        }catch (error){
+        }catch (err){
             HAP_EXTEND_OPERATION_APPLY_FUNCTION_POINTER=250;
-            console.error(error);
+            clearInterval(HAP_EXTEND_OPERATION_APPLY_FUNCTION_REFER);
+            // console.error(err);
+            throw err;
         }
         HAP_EXTEND_OPERATION_APPLY_FUNCTION_POINTER ++;
         if(HAP_EXTEND_OPERATION_APPLY_FUNCTION_POINTER > 250){
