@@ -169,132 +169,146 @@ function core_extractElementId(param_ele) {
     return id_str+"";
 }
 
-function core_hasAppliedRule(param_ele) {
-    var mask_str = param_ele.attr("op_pms_mask");
+/**
+ * 判断是否已经应用了规则，对于已经应用过规则的元素不再重复应用.
+ * @param param_ele
+ * @param param_mask_suffix 应用过规则的标志位后缀，与"op_pms_mask_"组成标识符，值为"APPLIED"
+ * @returns {boolean}
+ */
+function core_hasAppliedRule(param_ele,param_mask_suffix) {
+    var mask_str = param_ele.attr("op_pms_mask_"+param_mask_suffix);
     if(mask_str && mask_str.toUpperCase()=="APPLIED"){
         return true;
     }
     return false;
 }
 
-function core_setAppledMask(param_ele) {
-    param_ele.attr("op_pms_mask","APPLIED");
+function core_setAppledMask(param_ele,param_mask_suffix) {
+    param_ele.attr("op_pms_mask_"+param_mask_suffix,"APPLIED");
 }
 // =====================BASIC OPERATION================================================end
-
-
-
-
-
-
 // =====================GRID COMMON OPERATION================================================start
 function COMMON_GRID_displayFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if(!core_hasAppliedRule(ele)){
+        if(!core_hasAppliedRule(ele,"COMMON_GRID_displayFunction")){
             if("N"===val){
                 ele.attr("hidden","hidden");
                 ele.hide();
-                core_setAppledMask(ele);
             }
             else if("Y"===val){
                 ele.show();
-                core_setAppledMask(ele);
             }
+            core_setAppledMask(ele,"COMMON_GRID_displayFunction");
         }
     });
 }
 
 function COMMON_GRID_requireFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-            ele.attr("required","required");
-        }
-        else if("N"===val){
-            ele.removeAttr("required");
+        if(!core_hasAppliedRule(ele,"COMMON_GRID_requireFunction")){
+            if("Y"===val){
+                ele.attr("required","required");
+            }
+            else if("N"===val){
+                ele.removeAttr("required");
+            }
+            core_setAppledMask(ele,"COMMON_GRID_requireFunction");
         }
     });
 }
 
 function COMMON_GRID_readonlyFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-            ele.attr("readonly","readonly");
-        }
-        else if("N"===val){
-            ele.removeAttr("readonly");
+        if(!core_hasAppliedRule(ele,"COMMON_GRID_readonlyFunction")){
+            if("Y"===val){
+                ele.attr("readonly","readonly");
+            }
+            else if("N"===val){
+                ele.removeAttr("readonly");
+            }
+            core_setAppledMask(ele,"COMMON_GRID_readonlyFunction");
         }
     });
 }
 
 function COMMON_GRID_disableFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-            ele.attr("disabled","disabled");
-            ele.unbind();
-            ele.prop("onclick",null);
-            ele.click(function (event) {
-                event.preventDefault();
-            });
-        }
-        else if("N"===val){
-            //suggest do nothing
-            ele.removeAttr("disabled");
+        if(!core_hasAppliedRule(ele,"COMMON_GRID_disableFunction")){
+            if("Y"===val){
+                ele.attr("disabled","disabled");
+                ele.unbind();
+                ele.prop("onclick",null);
+                ele.click(function (event) {
+                    event.preventDefault();
+                });
+            }
+            else if("N"===val){
+                //suggest do nothing
+                // ele.removeAttr("disabled");
+            }
+            core_setAppledMask(ele,"COMMON_GRID_disableFunction");
         }
     });
 }
 // =====================GRID COMMON OPERATION================================================end
-
-
-
 // =====================GRID grid OPERATION================================================start
 function GRID_grid_displayFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-
-        }
-        else if("N"===val){
-            ele.attr("hidden","hidden");
-            ele.hide();
+        if(!core_hasAppliedRule(ele,"GRID_grid_displayFunction")){
+            if("Y"===val){
+            }
+            else if("N"===val){
+                ele.attr("hidden","hidden");
+                ele.hide();
+            }
+            core_setAppledMask(ele,"GRID_grid_displayFunction");
         }
     });
 }
 function GRID_grid_requireFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        //just do nothing for whole grid
-        if("Y"===val){
-        }
-        else if("N"===val){
+        if(!core_hasAppliedRule(ele,"GRID_grid_requireFunction")){
+            //just do nothing for whole grid
+            if("Y"===val){
+            }
+            else if("N"===val){
+            }
+            core_setAppledMask(ele,"GRID_grid_requireFunction");
         }
     });
 }
 function GRID_grid_readonlyFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-            gridUtils_forbidEditWholeGrid(core_extractElementId(ele));
-        }
-        else if("N"===val){
-            gridUtils_allowEditWholeGrid(core_extractElementId(ele));
+        if(!core_hasAppliedRule(ele,"GRID_grid_readonlyFunction")){
+            if("Y"===val){
+                gridUtils_forbidEditWholeGrid(core_extractElementId(ele));
+            }
+            else if("N"===val){
+                gridUtils_allowEditWholeGrid(core_extractElementId(ele));
+            }
+            core_setAppledMask(ele,"GRID_grid_readonlyFunction");
         }
     });
 }
 function GRID_grid_disableFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-            ele.attr("disabled","disabled");
-        }
-        else if("N"===val){
-            //suggest do nothing
-            // ele.removeAttr("disabled");
+        if(!core_hasAppliedRule(ele,"GRID_grid_disableFunction")){
+            if("Y"===val){
+                ele.attr("disabled","disabled");
+            }
+            else if("N"===val){
+                //suggest do nothing
+                // ele.removeAttr("disabled");
+            }
+            core_setAppledMask(ele,"GRID_grid_disableFunction");
         }
     });
 }
 // =====================GRID grid OPERATION================================================end
-
-
 // =====================GRID grid column OPERATION================================================start
 //TODO 重新设计参数模板
 /**
- * just handle hide columns
+ * just handle hide columns.it means hidden column when call this function.
  * @param param_tagAttr
  * @param param_tagAttrVal
  * @param param_val index array of columns(is going to be hidden),start from 0;
@@ -302,12 +316,11 @@ function GRID_grid_disableFunction(param_tagAttr, param_tagAttrVal, param_val) {
  */
 function GRID_grid_column_displayFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-
-        }
-        else if("N"===val){
+        if(!core_hasAppliedRule(ele,"GRID_grid_column_displayFunction")){
             var idStr = core_extractElementId(ele);
             gridUtils_hideColumns(idStr,param_val);
+
+            core_setAppledMask(ele,"GRID_grid_column_displayFunction");
         }
     });
 }
@@ -320,20 +333,34 @@ function GRID_grid_column_displayFunction(param_tagAttr, param_tagAttrVal, param
  */
 function GRID_grid_column_requireFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-        }
-        else if("N"===val){
+        if(!core_hasAppliedRule(ele,"GRID_grid_column_requireFunction")){
+            if("Y"===val){
+            }
+            else if("N"===val){
+            }
+
+            core_setAppledMask(ele,"GRID_grid_column_requireFunction");
         }
     });
 }
+/**
+ * it means disable edit for columns when this function is called.
+ * @param param_tagAttr
+ * @param param_tagAttrVal
+ * @param param_val
+ * @constructor
+ */
 function GRID_grid_column_readonlyFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
+        if(!core_hasAppliedRule(ele,"GRID_grid_column_readonlyFunction")){
             gridUtils_forbidEditColumns(core_extractElementId(ele),param_val);
+            // console.log(core_extractElementId(ele));
+            // console.log(param_val);
+
+            core_setAppledMask(ele,"GRID_grid_column_readonlyFunction");
         }
-        else if("N"===val){
-            //do nothing
-        }
+
+
     });
 }
 /**
@@ -345,109 +372,204 @@ function GRID_grid_column_readonlyFunction(param_tagAttr, param_tagAttrVal, para
  */
 function GRID_grid_column_disableFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-        }
-        else if("N"===val){
+        if(!core_hasAppliedRule(ele,"GRID_grid_column_disableFunction")){
+            if("Y"===val){
+            }
+            else if("N"===val){
+            }
+
+            core_setAppledMask(ele,"GRID_grid_column_disableFunction");
         }
     });
 }
 // =====================GRID grid column OPERATION================================================end
-
-
-
 // =====================GRID button OPERATION================================================start
 function GRID_button_displayFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-            ele.removeAttr("hidden","hidden");
-            ele.show();
-        }
-        else if("N"===val){
-            ele.attr("hidden","hidden");
-            ele.hide();
+        if(!core_hasAppliedRule(ele,"GRID_button_displayFunction")){
+            if("Y"===val){
+                ele.removeAttr("hidden","hidden");
+                ele.show();
+            }
+            else if("N"===val){
+                ele.attr("hidden","hidden");
+                ele.hide();
+            }
+
+            core_setAppledMask(ele,"GRID_button_displayFunction");
         }
     });
 }
 function GRID_button_requireFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        //just do nothing for button
-        if("Y"===val){
-        }
-        else if("N"===val){
+        if(!core_hasAppliedRule(ele,"GRID_button_requireFunction")){
+            //just do nothing for button
+            if("Y"===val){
+            }
+            else if("N"===val){
+            }
+
+            core_setAppledMask(ele,"GRID_button_requireFunction");
         }
     });
 }
 function GRID_button_readonlyFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        //just do nothing for button
-        if("Y"===val){
-        }
-        else if("N"===val){
+        if(!core_hasAppliedRule(ele,"GRID_button_readonlyFunction")){
+            //just do nothing for button
+            if("Y"===val){
+            }
+            else if("N"===val){
+            }
+
+            core_setAppledMask(ele,"GRID_button_readonlyFunction");
         }
     });
 }
 function GRID_button_disableFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-            ele.attr("disabled","disabled");
-            ele.unbind();
-            ele.prop("onclick",null);
-            ele.click(function (event) {
-                event.preventDefault();
-            });
-        }
-        else if("N"===val){
-            //suggest do nothing, for we have removed all events,...
+        if(!core_hasAppliedRule(ele,"GRID_button_disableFunction")){
+            if("Y"===val){
+                ele.attr("disabled","disabled");
+                ele.unbind();
+                ele.prop("onclick",null);
+                ele.click(function (event) {
+                    event.preventDefault();
+                });
+                console.log("已经设置为Disable");
+            }
+            else if("N"===val){
+                //suggest do nothing, for we have removed all events,...
+            }
+
+            core_setAppledMask(ele,"GRID_button_disableFunction");
         }
     });
 }
 // =====================GRID button OPERATION================================================end
+// =====================FORM COMMON OPERATION================================================start
+function COMMON_FORM_displayFunction(param_tagAttr, param_tagAttrVal, param_val) {
+    core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
+        if(!core_hasAppliedRule(ele,"COMMON_FORM_displayFunction")){
+            if("N"===val){
+                ele.attr("hidden","hidden");
+                ele.hide();
+            }
+            else if("Y"===val){
+                ele.show();
+            }
+            core_setAppledMask(ele,"COMMON_FORM_displayFunction");
+        }
+    });
+}
 
+function COMMON_FORM_requireFunction(param_tagAttr, param_tagAttrVal, param_val) {
+    core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
+        if(!core_hasAppliedRule(ele,"COMMON_FORM_requireFunction")){
+            if("Y"===val){
+                ele.attr("required","required");
+            }
+            else if("N"===val){
+                ele.removeAttr("required");
+            }
+            core_setAppledMask(ele,"COMMON_FORM_requireFunction");
+        }
+    });
+}
 
+function COMMON_FORM_readonlyFunction(param_tagAttr, param_tagAttrVal, param_val) {
+    core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
+        if(!core_hasAppliedRule(ele,"COMMON_FORM_readonlyFunction")){
+            if("Y"===val){
+                ele.attr("readonly","readonly");
+            }
+            else if("N"===val){
+                ele.removeAttr("readonly");
+            }
+            core_setAppledMask(ele,"COMMON_FORM_readonlyFunction");
+        }
+    });
+}
 
+function COMMON_FORM_disableFunction(param_tagAttr, param_tagAttrVal, param_val) {
+    core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
+        if(!core_hasAppliedRule(ele,"COMMON_FORM_disableFunction")){
+            if("Y"===val){
+                ele.attr("disabled","disabled");
+                ele.unbind();
+                ele.prop("onclick",null);
+                ele.click(function (event) {
+                    event.preventDefault();
+                });
+            }
+            else if("N"===val){
+                //suggest do nothing
+                // ele.removeAttr("disabled");
+            }
+            core_setAppledMask(ele,"COMMON_FORM_disableFunction");
+        }
+    });
+}
+// =====================FORM COMMON OPERATION================================================end
 // =====================FORM button OPERATION================================================start
 function FORM_button_displayFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-            ele.removeAttr("hidden","hidden");
-            ele.show();
-        }
-        else if("N"===val){
-            ele.attr("hidden","hidden");
-            ele.hide();
+        if(!core_hasAppliedRule(ele,"FORM_button_displayFunction")){
+            if("Y"===val){
+                ele.removeAttr("hidden","hidden");
+                ele.show();
+            }
+            else if("N"===val){
+                ele.attr("hidden","hidden");
+                ele.hide();
+            }
+
+            core_setAppledMask(ele,"FORM_button_displayFunction");
         }
     });
 }
 function FORM_button_requireFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        //just do nothing for button
-        if("Y"===val){
-        }
-        else if("N"===val){
+        if(!core_hasAppliedRule(ele,"FORM_button_requireFunction")){
+            //just do nothing for button
+            if("Y"===val){
+            }
+            else if("N"===val){
+            }
+
+            core_setAppledMask(ele,"FORM_button_requireFunction");
         }
     });
 }
 function FORM_button_readonlyFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        //just do nothing for button
-        if("Y"===val){
-        }
-        else if("N"===val){
+        if(!core_hasAppliedRule(ele,"FORM_button_readonlyFunction")){
+            //just do nothing for button
+            if("Y"===val){
+            }
+            else if("N"===val){
+            }
+
+            core_setAppledMask(ele,"FORM_button_readonlyFunction");
         }
     });
 }
 function FORM_button_disableFunction(param_tagAttr, param_tagAttrVal, param_val) {
     core_apply_action(param_tagAttr,param_tagAttrVal,param_val,function (ele, val) {
-        if("Y"===val){
-            ele.attr("disabled","disabled");
-            ele.unbind();
-            ele.prop("onclick",null);
-            ele.click(function (event) {
-                event.preventDefault();
-            });
-        }
-        else if("N"===val){
-            //do nothing
+        if(!core_hasAppliedRule(ele,"FORM_button_disableFunction")){
+            if("Y"===val){
+                ele.attr("disabled","disabled");
+                ele.unbind();
+                ele.prop("onclick",null);
+                ele.click(function (event) {
+                    event.preventDefault();
+                });
+            }
+            else if("N"===val){
+                //do nothing
+            }
+
+            core_setAppledMask(ele,"FORM_button_disableFunction");
         }
     });
 }
