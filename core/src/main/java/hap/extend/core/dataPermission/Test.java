@@ -21,8 +21,11 @@ public class Test {
 //        String strNoBlank = m.replaceAll(" ");
 //        System.out.println(strNoBlank);
 
-        ThreadLocal<String> threadLocal = new ThreadLocal<>();
-        threadLocal.set(null);
-        System.out.println(threadLocal.get());
+//        ThreadLocal<String> threadLocal = new ThreadLocal<>();
+//        threadLocal.set(null);
+//        System.out.println(threadLocal.get());
+
+        String s = "LIMIT ? OFFSET ?";
+        System.out.println(s.replaceAll("LIMIT \\? OFFSET \\?",""));
     }
 }
