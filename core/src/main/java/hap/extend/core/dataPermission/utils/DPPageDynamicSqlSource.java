@@ -23,15 +23,15 @@ public class DPPageDynamicSqlSource extends PageDynamicSqlSource {
 
     private Configuration configuration;
     private SqlNode rootSqlNode;
-    private String conditionSql;
-    private ThreadLocal<String> threadLocal;
+    private ThreadLocal<String> tlOfConditionSql;
+    private ThreadLocal<Boolean> tlOfIsCountFlag;
 
-    public DPPageDynamicSqlSource(Configuration configuration, SqlNode rootSqlNode, String conditionSql,ThreadLocal<String> threadLocal) {
+    public DPPageDynamicSqlSource(Configuration configuration, SqlNode rootSqlNode, ThreadLocal<String> threadLocal, ThreadLocal<Boolean> tlOfIsCountFlag) {
         this(new DynamicSqlSource(configuration, rootSqlNode));
         this.configuration = configuration;
         this.rootSqlNode = rootSqlNode;
-        this.conditionSql = conditionSql;
-        this.threadLocal = threadLocal;
+        this.tlOfConditionSql = threadLocal;
+        this.tlOfIsCountFlag = tlOfIsCountFlag;
     }
 
     /**
@@ -45,10 +45,10 @@ public class DPPageDynamicSqlSource extends PageDynamicSqlSource {
     public BoundSql getBoundSql(Object parameterObject) {
         BoundSql boundSql = super.getBoundSql(parameterObject);
         String sql = boundSql.getSql();//old sql
-        if(isNotNull(threadLocal) && isNotNull(threadLocal.get())){
+        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
             String newSql = null;
             try {
-                newSql = SqlUtil.addConditionToSql(sql, threadLocal.get());
+                newSql = SqlUtil.addConditionToSql(sql, tlOfConditionSql.get(), tlOfIsCountFlag.get());
                 newSql = replaceLimit(newSql);
             } catch (JSQLParserException e) {
                 e.printStackTrace();
@@ -61,5 +61,21 @@ public class DPPageDynamicSqlSource extends PageDynamicSqlSource {
             metaObject.setValue("sql", sql);
         }
         return boundSql;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public SqlNode getRootSqlNode() {
+        return rootSqlNode;
+    }
+
+    public ThreadLocal<String> getTlOfConditionSql() {
+        return tlOfConditionSql;
+    }
+
+    public ThreadLocal<Boolean> getTlOfIsCountFlag() {
+        return tlOfIsCountFlag;
     }
 }
