@@ -24,6 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+
+import hap.extend.core.dataPermission.utils.DPDynamicSqlSource;
+import hap.extend.core.dataPermission.utils.DPPageDynamicSqlSource;
+import hap.extend.core.dataPermission.utils.NewDPDynamicSqlSource;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.builder.annotation.ProviderSqlSource;
 import org.apache.ibatis.mapping.BoundSql;
@@ -37,6 +41,8 @@ import org.apache.ibatis.scripting.xmltags.DynamicSqlSource;
 import org.apache.ibatis.session.RowBounds;
 
 import javax.validation.constraints.NotNull;
+
+import static hap.extend.core.dataPermission.utils.LangUtils.isNull;
 
 public class SqlUtil implements Constant {
     private static final ThreadLocal<Page> LOCAL_PAGE = new ThreadLocal();
@@ -233,10 +239,14 @@ public class SqlUtil implements Constant {
             if(!(sqlSource instanceof DynamicSqlSource)) {
                 throw new RuntimeException("无法处理该类型[" + sqlSource.getClass() + "]的SqlSource");
             }
-
-//            pageSqlSource = new PageDynamicSqlSource((DynamicSqlSource)sqlSource);
-            msObject.setValue("sqlSource", sqlSource);
-            msCountMap.put(ms.getId(), MSUtils.newCountMappedStatement(ms));
+            if( sqlSource instanceof DPDynamicSqlSource){
+                DPDynamicSqlSource temp = (DPDynamicSqlSource)sqlSource;
+//                pageSqlSource = new DPPageDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode(),temp.getTlOfConditionSql(),temp.getTlOfIsCountFlag());
+                pageSqlSource = new NewDPDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode(),
+                        isNull(temp.getTlOfConditionSql())?"":temp.getTlOfConditionSql().get());
+            }else {
+                pageSqlSource = new PageDynamicSqlSource((DynamicSqlSource)sqlSource);
+            }
         }
 
         msObject.setValue("sqlSource", pageSqlSource);
@@ -330,11 +340,30 @@ public class SqlUtil implements Constant {
         return page;
     }
 
+    public void processStatement(@NotNull MappedStatement ms) throws Throwable {
+        SqlSource sqlSource = ms.getSqlSource();
+        MetaObject msObject = SystemMetaObject.forObject(ms);
+
+        if(sqlSource instanceof NewDPDynamicSqlSource) {
+            NewDPDynamicSqlSource temp = (NewDPDynamicSqlSource)sqlSource;
+            ThreadLocal<String> tlOfConditionSql = temp.getTlOfConditionSql();
+            String conditionSql = "";
+            if(!isNull(tlOfConditionSql) || !isNull(tlOfConditionSql.get())){
+                conditionSql = tlOfConditionSql.get();
+            }
+            NewDPDynamicSqlSource newDPDynamicSqlSource = new NewDPDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode(),conditionSql);
+            msObject.setValue("sqlSource", newDPDynamicSqlSource);
+            msCountMap.put(ms.getId(), MSUtils.newCountMappedStatement(ms));
+        }
+    }
+
     private Page doProcessPage(Invocation invocation, Page page, Object[] args) throws Throwable {
         RowBounds rowBounds = (RowBounds)args[2];
         MappedStatement ms = (MappedStatement)args[0];
         if(!this.isPageSqlSource(ms)) {
             this.processMappedStatement(ms);
+        }else {
+            this.processStatement(ms);
         }
 
         ((PageSqlSource)ms.getSqlSource()).setParser(this.parser);
