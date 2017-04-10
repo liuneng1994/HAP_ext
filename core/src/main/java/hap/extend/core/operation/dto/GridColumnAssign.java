@@ -45,6 +45,9 @@ public class GridColumnAssign extends BaseDTO {
 
     @Transient
     private String columnName;
+    @Transient
+    private Long columnIndex;
+
 
     public Long getColumnAssignId() {
         return columnAssignId;
@@ -124,5 +127,13 @@ public class GridColumnAssign extends BaseDTO {
 
     public void setColumnId(Long columnId) {
         this.columnId = columnId;
+    }
+
+    public Long getColumnIndex() {
+        return columnIndex;
+    }
+
+    public void setColumnIndex(Long columnIndex) {
+        this.columnIndex = columnIndex;
     }
 }
