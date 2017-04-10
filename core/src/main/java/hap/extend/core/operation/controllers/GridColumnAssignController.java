@@ -38,7 +38,7 @@ public class GridColumnAssignController extends BaseController {
         gridColumnAssign.setColumnName(returnNullIfStrEmpty(columnName));
         gridColumnAssign.setCpnAssignId(cpnAssignId);
 
-        List<GridColumnAssign> gridColumnAssignList = gridColumnAssignService.select(requestContext, gridColumnAssign, page, pageSize);
+        List<GridColumnAssign> gridColumnAssignList = gridColumnAssignService.selectByGridColumnAssign(requestContext, gridColumnAssign, page, pageSize);
         return new ResponseData(gridColumnAssignList);
     }
 
