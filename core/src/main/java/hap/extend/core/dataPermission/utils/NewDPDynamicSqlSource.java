@@ -158,28 +158,6 @@ public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
         return boundSql;
     }
 
-    //多余
-//    @Override
-//    public BoundSql getBoundSql(Object parameterObject) {
-//        BoundSql boundSql = super.getBoundSql(parameterObject);
-//        String sql = boundSql.getSql();//old sql
-//        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
-//            String newSql = null;
-//            try {
-//                newSql = SqlUtil.addConditionToSql_0(sql, tlOfConditionSql.get());
-//                newSql = replaceLimit(newSql);
-//            } catch (JSQLParserException e) {
-//                e.printStackTrace();
-//                logger.error(e.getMessage(),e);
-//            }
-//            MetaObject metaObject = SystemMetaObject.forObject(boundSql);
-//            metaObject.setValue("sql", newSql);
-//        }else {
-//            MetaObject metaObject = SystemMetaObject.forObject(boundSql);
-//            metaObject.setValue("sql", sql);
-//        }
-//        return boundSql;
-//    }
 
     private String removeLimitOffset(String sourceSql){
         return sourceSql.replaceAll("LIMIT \\? OFFSET \\?","");
