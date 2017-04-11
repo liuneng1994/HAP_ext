@@ -38,22 +38,6 @@ public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
         this.configuration = configuration;
         this.rootSqlNode = rootSqlNode;
         this.tlOfConditionSql.set(conditionSql);
-//        BoundSql boundSql = super.getBoundSql(parameterObject);
-//        String sql = boundSql.getSql();//old sql
-//        if(isNotNull(threadLocal) && isNotNull(threadLocal.get())){
-//            String newSql = null;
-//            try {
-//                newSql = SqlUtil.addConditionToSql(sql, threadLocal.get(),false);
-//                newSql = replaceLimit(newSql);
-//                MetaObject metaObject = SystemMetaObject.forObject(boundSql);
-//                metaObject.setValue("sql", newSql);
-//                SqlNode sqlNode = new StaticTextSqlNode(newSql);
-//                this.rootSqlNode = sqlNode;
-//            } catch (JSQLParserException e) {
-//                e.printStackTrace();
-//                logger.error(e.getMessage(),e);
-//            }
-//        }
     }
 
 
@@ -200,111 +184,6 @@ public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
     private String removeLimitOffset(String sourceSql){
         return sourceSql.replaceAll("LIMIT \\? OFFSET \\?","");
     }
-
-
-
-
-//    protected BoundSql getDefaultBoundSql(Object parameterObject) {
-//        DynamicContext context = new DynamicContext(this.configuration, parameterObject);
-//        this.rootSqlNode.apply(context);
-//        SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(this.configuration);
-//        Class parameterType = parameterObject == null?Object.class:parameterObject.getClass();
-//        SqlSource sqlSource = sqlSourceParser.parse(context.getSql(), parameterType, context.getBindings());
-//        OrderByStaticSqlSource sqlSource1 = new OrderByStaticSqlSource((StaticSqlSource)sqlSource);
-//        BoundSql boundSql = sqlSource1.getBoundSql(parameterObject);
-//        Iterator var7 = context.getBindings().entrySet().iterator();
-//
-//        while(var7.hasNext()) {
-//            Map.Entry entry = (Map.Entry)var7.next();
-//            boundSql.setAdditionalParameter((String)entry.getKey(), entry.getValue());
-//        }
-//
-////just new sql source
-//        String newSql = boundSql.getSql();
-//        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
-//            try {
-//                newSql = SqlUtil.addConditionToSql_0(newSql, tlOfConditionSql.get());
-//                newSql = removeLimitOffset(newSql);
-//                MetaObject metaObject = SystemMetaObject.forObject(boundSql);
-//                metaObject.setValue("sql", newSql);
-//            } catch (JSQLParserException e) {
-//                logger.error(e.getMessage(),e);
-//            }
-//        }
-//        return boundSql;
-//    }
-//
-//    protected BoundSql getCountBoundSql(Object parameterObject) {
-//        DynamicContext context = new DynamicContext(this.configuration, parameterObject);
-//        this.rootSqlNode.apply(context);
-//        SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(this.configuration);
-//        Class parameterType = parameterObject == null?Object.class:parameterObject.getClass();
-//
-//        SqlSource sqlSource = sqlSourceParser.parse(context.getSql(), parameterType, context.getBindings());
-//        BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
-//        String newSql = boundSql.getSql();
-//        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
-//            try {
-//                newSql = SqlUtil.addConditionToSql_0(newSql, tlOfConditionSql.get());
-//                newSql = removeLimitOffset(newSql);
-//                MetaObject metaObject = SystemMetaObject.forObject(boundSql);
-//                metaObject.setValue("sql", newSql);
-//            } catch (JSQLParserException e) {
-//                logger.error(e.getMessage(),e);
-//            }
-//        }
-//        String temp = boundSql.getSql();
-//        StaticSqlSource sqlSource1 = new StaticSqlSource(this.configuration, ((Parser)localParser.get()).getCountSql(boundSql.getSql()), boundSql.getParameterMappings());
-//        boundSql = sqlSource1.getBoundSql(parameterObject);
-//        Iterator var7 = context.getBindings().entrySet().iterator();
-//
-//        while(var7.hasNext()) {
-//            Map.Entry entry = (Map.Entry)var7.next();
-//            boundSql.setAdditionalParameter((String)entry.getKey(), entry.getValue());
-//        }
-//        return boundSql;
-//    }
-//
-//    protected BoundSql getPageBoundSql(Object parameterObject) {
-//        DynamicContext context;
-//        if(parameterObject != null && parameterObject instanceof Map && ((Map)parameterObject).containsKey("_ORIGINAL_PARAMETER_OBJECT")) {
-//            context = new DynamicContext(this.configuration, ((Map)parameterObject).get("_ORIGINAL_PARAMETER_OBJECT"));
-//        } else {
-//            context = new DynamicContext(this.configuration, parameterObject);
-//        }
-//
-//        this.rootSqlNode.apply(context);
-//        SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(this.configuration);
-//        Class parameterType = parameterObject == null?Object.class:parameterObject.getClass();
-//
-//
-//        SqlSource sqlSource = sqlSourceParser.parse(context.getSql(), parameterType, context.getBindings());
-//        OrderByStaticSqlSource sqlSource1 = new OrderByStaticSqlSource((StaticSqlSource)sqlSource);
-//        BoundSql boundSql = sqlSource1.getBoundSql(parameterObject);
-//        String newSql = boundSql.getSql();
-//        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
-//            try {
-//                newSql = SqlUtil.addConditionToSql_0(newSql, tlOfConditionSql.get());
-//                newSql = removeLimitOffset(newSql);
-//                MetaObject metaObject = SystemMetaObject.forObject(boundSql);
-//                metaObject.setValue("sql", newSql);
-//            } catch (JSQLParserException e) {
-//                logger.error(e.getMessage(),e);
-//            }
-//        }
-//        String temp = boundSql.getSql();
-//        StaticSqlSource sqlSource2 = new StaticSqlSource(this.configuration, ((Parser)localParser.get()).getPageSql(boundSql.getSql()), ((Parser)localParser.get()).getPageParameterMapping(this.configuration, boundSql));
-//        boundSql = sqlSource2.getBoundSql(parameterObject);
-//        Iterator var7 = context.getBindings().entrySet().iterator();
-//
-//        while(var7.hasNext()) {
-//            Map.Entry entry = (Map.Entry)var7.next();
-//            boundSql.setAdditionalParameter((String)entry.getKey(), entry.getValue());
-//        }
-//
-//        return boundSql;
-//    }
-
 
     public Configuration getConfiguration() {
         return configuration;
