@@ -207,7 +207,9 @@ NOTICE:禁止在规则SQL片段中包含与其他规则SQL之间逻辑操作符(
                         field: "ruleSql",
                         title: '<@spring.message "hap_extend.data_permission.rule.title_rule_sql"/>',
                         width: 200,
-                        height:20,
+                        attributes: {
+                            style: 'white-space: nowrap '
+                        },
                         editor:sqlCodeEditor,
                         template:"#=ruleSql#"
                     },
