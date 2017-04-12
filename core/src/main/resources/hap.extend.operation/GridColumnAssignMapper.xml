@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hap.extend.core.operation.mapper.GridColumnAssignMapper" >
+    <resultMap id="BaseResultMap" type="hap.extend.core.operation.dto.GridColumnAssign" extends="com.hand.hap.mapper.StdMapper.STD" >
+        <id column="COLUMN_ASSIGN_ID" property="columnAssignId"/>
+        <result column="COMPONENT_ASSIGN_ID" property="cpnAssignId"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="ENABLE_FLAG" property="enableFlag"/>
+        <result column="COMPONENT_ID" property="componentId"/>
+        <result column="COLUMN_ID" property="columnId"/>
+        <result column="COLUMN_NAME" property="columnName"/>
+        <result column="COLUMN_INDEX" property="columnIndex"/>
+        <result column="DISPLAY" property="display"/>
+        <result column="REQUIRED" property="require"/>
+        <result column="READ_ONLY" property="readonly"/>
+        <result column="DISABLE" property="disable"/>
+    </resultMap>
+
+    <select id="selectByGridColumnAssign" resultMap="BaseResultMap">
+        SELECT assign.*,grid_column.COLUMN_NAME AS COLUMN_NAME,grid_column.COLUMN_INDEX AS COLUMN_INDEX
+        FROM HCOM_RES_COLUMN_ASSIGN assign JOIN HCOM_RES_GRID_COLUMN grid_column ON assign.COLUMN_ID=grid_column.COLUMN_ID
+        <where>
+            <if test="columnAssignId != null and columnAssignId>0">
+                and assign.COLUMN_ASSIGN_ID = #{columnAssignId,jdbcType=DECIMAL}
+            </if>
+            <if test="cpnAssignId != null and cpnAssignId>0">
+                and assign.COMPONENT_ASSIGN_ID = #{cpnAssignId,jdbcType=DECIMAL}
+            </if>
+            <if test="columnId != null and columnId>0">
+                and assign.COLUMN_ID = #{columnId,jdbcType=DECIMAL}
+            </if>
+            <if test="columnName != null">
+                <bind name="pattern_columnName" value="'%' + _parameter.columnName + '%'" />
+                AND grid_column.COLUMN_NAME like #{pattern_columnName}
+            </if>
+            <if test="description != null">
+                <bind name="pattern_description" value="'%' + _parameter.description + '%'" />
+                AND assign.DESCRIPTION like #{pattern_description}
+            </if>
+            <if test="enableFlag != null">
+                AND assign.ENABLE_FLAG = #{enableFlag}
+            </if>
+        </where>
+    </select>
+</mapper>

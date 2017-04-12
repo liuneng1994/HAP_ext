@@ -57,6 +57,7 @@ public class DataPermissionInterceptor implements Interceptor {
         MappedStatement statement = (MappedStatement) args[0];//在当前类的开头使用注解规定需要注入的参数
         String sqlId = statement.getId();
         logger.info("\ndata permission:is going to handle(userId,roleId,sqlId)=({},{},{})\n",userId_L,roleId_L,sqlId);
+        boolean isCountFlag = isPrePagingMethod(sqlId);
         sqlId = extractMapperMethod(sqlId);
         initCacheObj();
         if(isNull(ruleIdsOfMethodMappingCache) || isNull(ruleUserMappingCache) || isNull(rulesCache)){
@@ -123,8 +124,10 @@ public class DataPermissionInterceptor implements Interceptor {
 //        Assert.isTrue(oldSql.length() > 0,"需要执行的sql不能为空串");
         ThreadLocal<String> threadLocal = new ThreadLocal<>();
         threadLocal.set(conditionSql);
+        ThreadLocal<Boolean> threadLocalOfCountFlag = new ThreadLocal<>();
+        threadLocalOfCountFlag.set(isCountFlag);
         SqlSource sqlSource = statement.getSqlSource();
-        SqlSource newSqlSource1 = SqlSourceUtil.covertSqlSource(sqlSource, conditionSql,threadLocal);
+        SqlSource newSqlSource1 = SqlSourceUtil.covertSqlSource(sqlSource, conditionSql,args[1], threadLocal,threadLocalOfCountFlag);
         MetaObject msObject = SystemMetaObject.forObject(statement);
         msObject.setValue("sqlSource", newSqlSource1);
 

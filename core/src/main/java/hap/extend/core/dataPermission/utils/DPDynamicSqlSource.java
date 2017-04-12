@@ -24,25 +24,42 @@ public class DPDynamicSqlSource extends DynamicSqlSource {
 
     private SqlNode rootSqlNode;
     /** 条件SQL片段*/
-    private String conditionSql;
-    private ThreadLocal<String> threadLocal;
+    private ThreadLocal<String> tlOfConditionSql;
+    private ThreadLocal<Boolean> tlOfIsCountFlag;
 
-    public DPDynamicSqlSource(Configuration configuration, SqlNode rootSqlNode, String conditionSql,ThreadLocal<String> threadLocal) {
+    public DPDynamicSqlSource(Configuration configuration, SqlNode rootSqlNode, Object parameterObj, ThreadLocal<String> threadLocal, ThreadLocal<Boolean> tlOfIsCountFlag) {
         super(configuration, rootSqlNode);
         this.configuration = configuration;
         this.rootSqlNode = rootSqlNode;
-        this.conditionSql = conditionSql;
-        this.threadLocal = threadLocal;
+        this.tlOfConditionSql = threadLocal;
+        this.tlOfIsCountFlag = tlOfIsCountFlag;
+//        DynamicContext context = new DynamicContext(this.configuration, parameterObj);
+//        context.appendSql("<where> "+ threadLocal.get()+" </where>");//TODO 关键 ===================================
+//        this.rootSqlNode.apply(context);
+//        BoundSql boundSql = super.getBoundSql(parameterObj);
+//        String sql = boundSql.getSql();//old sql
+//        if(isNotNull(threadLocal) && isNotNull(threadLocal.get())){
+//            String newSql = null;
+//            try {
+//                newSql = SqlUtil.addConditionToSql(sql, threadLocal.get(),tlOfIsCountFlag.get());
+//                newSql = replaceLimit(newSql);
+//            } catch (JSQLParserException e) {
+//                e.printStackTrace();
+//                logger.error(e.getMessage(),e);
+//            }
+//            MetaObject metaObject = SystemMetaObject.forObject(boundSql);
+//            metaObject.setValue("sql", newSql);
+//        }
     }
 
     @Override
     public BoundSql getBoundSql(Object parameterObject) {
         BoundSql boundSql = super.getBoundSql(parameterObject);
         String sql = boundSql.getSql();//old sql
-        if(isNotNull(threadLocal) && isNotNull(threadLocal.get())){
+        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
             String newSql = null;
             try {
-                newSql = SqlUtil.addConditionToSql(sql, threadLocal.get());
+                newSql = SqlUtil.addConditionToSql(sql, tlOfConditionSql.get(),tlOfIsCountFlag.get());
                 newSql = replaceLimit(newSql);
             } catch (JSQLParserException e) {
                 e.printStackTrace();
@@ -55,5 +72,21 @@ public class DPDynamicSqlSource extends DynamicSqlSource {
             metaObject.setValue("sql", sql);
         }
         return boundSql;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public SqlNode getRootSqlNode() {
+        return rootSqlNode;
+    }
+
+    public ThreadLocal<String> getTlOfConditionSql() {
+        return tlOfConditionSql;
+    }
+
+    public ThreadLocal<Boolean> getTlOfIsCountFlag() {
+        return tlOfIsCountFlag;
     }
 }

@@ -88,7 +88,7 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
         StringBuilder sb = new StringBuilder();
         sb.append("function HAP_EXT_OPM_appliedOP(){\n");
 
-        assignIds.parallelStream().forEach(assignId -> {
+        assignIds.forEach(assignId -> {
             ComponentAssign cpnAssign = new ComponentAssign();
             cpnAssign.setAssignId(assignId);
             cpnAssign.setEnableFlag(OPConstUtil.VALUE_YES);
@@ -107,7 +107,7 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
         });
 
         List<Js> results = new ArrayList<>();
-        jsIds.parallelStream().forEach(jsId->{
+        jsIds.forEach(jsId->{
             Js js = new Js();
             js.setJsId(jsId);
             js.setEnableFlag(OPConstUtil.VALUE_YES);
@@ -117,8 +117,8 @@ public class OperationPermissionServiceImpl implements IOperationPermissionServi
             }
         });
 
-        results.parallelStream().forEach(js -> {
-            sb.append("//applied:"+js.getJsName()+"\n");
+        results.forEach(js -> {
+//            sb.append("//applied:"+js.getJsName()+"\n");
             sb.append(js.getJsScript()+"\n");
         });
         sb.append("\n}\n HAP_EXT_OPM_appliedOP();");

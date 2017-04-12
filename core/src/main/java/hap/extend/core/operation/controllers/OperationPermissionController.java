@@ -41,11 +41,8 @@ public class OperationPermissionController extends BaseController {
         IRequest requestContext = createRequestContext(request);
         List<BaseDTO> list = new ArrayList<>();
         DataCarrier dataCarrier = new DataCarrier();
-//        String s = "function disableCpn(cpn_id) {\n" +
-//                "    $(\"#\"+cpn_id).attr(\"disabled\",true);\n" +
-//                "}\ndisableCpn(\"btn_test\");";
         String s = operationPermissionService.fetchApplyRules(filePath,requestContext);
-        logger.debug("control js code:{}",s);
+//        logger.debug("control js code:{}",s);
         dataCarrier.setName(s);
         list.add(dataCarrier);
         return new ResponseData(list);
