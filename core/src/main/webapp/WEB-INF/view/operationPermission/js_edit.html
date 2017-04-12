@@ -199,7 +199,9 @@
                 field: "jsScript",
                 title: '<@spring.message "hap_extend.op_permission.grid_title.js_code"/>',
                 width: 80,
-                height:20,
+                attributes: {
+                    style: 'white-space: nowrap '
+                },
                 editor:jsCodeEditor,
                 template:"#=jsScript#"
             },
