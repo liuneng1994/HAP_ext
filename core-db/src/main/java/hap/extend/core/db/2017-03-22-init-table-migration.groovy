@@ -184,7 +184,7 @@ databaseChangeLog(logicalFilePath:"hap/extend/core/db/2017-03-22-init-migration.
             column(name: "COMPONENT_NAME", type: "VARCHAR(255)",remarks: "组件名称") {
                 constraints(nullable: "false")
             }
-            column(name: "LEVEL", type: "VARCHAR(30)",remarks: "组件大的类别，分为FORM和GRID") {
+            column(name: "CPN_LEVEL", type: "VARCHAR(30)",remarks: "组件大的类别，分为FORM和GRID") {
                 constraints(nullable: "false")
             }
             column(name: "COMPONENT_TYPE", type: "VARCHAR(50)",remarks: "组件类型") {
@@ -259,7 +259,7 @@ databaseChangeLog(logicalFilePath:"hap/extend/core/db/2017-03-22-init-migration.
                 constraints(nullable: "false")
             }
             column(name: "DESCRIPTION", type: "VARCHAR(255)",remarks: "描述") {
-                constraints(nullable: "false")
+                constraints(nullable: "true")
             }
             column(name: "ENABLE_FLAG", type: "VARCHAR(2)",defaultValue:"Y", remarks: "Y=启用或者N=不启用") {
                 constraints(nullable: "false")
@@ -297,7 +297,7 @@ databaseChangeLog(logicalFilePath:"hap/extend/core/db/2017-03-22-init-migration.
             createSequence(sequenceName: 'HCOM_RES_GRID_COLUMN_S', startValue:"10001")
         }
         createTable(tableName: "HCOM_RES_GRID_COLUMN") {
-            column(name:"COLUMN_ID",type:"BIGINT",autoIncrement: "true", startWith:"10001",remarks: "表ID，主键"){
+            column(name:"CPN_COLUMN_ID",type:"BIGINT",autoIncrement: "true", startWith:"10001",remarks: "表ID，主键"){
                 constraints(nullable: "false", primaryKey: "true",primaryKeyName: "HCOM_RES_GRID_COLUMN_PK")
             }
 
@@ -350,6 +350,9 @@ databaseChangeLog(logicalFilePath:"hap/extend/core/db/2017-03-22-init-migration.
             column(name: "COMPONENT_ASSIGN_ID", type: "BIGINT",remarks: "权限类别中当前列所在grid组件的分配id") {
                 constraints(nullable: "false")
             }
+            column(name: "CPN_COLUMN_ID", type: "BIGINT",remarks: "列id") {
+                constraints(nullable: "false")
+            }
 
             column(name: "DISPLAY", type: "VARCHAR(1)",remarks: "可见") {
                 constraints(nullable: "false")
@@ -364,7 +367,7 @@ databaseChangeLog(logicalFilePath:"hap/extend/core/db/2017-03-22-init-migration.
                 constraints(nullable: "false")
             }
             column(name: "DESCRIPTION", type: "VARCHAR(255)",remarks: "描述") {
-                constraints(nullable: "false")
+                constraints(nullable: "true")
             }
             column(name: "ENABLE_FLAG", type: "VARCHAR(2)",defaultValue:"Y", remarks: "Y=启用或者N=不启用") {
                 constraints(nullable: "false")
