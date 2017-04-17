@@ -9,16 +9,20 @@
         <div class="panel">
             <form class="form-horizontal">
                 <div class="panel-body col-sm-offset-0">
-                    <div class="col-sm-3">
+                    <div class="col-sm-3 col-lg-3 col-md-3">
                         <div class="form-group">
-                            <label style="width: 20%"><@spring.message "hap_extend.op_permission.name"/></label>
-                            <input type="text" style="width:70%" data-bind="value:model.componentName">
+                            <label class="col-sm-4 col-lg-4 col-md-4 control-label"><@spring.message "hap_extend.op_permission.name"/></label>
+                            <div class="col-sm-8 col-lg-8 col-md-8">
+                                <input type="text" style="width:100%" data-bind="value:model.componentName" class="k-textbox">
+                            </div>
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3 col-lg-3 col-md-3">
                         <div class="form-group">
-                            <label style="width: 20%"><@spring.message "hap_extend.op_permission.description"/></label>
-                            <input type="text" style="width:70%" data-bind="value:model.description">
+                            <label class="col-sm-4 col-lg-4 col-md-4 control-label"><@spring.message "hap_extend.op_permission.description"/></label>
+                            <div class="col-sm-8 col-lg-8 col-md-8">
+                                <input type="text" style="width:100%" data-bind="value:model.description" class="k-textbox">
+                            </div>
                         </div>
                     </div>
 
@@ -212,7 +216,7 @@
             },
             {
                 field: "componentType",
-                title: '<@spring.message "hap_extend.op_permission.grid_title.componentType"/>',
+                title: '<@spring.message "hap_extend.op_permission.grid_title.component_type"/>',
 //                title: '具体类型',
                 width: 80
             },
@@ -223,9 +227,9 @@
             },
             {
                 field: "htmlTagAttr",
-                title: '<@spring.message "hap_extend.op_permission.grid_title.htmlTagAttr"/>',
+                title: '<@spring.message "hap_extend.op_permission.grid_title.html_tag_attr"/>',
 //                title: 'HTML标签属性',
-                width: 40,
+                width: 80,
                 template: function (dataItem) {
                     return Hap.getCodeMeaning(htmlTagAttr_dataSource, dataItem.htmlTagAttr)
                 },
@@ -241,9 +245,9 @@
             },
             {
                 field: "htmlTagAttrVal",
-                title: '<@spring.message "hap_extend.op_permission.grid_title.htmlTagAttrVal"/>',
+                title: '<@spring.message "hap_extend.op_permission.grid_title.html_tag_attr_val"/>',
 //                title: 'HTML标签属性值',
-                width: 40
+                width: 80
             },
             {
                 field: "description",
