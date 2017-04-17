@@ -19,7 +19,7 @@ public class GridColumnAssign extends BaseDTO {
     @Column(name = "COMPONENT_ASSIGN_ID",nullable = false)
     private Long cpnAssignId;
 
-    @Column(name = "COLUMN_ID")
+    @Column(name = "CPN_COLUMN_ID")
     private Long columnId;
 
 
