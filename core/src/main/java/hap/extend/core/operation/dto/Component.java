@@ -39,7 +39,7 @@ public class Component extends BaseDTO {
     private String description;
 
     /** GRID OR FORM*/
-    @Column(name = "LEVEL",nullable = false)
+    @Column(name = "CPN_LEVEL",nullable = false)
     @Condition(operator = LIKE)
     private String level;
 
