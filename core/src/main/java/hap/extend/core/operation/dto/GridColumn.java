@@ -16,7 +16,7 @@ public class GridColumn extends BaseDTO {
 
     @Id
     @GeneratedValue(generator = GENERATOR_TYPE)
-    @Column(name = "COLUMN_ID")
+    @Column(name = "CPN_COLUMN_ID")
     private Long columnId;
 
     @Column(name = "COMPONENT_ID",nullable = false)

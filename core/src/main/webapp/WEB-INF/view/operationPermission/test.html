@@ -6,6 +6,9 @@
 <!--关于预先提供的部分js函数封装的说明：这部分函数封装主要是适用于规范的hap开发过程中，
 grid中约定使用情况下的处理，对于不同的项目可以参照着实现；
 这一部分的代码不一定适用于所有项目-->
+<script src="${base.contextPath}/resources/js/operationPermission/apply_op_permission.js" charset="UTF-8"></script>
+
+
 <div>
     <div id="content-container">
         <div id="page-content">
@@ -24,12 +27,12 @@ grid中约定使用情况下的处理，对于不同的项目可以参照着实�
                 <!--</form>-->
             </div>
         </div>
-        <div id="grid"></div>
         <div>
             <span id="btn_test" class="btn btn-success">测试按钮</span>
-            <span class="btn btn-success" onclick="hideColumn_1()">隐藏列</span>
-            <span class="btn btn-success" id="btn_create">新建</span>
+            <span id="btn_hideColumn" class="btn btn-success" onclick="hideColumn_1()">隐藏列</span>
+            <span id="btn_create" class="btn btn-success">新建</span>
         </div>
+        <div id="grid"></div>
     </div>
 </div>
 <script>
@@ -169,7 +172,7 @@ grid中约定使用情况下的处理，对于不同的项目可以参照着实�
     }
     //$("#"+_gridDivId).data("kendoGrid").dataSource.options.fields可以获取全部field，包括自动行号
 </script>
-<script src="${base.contextPath}/resources/js/operationPermission/apply_op_permission.js" charset="UTF-8"></script>
+
 
 </body>
 </html>
