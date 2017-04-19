@@ -57,7 +57,7 @@ public class RuleUserController extends BaseController{
     @ResponseBody
     public ResponseData createRuleUsers(@RequestBody List<RuleUser> ruleUserList, BindingResult result, HttpServletRequest request){
 
-        List<RuleUser> ruleUsers = ruleUserService.batchUpdate(createRequestContext(request), ruleUserList);
+        List<RuleUser> ruleUsers = ruleUserService.batchUpdateCacheAndDb(createRequestContext(request), ruleUserList);
         return new ResponseData(ruleUsers);
     }
 
@@ -72,7 +72,7 @@ public class RuleUserController extends BaseController{
     @ResponseBody
     public ResponseData deleteRuleUsers(@RequestBody List<RuleUser> ruleUserList, BindingResult result, HttpServletRequest request) throws Exception {
 
-        List<RuleUser> ruleUsers = ruleUserService.batchUpdate(createRequestContext(request), ruleUserList);
+        List<RuleUser> ruleUsers = ruleUserService.batchUpdateCacheAndDb(createRequestContext(request), ruleUserList);
         return new ResponseData(ruleUsers);
     }
 
@@ -86,7 +86,7 @@ public class RuleUserController extends BaseController{
     @RequestMapping(value = "update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateRuleUsers(@RequestBody List<RuleUser> ruleUserList, BindingResult result, HttpServletRequest request) throws Exception {
-        List<RuleUser> ruleUsers = ruleUserService.batchUpdate(createRequestContext(request), ruleUserList);
+        List<RuleUser> ruleUsers = ruleUserService.batchUpdateCacheAndDb(createRequestContext(request), ruleUserList);
         return new ResponseData(ruleUsers);
     }
 

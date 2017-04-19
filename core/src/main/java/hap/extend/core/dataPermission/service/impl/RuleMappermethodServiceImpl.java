@@ -38,7 +38,7 @@ public class RuleMappermethodServiceImpl extends BaseServiceImpl<RuleMappermetho
 
 
     @Override
-    public List<RuleMappermethod> batchUpdate(IRequest request, List<RuleMappermethod> list) {
+    public List<RuleMappermethod> batchUpdateCacheAndDb(IRequest request, List<RuleMappermethod> list) {
         IBaseService<RuleMappermethod> self = ((IBaseService<RuleMappermethod>) AopContext.currentProxy());
         Map<String,Set<Long>> addMap = new HashedMap();
         Map<String,Set<Long>> deleteMap = new HashedMap();

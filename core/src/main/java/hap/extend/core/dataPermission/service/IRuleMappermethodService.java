@@ -14,4 +14,5 @@ import java.util.List;
  */
 public interface IRuleMappermethodService  extends IBaseService<RuleMappermethod>, ProxySelf<IRuleService> {
     List<RuleMappermethod> selectByRuleMappermethod(IRequest iRequest, RuleMappermethod ruleMappermethod, int page, int pageSize);
+    public List<RuleMappermethod> batchUpdateCacheAndDb(IRequest request, List<RuleMappermethod> list);
 }

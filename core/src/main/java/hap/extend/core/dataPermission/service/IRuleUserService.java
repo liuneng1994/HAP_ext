@@ -14,4 +14,5 @@ import java.util.List;
  */
 public interface IRuleUserService extends IBaseService<RuleUser>, ProxySelf<IRuleUserService> {
     List<RuleUser> selectByRuleUser(IRequest iRequest, RuleUser ruleUser, int i, int i1);
+    public List<RuleUser> batchUpdateCacheAndDb(IRequest request, List<RuleUser> list);
 }

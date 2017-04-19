@@ -50,7 +50,7 @@ public class RuleController extends BaseController {
     @ResponseBody
     public ResponseData createRules(@RequestBody List<Rule> ruleList, BindingResult result, HttpServletRequest request){
 
-        List<Rule> rules = ruleService.batchUpdate(createRequestContext(request), ruleList);
+        List<Rule> rules = ruleService.batchUpdateCacheAndDb(createRequestContext(request), ruleList);
         return new ResponseData(rules);
     }
 
@@ -65,7 +65,7 @@ public class RuleController extends BaseController {
     @ResponseBody
     public ResponseData deleteRules(@RequestBody List<Rule> ruleList, BindingResult result, HttpServletRequest request) throws Exception {
 
-        List<Rule> rules = ruleService.batchUpdate(createRequestContext(request), ruleList);
+        List<Rule> rules = ruleService.batchUpdateCacheAndDb(createRequestContext(request), ruleList);
         return new ResponseData(rules);
     }
 
@@ -79,7 +79,7 @@ public class RuleController extends BaseController {
     @RequestMapping(value = "update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateRules(@RequestBody List<Rule> ruleList, BindingResult result, HttpServletRequest request) throws Exception {
-        List<Rule> rules = ruleService.batchUpdate(createRequestContext(request), ruleList);
+        List<Rule> rules = ruleService.batchUpdateCacheAndDb(createRequestContext(request), ruleList);
         return new ResponseData(rules);
     }
 
