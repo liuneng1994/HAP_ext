@@ -32,7 +32,7 @@ public class MapperMethodServiceImpl  extends BaseServiceImpl<MapperMethod> impl
     private DataPermissionRuleMethodCache ruleMethodCache;
 
     @Override
-    public List<MapperMethod> batchUpdate(IRequest request, List<MapperMethod> list) {
+    public List<MapperMethod> batchUpdateCacheAndDb(IRequest request, List<MapperMethod> list) {
         IBaseService<MapperMethod> self = ((IBaseService<MapperMethod>) AopContext.currentProxy());
         List<MapperMethod> deleteList = new ArrayList<>();
         Map<String,Long[]> addMap = new HashedMap();

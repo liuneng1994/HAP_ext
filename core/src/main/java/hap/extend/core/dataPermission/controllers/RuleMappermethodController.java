@@ -56,7 +56,7 @@ public class RuleMappermethodController extends BaseController {
     @ResponseBody
     public ResponseData createRules(@RequestBody List<RuleMappermethod> ruleUserList, BindingResult result, HttpServletRequest request){
 
-        List<RuleMappermethod> ruleUsers = ruleMappermethodService.batchUpdate(createRequestContext(request), ruleUserList);
+        List<RuleMappermethod> ruleUsers = ruleMappermethodService.batchUpdateCacheAndDb(createRequestContext(request), ruleUserList);
         return new ResponseData(ruleUsers);
     }
 
@@ -71,14 +71,14 @@ public class RuleMappermethodController extends BaseController {
     @ResponseBody
     public ResponseData deleteRules(@RequestBody List<RuleMappermethod> ruleUserList, BindingResult result, HttpServletRequest request) throws Exception {
 
-        List<RuleMappermethod> ruleUsers = ruleMappermethodService.batchUpdate(createRequestContext(request), ruleUserList);
+        List<RuleMappermethod> ruleUsers = ruleMappermethodService.batchUpdateCacheAndDb(createRequestContext(request), ruleUserList);
         return new ResponseData(ruleUsers);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateRuleUsers(@RequestBody List<RuleMappermethod> ruleUserList, BindingResult result, HttpServletRequest request) throws Exception {
-        List<RuleMappermethod> ruleUsers = ruleMappermethodService.batchUpdate(createRequestContext(request), ruleUserList);
+        List<RuleMappermethod> ruleUsers = ruleMappermethodService.batchUpdateCacheAndDb(createRequestContext(request), ruleUserList);
         return new ResponseData(ruleUsers);
     }
 

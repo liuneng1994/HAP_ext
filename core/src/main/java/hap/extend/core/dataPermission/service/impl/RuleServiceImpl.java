@@ -8,6 +8,7 @@ import hap.extend.core.dataPermission.cache.impl.DataPermissionRuleCache;
 import hap.extend.core.dataPermission.dto.Rule;
 import hap.extend.core.dataPermission.service.IRuleService;
 import hap.extend.core.dataPermission.utils.CacheUtils;
+import hap.extend.core.dataPermission.utils.Constant;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,7 @@ public class RuleServiceImpl extends BaseServiceImpl<Rule> implements IRuleServi
     @Autowired
     private DataPermissionRuleCache ruleCache;
 
-    @Override
-    public List<Rule> batchUpdate(IRequest request, List<Rule> list) {
+    public List<Rule> batchUpdateCacheAndDb(IRequest request, List<Rule> list) {
         IBaseService<Rule> self = ((IBaseService<Rule>) AopContext.currentProxy());
         List<Rule> deleteList = new ArrayList<>();
         List<Rule> addList = new ArrayList<>();
@@ -34,11 +34,15 @@ public class RuleServiceImpl extends BaseServiceImpl<Rule> implements IRuleServi
             switch (rule.get__status()) {
                 case DTOStatus.ADD:
                     self.insertSelective(request, rule);
-                    addList.add(rule);
+                    if(Rule.isEnable(rule.getEnableFlag())){
+                        addList.add(rule);
+                    }
                     break;
                 case DTOStatus.UPDATE:
                     deleteList.add(rule);
-                    addList.add(rule);
+                    if(Rule.isEnable(rule.getEnableFlag())){
+                        addList.add(rule);
+                    }
                     if (useSelectiveUpdate()) {
                         self.updateByPrimaryKeySelective(request, rule);
                     } else {

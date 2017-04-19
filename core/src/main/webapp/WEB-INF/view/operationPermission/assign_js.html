@@ -158,7 +158,7 @@
                             return dataItem['jsName'] || ''
                         },
                         editor: function (container, options) {
-                            $('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly="readonly" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="showJsLov(event)" class="k-icon k-i-search">&nbsp;</a></span>')
+                            $('<span onclick="showJsLov(event)" class="k-textbox k-space-right" style="width: 100%;"><input readonly="readonly" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" class="k-icon k-i-search">&nbsp;</a></span>')
                                     .appendTo(container);
 
                         }

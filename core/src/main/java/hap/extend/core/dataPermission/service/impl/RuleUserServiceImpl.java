@@ -68,7 +68,7 @@ public class RuleUserServiceImpl extends BaseServiceImpl<RuleUser> implements IR
     }
 
     @Override
-    public List<RuleUser> batchUpdate(IRequest request, List<RuleUser> list) {
+    public List<RuleUser> batchUpdateCacheAndDb(IRequest request, List<RuleUser> list) {
         IBaseService<RuleUser> self = ((IBaseService<RuleUser>) AopContext.currentProxy());
         List<RuleUser> addList = new ArrayList<>();
         List<RuleUser> beforeUpdateList = new ArrayList<>();
