@@ -87,6 +87,9 @@ databaseChangeLog(logicalFilePath:"hap/extend/core/db/2017-03-22-init-migration.
             column(name: "ENABLE_FLAG", type: "VARCHAR(2)",defaultValue:"Y", remarks: "Y=启用或者N=不启用") {
                 constraints(nullable: "false")
             }
+            column(name: "ENABLE_JS", type: "VARCHAR(2)",defaultValue:"N", remarks: "Y=启用或者N=不启用N,是否启用个性化js控制") {
+                constraints(nullable: "false")
+            }
 
             column(name:"OBJECT_VERSION_NUMBER",type:"BIGINT",defaultValue: "1")
             column(name: "REQUEST_ID", type: "bigint", defaultValue : "-1")
