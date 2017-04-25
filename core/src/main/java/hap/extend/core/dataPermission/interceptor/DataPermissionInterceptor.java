@@ -199,16 +199,28 @@ public class DataPermissionInterceptor implements Interceptor {
         if(rulesSet.isEmpty()){
             return null;
         }
+        boolean hasRule = false;
         for(String rule : rulesSet){
+            if(isNull(rule) || rule.trim().equals("")){
+                continue;
+            }
             if(isFirst){
                 stringBuilder.append("("+rule+")");
+                hasRule = true;
                 isFirst = false;
                 continue;
             }
             stringBuilder.append(" "+FIELD_SQL_AND+" ("+rule+")");
+            hasRule = true;
         }
         stringBuilder.append(")");
-        return stringBuilder.toString();
+
+        if(hasRule){
+            return stringBuilder.toString();
+        }
+        else {
+            return "";
+        }
     }
 
     /**
