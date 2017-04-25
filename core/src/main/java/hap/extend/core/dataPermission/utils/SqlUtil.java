@@ -29,6 +29,8 @@ public final class SqlUtil {
     public static final String PREFIX_OF_ORACLE_COUNT = "SELECT COUNT(0) FROM (";
     public static final String SURFIX_OF_ORACLE_COUNT = ") TABLE_COUNT";
     public static final String MYSQL_COUNT_SQL_TEMPLATE = "SELECT COUNT(0) FROM (%s)";
+    public static final String WRAP_SELECT_ALL_SQL_TEMPLATE_1 = "SELECT * FROM (%s) DATA_PMS_TEMP WHERE %s";
+    public static final String WRAP_SELECT_ALL_SQL_TEMPLATE_2 = "SELECT * FROM (%s) DATA_PMS_TEMP ";
 
     /**
      * generate new sql with additional Condition
@@ -183,6 +185,17 @@ public final class SqlUtil {
 //            }
 //        }
 
+        /** add to enable wrap select * from() outside source sql*/
+        if(ConfigUtil.enableWrapSqlWithSelectAll){
+            return wrapSqlWithSelectAll(oldSql,conditionSql);
+        }
+        /** add end*/
+
+
+        if("".equals(conditionSql)){
+            return oldSql;
+        }
+
         Select select = (Select) CCJSqlParserUtil.parse(newSql);
         Expression where = ((PlainSelect) select.getSelectBody()).getWhere();
         Expression expression = null;
@@ -221,6 +234,17 @@ public final class SqlUtil {
         if(isNull(conditionSql) || isNull(oldSql)){
             return oldSql;
         }
+
+        /** add to enable wrap select * from() outside source sql*/
+        if(ConfigUtil.enableWrapSqlWithSelectAll){
+            return wrapSqlWithSelectAll(oldSql,conditionSql);
+        }
+        /** add end*/
+
+
+        if("".equals(conditionSql)){
+            return oldSql;
+        }
         String newSql = oldSql.toUpperCase();
 
         Select select = (Select) CCJSqlParserUtil.parse(newSql);
@@ -234,5 +258,16 @@ public final class SqlUtil {
         ((PlainSelect) select.getSelectBody()).setWhere(expression);
 //        logger.info("\nsql with data permission:\n{}\n",select.toString());
         return select.toString();
+    }
+
+    public static String wrapSqlWithSelectAll(final String oldSql, final String conditionSql){
+        if(isNull(conditionSql) || isNull(oldSql)){
+            return oldSql;
+        }
+        if(!"".equals(conditionSql.trim())){
+            return String.format(WRAP_SELECT_ALL_SQL_TEMPLATE_1,oldSql,conditionSql);
+        }else {
+            return String.format(WRAP_SELECT_ALL_SQL_TEMPLATE_2,oldSql);
+        }
     }
 }
