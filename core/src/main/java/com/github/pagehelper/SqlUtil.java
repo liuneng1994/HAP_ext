@@ -239,6 +239,7 @@ public class SqlUtil implements Constant {
             if(!(sqlSource instanceof DynamicSqlSource)) {
                 throw new RuntimeException("无法处理该类型[" + sqlSource.getClass() + "]的SqlSource");
             }
+            //add by yyz
             if( sqlSource instanceof DPDynamicSqlSource){
                 DPDynamicSqlSource temp = (DPDynamicSqlSource)sqlSource;
 //                pageSqlSource = new DPPageDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode(),temp.getTlOfConditionSql(),temp.getTlOfIsCountFlag());
@@ -247,6 +248,7 @@ public class SqlUtil implements Constant {
             }else {
                 pageSqlSource = new PageDynamicSqlSource((DynamicSqlSource)sqlSource);
             }
+            //add end
         }
 
         msObject.setValue("sqlSource", pageSqlSource);
@@ -362,10 +364,10 @@ public class SqlUtil implements Constant {
         MappedStatement ms = (MappedStatement)args[0];
         if(!this.isPageSqlSource(ms)) {
             this.processMappedStatement(ms);
-        }else {
+        }else {//add by yyz
             this.processStatement(ms);
         }
-
+        //add end
         ((PageSqlSource)ms.getSqlSource()).setParser(this.parser);
 
         Page boundSql;
