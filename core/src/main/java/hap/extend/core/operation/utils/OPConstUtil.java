@@ -104,7 +104,7 @@ public final class OPConstUtil {
     public static String generateColumnJsCode(String htmlTagAttr, String htmlTagAttrVal, String hideColumnsIndexArr, String forbidEditColumnsIndexArr){
         String hideJs = generateHideJsFunName(htmlTagAttr,htmlTagAttrVal,hideColumnsIndexArr);
         String forbidEditJs = generateForbidEditJsFunName(htmlTagAttr,htmlTagAttrVal,forbidEditColumnsIndexArr);
-        if(isNull(hideJs) || "".equals(forbidEditJs)){
+        if(isNull(hideJs) || "".equals(hideJs)){
             if(isNotNull(forbidEditJs) && !"".equals(forbidEditJs)){
                 return forbidEditJs+";";
             }

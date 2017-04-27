@@ -33,23 +33,6 @@ public class DPDynamicSqlSource extends DynamicSqlSource {
         this.rootSqlNode = rootSqlNode;
         this.tlOfConditionSql = threadLocal;
         this.tlOfIsCountFlag = tlOfIsCountFlag;
-//        DynamicContext context = new DynamicContext(this.configuration, parameterObj);
-//        context.appendSql("<where> "+ threadLocal.get()+" </where>");//TODO 关键 ===================================
-//        this.rootSqlNode.apply(context);
-//        BoundSql boundSql = super.getBoundSql(parameterObj);
-//        String sql = boundSql.getSql();//old sql
-//        if(isNotNull(threadLocal) && isNotNull(threadLocal.get())){
-//            String newSql = null;
-//            try {
-//                newSql = SqlUtil.addConditionToSql(sql, threadLocal.get(),tlOfIsCountFlag.get());
-//                newSql = replaceLimit(newSql);
-//            } catch (JSQLParserException e) {
-//                e.printStackTrace();
-//                logger.error(e.getMessage(),e);
-//            }
-//            MetaObject metaObject = SystemMetaObject.forObject(boundSql);
-//            metaObject.setValue("sql", newSql);
-//        }
     }
 
     @Override
