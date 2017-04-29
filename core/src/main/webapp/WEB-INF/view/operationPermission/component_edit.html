@@ -9,16 +9,20 @@
         <div class="panel">
             <form class="form-horizontal">
                 <div class="panel-body col-sm-offset-0">
-                    <div class="col-sm-3">
+                    <div class="col-sm-3 col-lg-3 col-md-3">
                         <div class="form-group">
-                            <label style="width: 20%"><@spring.message "hap_extend.op_permission.name"/></label>
-                            <input type="text" style="width:70%" data-bind="value:model.componentName">
+                            <label class="col-sm-4 col-lg-4 col-md-4 control-label"><@spring.message "hap_extend.op_permission.name"/></label>
+                            <div class="col-sm-8 col-lg-8 col-md-8">
+                                <input type="text" style="width:100%" data-bind="value:model.componentName" class="k-textbox">
+                            </div>
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3 col-lg-3 col-md-3">
                         <div class="form-group">
-                            <label style="width: 20%"><@spring.message "hap_extend.op_permission.description"/></label>
-                            <input type="text" style="width:70%" data-bind="value:model.description">
+                            <label class="col-sm-4 col-lg-4 col-md-4 control-label"><@spring.message "hap_extend.op_permission.description"/></label>
+                            <div class="col-sm-8 col-lg-8 col-md-8">
+                                <input type="text" style="width:100%" data-bind="value:model.description" class="k-textbox">
+                            </div>
                         </div>
                     </div>
 
@@ -40,6 +44,7 @@
                     <div style="clear:both">
                         <div id="components_grid" style="clear:both"></div>
                     </div>
+                    <div id="maintainColumnWin_divId" style="clear:both"></div>
                 </div>
             </div>
         </div>
@@ -75,9 +80,6 @@
     });
     kendo.bind($('#toolbar-btn'), viewModel);
     kendo.bind($('#page-content'),viewModel);
-
-    //页面局部变量
-    var thisRowData;
 
     //Grid行中的删除事件处理函数
     //参数：grid_div_id是kendoGrid那个div的id值;e:click事件
@@ -165,8 +167,8 @@
                         htmlTagAttrVal:{type: 'string',validation: { required: true,
                             htmltagattrvalvalidation: function (input) {
                                 if (input.is("[name='htmlTagAttrVal']") && input.val() != "") {
-                                    input.attr("data-htmltagattrvalvalidation-msg", "需要以字母开头，由数字和字母构成");
-                                    return /^[A-Za-z][A-Za-z0-9]*$/.test(input.val());
+                                    input.attr("data-htmltagattrvalvalidation-msg", "需要以字母开头，由字母、数字、下划线构成");
+                                    return /^[A-Za-z_][A-Za-z0-9_]*$/.test(input.val());
                                 }
                                 return true;
                             }
@@ -189,8 +191,8 @@
         columns: [
             {
                 field: "level",
-//                title: '<@spring.message "hap_extend.op_permission.grid_title.name"/>',
-                title: '类别',
+                title: '<@spring.message "hap_extend.op_permission.grid_title.level"/>',
+//                title: '类别',
                 width: 80,
                 template: function (dataItem) {
                     return Hap.getCodeMeaning(level_dataSource, dataItem.level)
@@ -214,8 +216,8 @@
             },
             {
                 field: "componentType",
-//                title: '<@spring.message "hap_extend.op_permission.grid_title.name"/>',
-                title: '具体类型',
+                title: '<@spring.message "hap_extend.op_permission.grid_title.component_type"/>',
+//                title: '具体类型',
                 width: 80
             },
             {
@@ -225,8 +227,8 @@
             },
             {
                 field: "htmlTagAttr",
-//                title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
-                title: 'HTML标签属性',
+                title: '<@spring.message "hap_extend.op_permission.grid_title.html_tag_attr"/>',
+//                title: 'HTML标签属性',
                 width: 80,
                 template: function (dataItem) {
                     return Hap.getCodeMeaning(htmlTagAttr_dataSource, dataItem.htmlTagAttr)
@@ -243,26 +245,33 @@
             },
             {
                 field: "htmlTagAttrVal",
-//                title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
-                title: 'HTML标签属性值',
+                title: '<@spring.message "hap_extend.op_permission.grid_title.html_tag_attr_val"/>',
+//                title: 'HTML标签属性值',
                 width: 80
             },
             {
                 field: "description",
                 title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
                 width: 80
+            },//TODO 列维护---对应于表格的情况
+            {
+                attributes: {style: "text-align:center;padding:0px"},
+                'field': '',
+                'title':'<@spring.message "hap_extend.data_permission.grid_title.column_maintain"/>',
+                'width': 40,
+                template: function (rowData) {
+                    if(!!rowData["componentId"] && "grid"===rowData["componentType"]){
+                        parameter_componentId = rowData["componentId"];
+                        return '<a class="btn btn-success" onclick="showMaintainColumnWin(parameter_componentId)"><@spring.message "hap_extend.data_permission.grid_title.column_maintain"/></a>';
+                    }
+                    return '<a class="btn btn-success" disabled="disabled"><@spring.message "hap_extend.data_permission.grid_title.column_maintain"/></a>';
+                }
             },
-//            {
-//                attributes: {style: "text-align:center;"},
-//                'field': 'enableFlag',
-//                'title':'<@spring.message "hap_extend.data_permission.rule.title_rule_enable"/>',
-//                'width': 30
-//            },
             {
                 attributes: {style: "text-align:center;padding:0px"},
                 field : "",
                 title : '<@spring.message "hap_extend.op_permission.grid_title.op"/>',
-                width : 50,
+                width : 40,
                 template: function (rowData) {
                     if(!!rowData["componentId"]){
                         parameter = "components_grid";
@@ -273,8 +282,23 @@
             }
         ]
     });
+    Hap.autoResizeGrid("#components_grid");
 
+
+    function showMaintainColumnWin(param_componentId) {
+        $("#maintainColumnWin_divId").kendoWindow(
+            {
+                actions : ["Close" ],
+                width : 600,
+                height : 450,
+                title : '<@spring.message "hap_extend.data_permission.grid_title.column_maintain"/>',
+                visible : false,
+                iframe : true,
+                modal: true,
+                content : 'cpn_gridColumn_edit.html?componentId_param='
+                + param_componentId
+            }).data("kendoWindow").center().open();
+    }
 </script>
-<div>
 </body>
 </html>

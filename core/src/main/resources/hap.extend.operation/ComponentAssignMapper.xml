@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hap.extend.core.operation.mapper.ComponentAssignMapper" >
+    <resultMap id="BaseResultMap" type="hap.extend.core.operation.dto.ComponentAssign" extends="com.hand.hap.mapper.StdMapper.STD" >
+        <id column="COMPONENT_ASSIGN_ID" property="cpnAssignId"/>
+        <result column="ASSIGN_ID" property="assignId"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="ENABLE_FLAG" property="enableFlag"/>
+        <result column="COMPONENT_ID" property="componentId"/>
+        <result column="COMPONENT_NAME" property="componentName"/>
+        <result column="DISPLAY" property="display"/>
+        <result column="REQUIRED" property="require"/>
+        <result column="READ_ONLY" property="readonly"/>
+        <result column="DISABLE" property="disable"/>
+        <result column="COMPONENT_TYPE" property="componentType"/>
+    </resultMap>
+
+    <select id="selectByComponentAssign" resultMap="BaseResultMap">
+        SELECT assign.*,cpn.COMPONENT_NAME AS COMPONENT_NAME,cpn.COMPONENT_TYPE AS COMPONENT_TYPE
+        FROM HCOM_RES_COMPONENT_ASSIGN assign JOIN HCOM_RES_COMPONENT cpn ON assign.COMPONENT_ID=cpn.COMPONENT_ID
+        <where>
+            <if test="assignId != null and assignId>0">
+                and assign.ASSIGN_ID = #{assignId,jdbcType=DECIMAL}
+            </if>
+            <if test="componentName != null">
+                <bind name="pattern_componentName" value="'%' + _parameter.componentName + '%'" />
+                AND cpn.COMPONENT_NAME like #{pattern_componentName}
+            </if>
+            <if test="description != null">
+                <bind name="pattern_description" value="'%' + _parameter.description + '%'" />
+                AND assign.DESCRIPTION like #{pattern_description}
+            </if>
+        </where>
+    </select>
+</mapper>

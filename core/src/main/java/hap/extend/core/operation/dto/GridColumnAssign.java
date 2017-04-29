@@ -6,36 +6,33 @@ import com.hand.hap.system.dto.BaseDTO;
 import javax.persistence.*;
 
 /**
- * mount component to page;<br><br>
- *
- * Created by yyz on 2017/3/10.
- *
- * @author yazheng.yang@hand-china.com
+ * Created by yyz on 17/4/1.
  */
-@Table(name = "HCOM_RES_COMPONENT_ASSIGN")
-public class ComponentAssign extends BaseDTO {
+@Table(name = "HCOM_RES_COLUMN_ASSIGN")
+public class GridColumnAssign extends BaseDTO {
 
     @Id
     @GeneratedValue(generator = GENERATOR_TYPE)
-    @Column(name = "COMPONENT_ASSIGN_ID")
+    @Column(name = "COLUMN_ASSIGN_ID")
+    private Long columnAssignId;
+
+    @Column(name = "COMPONENT_ASSIGN_ID",nullable = false)
     private Long cpnAssignId;
 
-    @Column(name = "ASSIGN_ID",nullable = false)
-    private Long assignId;
+    @Column(name = "CPN_COLUMN_ID")
+    private Long columnId;
 
-    @Column(name = "COMPONENT_ID",nullable = false)
-    private Long componentId;
 
     @Column(name = "DISPLAY",nullable = false)
     private String display;
 
-    @Column(name = "REQUIRED",nullable = false)
+    @Column(name = "REQUIRED")
     private String require;
 
     @Column(name = "READ_ONLY",nullable = false)
     private String readonly;
 
-    @Column(name = "DISABLE",nullable = false)
+    @Column(name = "DISABLE")
     private String disable;
 
     @Column(name = "DESCRIPTION")
@@ -47,10 +44,18 @@ public class ComponentAssign extends BaseDTO {
     private String enableFlag;
 
     @Transient
-    private String componentName;
+    private String columnName;
     @Transient
-    private String componentType;
+    private Long columnIndex;
 
+
+    public Long getColumnAssignId() {
+        return columnAssignId;
+    }
+
+    public void setColumnAssignId(Long columnAssignId) {
+        this.columnAssignId = columnAssignId;
+    }
 
     public Long getCpnAssignId() {
         return cpnAssignId;
@@ -58,22 +63,6 @@ public class ComponentAssign extends BaseDTO {
 
     public void setCpnAssignId(Long cpnAssignId) {
         this.cpnAssignId = cpnAssignId;
-    }
-
-    public Long getAssignId() {
-        return assignId;
-    }
-
-    public void setAssignId(Long assignId) {
-        this.assignId = assignId;
-    }
-
-    public Long getComponentId() {
-        return componentId;
-    }
-
-    public void setComponentId(Long componentId) {
-        this.componentId = componentId;
     }
 
     public String getDisplay() {
@@ -124,19 +113,27 @@ public class ComponentAssign extends BaseDTO {
         this.enableFlag = enableFlag;
     }
 
-    public String getComponentName() {
-        return componentName;
+    public String getColumnName() {
+        return columnName;
     }
 
-    public void setComponentName(String componentName) {
-        this.componentName = componentName;
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
     }
 
-    public String getComponentType() {
-        return componentType;
+    public Long getColumnId() {
+        return columnId;
     }
 
-    public void setComponentType(String componentType) {
-        this.componentType = componentType;
+    public void setColumnId(Long columnId) {
+        this.columnId = columnId;
+    }
+
+    public Long getColumnIndex() {
+        return columnIndex;
+    }
+
+    public void setColumnIndex(Long columnIndex) {
+        this.columnIndex = columnIndex;
     }
 }

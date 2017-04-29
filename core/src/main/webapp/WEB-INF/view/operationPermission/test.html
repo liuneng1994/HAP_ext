@@ -6,59 +6,63 @@
 <!--关于预先提供的部分js函数封装的说明：这部分函数封装主要是适用于规范的hap开发过程中，
 grid中约定使用情况下的处理，对于不同的项目可以参照着实现；
 这一部分的代码不一定适用于所有项目-->
+<script src="${base.contextPath}/resources/js/operationPermission/apply_op_permission.js" charset="UTF-8"></script>
+
+
 <div>
     <div id="content-container">
         <div id="page-content">
             <div class="panel" id="demo">
-                <form class="form-horizontal" id="query-form">
-                    <div class="panel-body col-sm-offset-0">
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <input id="lov" name="lov" placeholder="选择目标用户" data-bind="value:data.userId,text:data.userName" style="width: 250px" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel-footer text-right">
-                        <span class="btn btn-success" data-bind="click:switchUserFunction" type="submit">切换</span>
-                    </div>
-                </form>
+                <!--<form class="form-horizontal" id="query-form">-->
+                    <!--<div class="panel-body col-sm-offset-0">-->
+                        <!--<div class="col-sm-3">-->
+                            <!--<div class="form-group">-->
+                                <!--<input id="lov" name="lov" placeholder="选择目标用户" data-bind="value:data.userId,text:data.userName" style="width: 250px" />-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="panel-footer text-right">-->
+                        <!--<span class="btn btn-success" data-bind="click:switchUserFunction" type="submit">切换</span>-->
+                    <!--</div>-->
+                <!--</form>-->
             </div>
         </div>
-        <div id="grid"></div>
         <div>
             <span id="btn_test" class="btn btn-success">测试按钮</span>
-            <span class="btn btn-success" onclick="hideColumn_1()">隐藏列</span>
+            <span id="btn_hideColumn" class="btn btn-success" onclick="hideColumn_1()">隐藏列</span>
+            <span id="btn_create" class="btn btn-success">新建</span>
         </div>
+        <div id="grid"></div>
     </div>
 </div>
 <script>
     var baseUrl_switchUser = "${base.contextPath}/switch_user/";
     var viewModel = kendo.observable({
         data:{},
-        switchUserFunction:function () {
-            var userId = viewModel.data.userId;
-            if(userId>0){
-                var parameterMap = {targetUserId: userId};
-                $.ajax({
-                    type: 'POST',
-                    url: baseUrl_switchUser+"switch_to" ,
-                    data: parameterMap,
-                    success: function (data) {
-                        if(data.success){
-                            console.log("success");
-                            window.parent.location.reload(true);
-                        }
-                    },
-                    async:true,
-                    dataType: "json"
-                });
-            }else {
-                kendo.ui.showWarningDialog({
-                    title: $l('hap.tip.info'),
-                    message: "请先选择要切换的用户"
-                });
-            }
-        }
+//        switchUserFunction:function () {
+//            var userId = viewModel.data.userId;
+//            if(userId>0){
+//                var parameterMap = {targetUserId: userId};
+//                $.ajax({
+//                    type: 'POST',
+//                    url: baseUrl_switchUser+"switch_to" ,
+//                    data: parameterMap,
+//                    success: function (data) {
+//                        if(data.success){
+//                            console.log("success");
+//                            window.parent.location.reload(true);
+//                        }
+//                    },
+//                    async:true,
+//                    dataType: "json"
+//                });
+//            }else {
+//                kendo.ui.showWarningDialog({
+//                    title: $l('hap.tip.info'),
+//                    message: "请先选择要切换的用户"
+//                });
+//            }
+//        }
     });
     var constData = {'rows':[
         {employeeCode:1,employeeName:'jone',gender:'M',birthday:'2016-01-01'},
@@ -97,8 +101,8 @@ grid中约定使用情况下的处理，对于不同的项目可以参照着实�
         rownumber: true,
         editable:true,
         edit:function (e) {
-            console.log(e);
-            console.log(e.model);
+//            console.log(e);
+//            console.log(e.model);
             window.parent.myEvent = e;
             //通过e.container[0].cellIndex获取列的下标，
             //通过e.container.children().attr("readonly","readonly")设置为只读，无法编辑
@@ -155,7 +159,7 @@ grid中约定使用情况下的处理，对于不同的项目可以参照着实�
 
 
 
-    $("#lov").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "user_lov")});
+//    $("#lov").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "user_lov")});
     kendo.bind($('#demo'), viewModel);
 
     function hideColumn_1() {
@@ -168,7 +172,7 @@ grid中约定使用情况下的处理，对于不同的项目可以参照着实�
     }
     //$("#"+_gridDivId).data("kendoGrid").dataSource.options.fields可以获取全部field，包括自动行号
 </script>
-<script src="${base.contextPath}/resources/js/operationPermission/apply_op_permission.js" charset="UTF-8"></script>
+
 
 </body>
 </html>

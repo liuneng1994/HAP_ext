@@ -45,19 +45,19 @@ public class MapperMethodController extends BaseController{
     @RequestMapping(value = "submit", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData createMapperMethods(@RequestBody List<MapperMethod> mapperMethodList, BindingResult result, HttpServletRequest request){
-        return new ResponseData(mapperMethodService.batchUpdate(createRequestContext(request), mapperMethodList));
+        return new ResponseData(mapperMethodService.batchUpdateCacheAndDb(createRequestContext(request), mapperMethodList));
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData deleteMapperMethods(@RequestBody List<MapperMethod> mapperMethodList, BindingResult result, HttpServletRequest request) throws Exception {
-        return new ResponseData(mapperMethodService.batchUpdate(createRequestContext(request), mapperMethodList));
+        return new ResponseData(mapperMethodService.batchUpdateCacheAndDb(createRequestContext(request), mapperMethodList));
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateMapperMethods(@RequestBody List<MapperMethod> mapperMethodList, BindingResult result, HttpServletRequest request) throws Exception {
-        return new ResponseData(mapperMethodService.batchUpdate(createRequestContext(request), mapperMethodList));
+        return new ResponseData(mapperMethodService.batchUpdateCacheAndDb(createRequestContext(request), mapperMethodList));
     }
 
     private String returnNullIfEmpty(String source){

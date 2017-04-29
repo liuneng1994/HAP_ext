@@ -1,0 +1,344 @@
+<#--
+* description: 页面组件grid表格的column权限分配管理界面
+* version: 1.0
+* -->
+<#include "../include/header.html">
+<body>
+<div>
+    <div id="content-container">
+        <div id="theme-content">
+            <div id="page-content" style="clear:both">
+                <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+                    <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+                    <span class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
+                    <span class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hap.cancel"/></span>
+                </div>
+                <div style="clear:both">
+                    <div id="assignGridColumnListGrid" style="clear: both"></div>
+                </div>
+
+            </div>
+        </div>
+        <div id="gridColumnSelectWindow"></div>
+        <script type="text/x-kendo-template" id="gridColumnSelectWin_template">
+            <div id="details-container">
+                <div id="selectJs-content">
+                    <div class="pull-right" id="themesNotInThemeGroup_form" style="padding-bottom:10px;">
+                        <input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='列名称' data-bind="value:model.columnName" class="k-textbox">
+                        <span class="btn btn-primary" style="float:left;width:70px;margin-right:5px;" data-bind="click:queryFunction" type="submit"><@spring.message "hap.query"/></span>
+                        <span class="btn btn-default" style="float:left;width:70px"  data-bind="click:resetForm" type="button"><@spring.message "hap.reset"/></span>
+                        <div style="clear:both"></div>
+                    </div>
+                    <div style="clear:both">
+                        <div id="gridColumnSelect_grid" style="clear: both"></div>
+                    </div>
+                </div>
+            </div>
+        </script>
+    </div>
+    <script type="text/javascript">
+        var baseUrl = "${base.contextPath}/hap_extend/operation_permission/grid_column_assign/";
+        var assignedGridColumn_data;
+        //获取传递过来的数据
+        var componentId_param = "${RequestParameters.componentId}";
+        var cpnAssignId_param = "${RequestParameters.cpnAssignId}";
+        var gridColumnSelectWin = $("#gridColumnSelectWindow").kendoWindow({
+                title: 'SELECT COLUMN',
+                modal: true,
+                visible: false,
+                resizable: true,
+                actions : [ "Maximize", "Minimize", "Close"],
+                width: 600,
+                height:400
+            }).data("kendoWindow");
+        var gridColumnSelectWinTemplate = kendo.template($("#gridColumnSelectWin_template").html());
+
+        var viewModel = kendo.observable({
+            model : {
+                componentId:componentId_param,
+                cpnAssignId:cpnAssignId_param
+            },
+            createFunction: function(){
+                $('#assignGridColumnListGrid').data('kendoGrid').addRow();
+            },
+            saveFunction: function(){
+                $('#assignGridColumnListGrid').data('kendoGrid').dataSource.sync();
+            },
+            cancelFunction: function(e){
+                $('#assignGridColumnListGrid').data('kendoGrid').cancelChanges();
+            },
+            queryFunction: function(e) {
+                $('#assignGridColumnListGrid').data('kendoGrid').dataSource.page(1);
+            },
+            resetForm : function(e) {
+                var formData = viewModel.model.toJSON();
+                for ( var k in formData) {
+                    if(k==="cpnAssignId" || k==="componentId"){
+                        continue;
+                    }else {
+                        viewModel.model.set(k, null);
+                    }
+                }
+            }
+        });
+        kendo.bind($('#toolbar-btn'), viewModel);
+
+        $(document).ready(function () {
+            assignedGridColumn_data = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: baseUrl+"query",
+                        type: "POST",
+                        dataType: "json"
+                    },
+                    update: {
+                        url: baseUrl + "update",
+                        type : 'POST',
+                        dataType: "json",
+                        contentType:"application/json"
+                    },
+                    create: {
+                        url: baseUrl+'submit',
+                        type : 'POST',
+                        dataType: "json",
+                        contentType:"application/json"
+                    },
+                    destroy:{
+                        url: baseUrl+'remove',
+                        type : 'POST',
+                        dataType: "json",
+                        contentType:"application/json"
+                    },
+                    parameterMap: function(options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return kendo.stringify(Hap.prepareSubmitParameter(options, operation));
+                        } else if (operation === "read") {
+                            return Hap.prepareQueryParameter(viewModel.model.toJSON(), options)
+                        }
+                    }
+                },
+                batch: true,
+                serverPaging : true,
+                pageSize: 10,
+                schema: {
+                    data:'rows',
+                    total:'total',
+                    model: {
+                        id: 'columnAssignId',
+                        fields: {
+                            cpnAssignId: { type: 'int',defaultValue:cpnAssignId_param },
+                            columnId: { type: 'int',validation: { required: true, nullable: false } },
+                            display:{defaultValue:'Y',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'},
+                            require:{defaultValue:'N',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'},
+                            readonly:{defaultValue:'N',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'},
+                            disable:{defaultValue:'N',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'},
+                            enableFlag:{defaultValue:'Y',checkedValue:'Y',uncheckedValue:'N',type: 'boolean'},
+                            columnName: { type: 'string' },
+                            description: { type: 'string' }
+                        }
+                    }
+                }
+            });
+
+            var grid = $("#assignGridColumnListGrid").kendoGrid({
+                dataSource: assignedGridColumn_data,
+                resizable: true,
+                selectable: "multiple",
+                scrollable: true,
+                pageable: {
+                    pageSizes: [10, 20, 50, 100],
+                    refresh: true,
+                    buttonCount: 10
+                },
+                columns:
+                    [
+                        {
+                            'field': 'columnId',
+                            'title':'<@spring.message "hap_extend.op_permission.grid_title.name"/>',
+                            'width': 100,
+                            template: function (dataItem) {
+                                return dataItem['columnName'] || ''
+                            },
+                            editor: function (container, options) {
+                                $('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly="readonly" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="showGridColumnLov(event)" class="k-icon k-i-search">&nbsp;</a></span>')
+                                    .appendTo(container);
+
+                            }
+                        },
+                        {
+                            'field':'description',
+                            'title': '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
+                            'width':100
+                        },
+                        {
+                            attributes: {style: "text-align:center;"},
+                            'field': 'display',
+                            'title':'<@spring.message "hap_extend.op_permission.assign_cpn.title_display"/>',
+                            'width': 30
+                        },
+//                        {
+//                            attributes: {style: "text-align:center;"},
+//                            'field': 'require',
+//                            'title':'<@spring.message "hap_extend.op_permission.assign_cpn.title_require"/>',
+//                            'width': 30
+//                        },
+                        {
+                            attributes: {style: "text-align:center;"},
+                            'field': 'readonly',
+                            'title':'<@spring.message "hap_extend.op_permission.assign_cpn.title_readonly"/>',
+                            'width': 30
+                        },
+//                        {
+//                            attributes: {style: "text-align:center;"},
+//                            'field': 'disable',
+//                            'title':'<@spring.message "hap_extend.op_permission.assign_cpn.title_disable"/>',
+//                            'width': 30
+//                        },
+                        {
+                            attributes: {style: "text-align:center;"},
+                            'field': 'enableFlag',
+                            'title':'<@spring.message "hap_extend.data_permission.rule.title_rule_enable"/>',
+                            'width': 30
+                        },
+                        {
+                            attributes: {style: "text-align:center;padding:0px"},
+                            title: '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
+                            command : [{
+                                name:'remove',
+                                template : function (rowData) {
+                                    return '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>';
+                                },
+                                click: function(e){
+                                    var th = this;
+                                    e.preventDefault();
+                                    kendo.ui.showConfirmDialog({
+                                        title:$l('hap.tip.info'),
+                                        message: $l('hap.tip.delete_confirm')
+                                    }).done(function(event){
+                                        if(event.button == 'OK'){
+                                            var data = th.dataItem($(e.target).closest("tr"));
+                                            th.dataSource.remove(data);
+                                            th.dataSource.sync();
+                                        }
+                                    })
+                                }
+                            }],
+                            width:30
+                        }
+                    ],
+                editable: true
+            });
+            kendo.bind($('#theme-content'),viewModel);
+        });
+
+        function showGridColumnLov(event) {
+            var rowData = $("#assignGridColumnListGrid").data("kendoGrid").dataItem($(event.target).closest("tr"));
+            gridColumnSelectWin.content(gridColumnSelectWinTemplate);
+            gridColumnSelectWin.center().open();
+            var gridColumnSelect_viewModel = kendo.observable({
+                model : {
+                    columnName:'',
+                    componentId:componentId_param
+                },
+                queryFunction: function(e) {
+                    $('#gridColumnSelect_grid').data('kendoGrid').dataSource.page(1);
+                },
+                resetForm : function(e) {
+                    var formData = gridColumnSelect_viewModel.model.toJSON();
+                    for ( var k in formData) {
+                        if(k==="componentId"){
+                            continue;
+                        }else {
+                            gridColumnSelect_viewModel.model.set(k, null);
+                        }
+                    }
+                }
+            });
+            var gridColumnToSelect_data = new kendo.data.DataSource({
+                transport: {
+                    read:  {
+                        url: "${base.contextPath}/hap_extend/operation_permission/grid_column/query",
+                        type : 'POST',
+                        dataType: "json"
+                    },
+                    parameterMap: function(options, operation) {
+                        if (operation === "read") {
+                            var model = gridColumnSelect_viewModel.model;
+                            if(!model.columnName){
+                                model.columnName='';
+                            }
+                            if(!model.description){
+                                model.description='';
+                            }
+
+                            var map = {componentId:componentId_param,columnName:model.columnName};
+                            if (options.page)
+                                map.page = options.page;
+                            if (options.pageSize)
+                                map.pageSize = options.pageSize;
+                            for(var k in map){
+                                if(map[k]==='')delete map[k]
+                            }
+                            return map;
+                        }
+                    }
+                },
+                batch: true,
+                serverPaging : true,
+                pageSize: 10,
+                schema: {
+                    data:'rows',
+                    total:'total',
+                    model: {
+                        id: 'columnId',
+                        fields: {
+                            name: {
+                                type: 'string'
+                            },
+                            index:{type:'number'}
+                        }
+                    }
+                }
+            });
+            $("#gridColumnSelect_grid").kendoGrid({
+                dataSource: gridColumnToSelect_data,
+                resizable: true,
+                selectable: "multiple",
+                scrollable: true,
+                columnMenu: true,
+                reorderable: true,
+                pageable: {
+                    pageSizes:[10, 20, 50, 100],
+                    refresh:true,
+                    buttonCount:10
+                },
+                columns:
+                    [
+                        {
+                            'field': 'name',
+                            'title': '<@spring.message "hap_extend.op_permission.grid_title.name"/>',
+                            'width': "100px"
+                        },
+                        {
+                            'field': 'index',
+                            'title': '<@spring.message "hap_extend.op_permission.grid_title.description"/>',
+                            'width': "100px"
+                        }
+                    ],
+                editable: false
+            });
+            $("#gridColumnSelect_grid").on("dblclick", "tr", function (e) {
+                e.preventDefault();
+                var firstRow = $("#gridColumnSelect_grid").data("kendoGrid").selectedDataItems()[0];
+                rowData.set("columnId",firstRow.columnId);
+                rowData.set("columnName",firstRow.name);
+                rowData.set("index",firstRow.index);
+                gridColumnSelectWin.close();
+            });
+            kendo.bind($('#selectJs-content'),gridColumnSelect_viewModel);
+        }
+
+    </script>
+</div>
+</body>
+</html>

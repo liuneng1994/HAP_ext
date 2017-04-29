@@ -17,6 +17,7 @@ import org.apache.ibatis.session.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
+
 import static hap.extend.core.dataPermission.utils.LangUtils.isNull;
 
 /**
@@ -32,11 +33,11 @@ public final class SqlSourceUtil {
      * 不同的sql source不同的处理模式.
      * @param sqlSource
      * @param conditionSql
-//     * @param parameterObject 查询参数对象，一般是dto，这个对象的拦截器的注解上已经注入了（实际上是query方法的第二个参数）
+     * @param parameterObject 查询参数对象，一般是dto，这个对象的拦截器的注解上已经注入了（实际上是query方法的第二个参数）
      * @return
      * @throws JSQLParserException
      */
-    public static SqlSource covertSqlSource(SqlSource sqlSource, String conditionSql,ThreadLocal<String> threadLocal) throws JSQLParserException {
+    public static SqlSource covertSqlSource(SqlSource sqlSource, String conditionSql, Object parameterObject, ThreadLocal<String> threadLocal, ThreadLocal<Boolean> tlOfIsCountFlag) throws JSQLParserException {
         if(isNull(sqlSource)){
             return sqlSource;
         }
@@ -48,7 +49,7 @@ public final class SqlSourceUtil {
             StaticSqlSource staticSqlSource = (StaticSqlSource) metaObject.getValue("sqlSource");
             MetaObject metaObject2 = SystemMetaObject.forObject(staticSqlSource);
             String oldSql = (String) metaObject2.getValue("sql");
-            String newSql = SqlUtil.addConditionToSql(oldSql,conditionSql);
+            String newSql = SqlUtil.addConditionToSql(oldSql,conditionSql,tlOfIsCountFlag.get());
             // 替换新的SQL
             Configuration configuration = (Configuration) metaObject2.getValue("configuration");
             List<ParameterMapping> parameterMappings = (List<ParameterMapping>) metaObject2
@@ -63,13 +64,14 @@ public final class SqlSourceUtil {
             Configuration configuration = (Configuration) metaObject2.getValue("configuration");
             SqlNode rootSqlNode = (SqlNode) metaObject2.getValue("rootSqlNode");
             // 替换新的sql源
-            DPDynamicSqlSource vpdDynamicSqlSource = new DPDynamicSqlSource(configuration, rootSqlNode, conditionSql, threadLocal);
+//            DPDynamicSqlSource vpdDynamicSqlSource = new DPDynamicSqlSource(configuration, rootSqlNode, parameterObject, threadLocal, tlOfIsCountFlag);
+            DPDynamicSqlSource vpdDynamicSqlSource = new DPDynamicSqlSource(configuration, rootSqlNode, parameterObject);
             result = vpdDynamicSqlSource;
         } else if (sqlSource instanceof StaticSqlSource || sqlSource instanceof OrderByStaticSqlSource
                 || sqlSource instanceof PageStaticSqlSource) {
             MetaObject metaObject = SystemMetaObject.forObject(sqlSource);
             String oldSql = (String) metaObject.getValue("sql");//old sql
-            String newSql = SqlUtil.addConditionToSql(oldSql,conditionSql);
+            String newSql = SqlUtil.addConditionToSql(oldSql,conditionSql,tlOfIsCountFlag.get());
             // 替换新的sql
             metaObject.setValue("sql", newSql);
 
@@ -79,7 +81,7 @@ public final class SqlSourceUtil {
             PageStaticSqlSource pageStaticSqlSource = (PageStaticSqlSource) metaObject.getValue("sqlSource");
             MetaObject metaObject2 = SystemMetaObject.forObject(pageStaticSqlSource);
             String oldSql = (String) metaObject2.getValue("sql");//old sql
-            String newSql = SqlUtil.addConditionToSql(oldSql,conditionSql);
+            String newSql = SqlUtil.addConditionToSql(oldSql,conditionSql,tlOfIsCountFlag.get());
             //直接替换
             metaObject2.setValue("sql", newSql);
 
@@ -88,8 +90,12 @@ public final class SqlSourceUtil {
             MetaObject metaObject2 = SystemMetaObject.forObject(sqlSource);
             Configuration configuration = (Configuration) metaObject2.getValue("configuration");
             SqlNode rootSqlNode = (SqlNode) metaObject2.getValue("rootSqlNode");
-            DPPageDynamicSqlSource vpdPageDynamicSqlSource = new DPPageDynamicSqlSource(
-                    configuration, rootSqlNode, conditionSql,threadLocal);
+//            DPPageDynamicSqlSource vpdPageDynamicSqlSource = new DPPageDynamicSqlSource(
+//                    configuration, rootSqlNode,threadLocal, tlOfIsCountFlag);
+//            NewDPDynamicSqlSource vpdPageDynamicSqlSource = new NewDPDynamicSqlSource(
+//                    configuration, rootSqlNode,conditionSql);
+            NewDPDynamicSqlSource vpdPageDynamicSqlSource = new NewDPDynamicSqlSource(
+                    configuration, rootSqlNode);
             result = vpdPageDynamicSqlSource;
         }
         if (logger.isInfoEnabled()) {

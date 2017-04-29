@@ -88,6 +88,12 @@
         <property name="loadOnStartUp" value="true"/>
         <property name="sqlId" value="com.hand.hap.function.mapper.FunctionMapper.selectForCache"/>
     </bean>
+    <bean id="resourceItemCache" class="com.hand.hap.cache.impl.ResourceItemCache">
+        <property name="name" value="resource_item"/>
+    </bean>
+    <bean id="roleResourceItemCache" class="com.hand.hap.cache.impl.RoleResourceItemCache">
+        <property name="name" value="role_resource_item"/>
+    </bean>
     <bean id="resourceCustomizationCache" class="com.hand.hap.cache.impl.ResourceCustomizationCache">
         <property name="name" value="resource_customization"/>
     </bean>
@@ -130,6 +136,8 @@
                 <ref bean="lovCache"/>
                 <ref bean="codeCache"/>
                 <ref bean="resourceCustomizationCache"/>
+                <ref bean="resourceItemCache"/>
+                <ref bean="roleResourceItemCache"/>
 
                 <!--add by yyz -->
                 <ref bean="hap_extend_rules"/>

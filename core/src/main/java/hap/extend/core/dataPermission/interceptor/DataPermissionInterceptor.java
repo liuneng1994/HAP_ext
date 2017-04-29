@@ -6,7 +6,6 @@ import com.hand.hap.cache.Cache;
 import com.hand.hap.cache.CacheManager;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.core.impl.RequestHelper;
-import org.apache.commons.collections.list.TransformedList;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
@@ -45,6 +44,8 @@ public class DataPermissionInterceptor implements Interceptor {
     private Cache<String> ruleUserMappingCache;
     private Cache<String> rulesCache;
 
+    private static final ThreadLocal<String> conditionSqlThisThread = new ThreadLocal<>();
+
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         IRequest request = RequestHelper.getCurrentRequest(true);
@@ -55,8 +56,10 @@ public class DataPermissionInterceptor implements Interceptor {
         }
         final Object[] args = invocation.getArgs();
         MappedStatement statement = (MappedStatement) args[0];//在当前类的开头使用注解规定需要注入的参数
+        SqlSource sqlSource = statement.getSqlSource();
         String sqlId = statement.getId();
         logger.info("\ndata permission:is going to handle(userId,roleId,sqlId)=({},{},{})\n",userId_L,roleId_L,sqlId);
+        boolean isCountFlag = isPrePagingMethod(sqlId);
         sqlId = extractMapperMethod(sqlId);
         initCacheObj();
         if(isNull(ruleIdsOfMethodMappingCache) || isNull(ruleUserMappingCache) || isNull(rulesCache)){
@@ -112,19 +115,12 @@ public class DataPermissionInterceptor implements Interceptor {
         String conditionSql = handleRuleList(userId_L.toString(), roleId_L.toString(), filteredRuleKeys, rulesCache);
         /** 应用customize 插件*/
         conditionSql = handlePlugin(conditionSql);
-//        if(isNull(conditionSql)){//now null has special meaning
-//            conditionSql="";
-//            return jumpIntercept(invocation);
-//        }
-//        //apply rules below
-//        BoundSql boundSql = statement.getBoundSql(args[1]);
-//        String oldSql = boundSql.getSql();
-//        Assert.notNull(oldSql,"需要执行的sql不能为null");
-//        Assert.isTrue(oldSql.length() > 0,"需要执行的sql不能为空串");
+        conditionSqlThisThread.set(conditionSql);
         ThreadLocal<String> threadLocal = new ThreadLocal<>();
         threadLocal.set(conditionSql);
-        SqlSource sqlSource = statement.getSqlSource();
-        SqlSource newSqlSource1 = SqlSourceUtil.covertSqlSource(sqlSource, conditionSql,threadLocal);
+        ThreadLocal<Boolean> threadLocalOfCountFlag = new ThreadLocal<>();
+        threadLocalOfCountFlag.set(isCountFlag);
+        SqlSource newSqlSource1 = SqlSourceUtil.covertSqlSource(sqlSource, conditionSql,args[1], threadLocal,threadLocalOfCountFlag);
         MetaObject msObject = SystemMetaObject.forObject(statement);
         msObject.setValue("sqlSource", newSqlSource1);
 
@@ -196,16 +192,28 @@ public class DataPermissionInterceptor implements Interceptor {
         if(rulesSet.isEmpty()){
             return null;
         }
+        boolean hasRule = false;
         for(String rule : rulesSet){
+            if(isNull(rule) || rule.trim().equals("")){
+                continue;
+            }
             if(isFirst){
                 stringBuilder.append("("+rule+")");
+                hasRule = true;
                 isFirst = false;
                 continue;
             }
             stringBuilder.append(" "+FIELD_SQL_AND+" ("+rule+")");
+            hasRule = true;
         }
         stringBuilder.append(")");
-        return stringBuilder.toString();
+
+        if(hasRule){
+            return stringBuilder.toString();
+        }
+        else {
+            return "";
+        }
     }
 
     /**
@@ -253,5 +261,9 @@ public class DataPermissionInterceptor implements Interceptor {
         }
 
         return conditionSql;
+    }
+
+    public static String getConditionSql(){
+        return conditionSqlThisThread.get();
     }
 }
