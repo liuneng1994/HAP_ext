@@ -17,6 +17,7 @@ import static hap.extend.core.dataPermission.utils.SqlUtil.replaceLimit;
  * DynamicSqlSource.
  * @author yyz
  */
+@Deprecated
 public class DPPageDynamicSqlSource extends PageDynamicSqlSource {
 
     private Logger logger = LoggerFactory.getLogger(DPPageDynamicSqlSource.class);

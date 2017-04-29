@@ -3,6 +3,7 @@ package hap.extend.core.dataPermission.utils;
 import com.github.pagehelper.parser.Parser;
 import com.github.pagehelper.sqlsource.OrderByStaticSqlSource;
 import com.github.pagehelper.sqlsource.PageDynamicSqlSource;
+import hap.extend.core.dataPermission.interceptor.DataPermissionInterceptor;
 import net.sf.jsqlparser.JSQLParserException;
 import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.builder.StaticSqlSource;
@@ -27,19 +28,24 @@ import static hap.extend.core.dataPermission.utils.SqlUtil.replaceLimit;
 public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
     private Configuration configuration;
     private SqlNode rootSqlNode;
-    private ThreadLocal<String> tlOfConditionSql = new ThreadLocal<>();
+//    private ThreadLocal<String> tlOfConditionSql = new ThreadLocal<>();
     private Logger logger = LoggerFactory.getLogger(NewDPDynamicSqlSource.class);
 
     public NewDPDynamicSqlSource(DynamicSqlSource sqlSource) {
         super(sqlSource);
     }
-    public NewDPDynamicSqlSource(Configuration configuration, SqlNode rootSqlNode, String conditionSql) {
+//    public NewDPDynamicSqlSource(Configuration configuration, SqlNode rootSqlNode, String conditionSql) {
+//        this(new DynamicSqlSource(configuration, rootSqlNode));
+//        this.configuration = configuration;
+//        this.rootSqlNode = rootSqlNode;
+//        this.tlOfConditionSql.set(DataPermissionInterceptor.getConditionSql());
+//    }
+    public NewDPDynamicSqlSource(Configuration configuration, SqlNode rootSqlNode) {
         this(new DynamicSqlSource(configuration, rootSqlNode));
         this.configuration = configuration;
         this.rootSqlNode = rootSqlNode;
-        this.tlOfConditionSql.set(conditionSql);
+//        this.tlOfConditionSql.set(DataPermissionInterceptor.getConditionSql());
     }
-
 
     protected BoundSql getDefaultBoundSql(Object parameterObject) {
         DynamicContext context = new DynamicContext(this.configuration, parameterObject);
@@ -50,9 +56,10 @@ public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
 
         BoundSql boundSql_0 = sqlSource.getBoundSql(parameterObject);
         String newSql = boundSql_0.getSql();
-        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
+        String conditionSql = DataPermissionInterceptor.getConditionSql();
+        if(isNotNull(conditionSql)){
             try {
-                newSql = SqlUtil.addConditionToSql_0(newSql, tlOfConditionSql.get());
+                newSql = SqlUtil.addConditionToSql_0(newSql, conditionSql);
                 newSql = removeLimitOffset(newSql);
                 MetaObject metaObject = SystemMetaObject.forObject(boundSql_0);
                 metaObject.setValue("sql", newSql);
@@ -61,6 +68,17 @@ public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
                 logger.error(e.getMessage(),e);
             }
         }
+//        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
+//            try {
+//                newSql = SqlUtil.addConditionToSql_0(newSql, tlOfConditionSql.get());
+//                newSql = removeLimitOffset(newSql);
+//                MetaObject metaObject = SystemMetaObject.forObject(boundSql_0);
+//                metaObject.setValue("sql", newSql);
+//                sqlSource = sqlSourceParser.parse(newSql, parameterType, context.getBindings());
+//            } catch (JSQLParserException e) {
+//                logger.error(e.getMessage(),e);
+//            }
+//        }
 
         OrderByStaticSqlSource sqlSource1 = new OrderByStaticSqlSource((StaticSqlSource)sqlSource);
         BoundSql boundSql = sqlSource1.getBoundSql(parameterObject);
@@ -84,9 +102,11 @@ public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
         StaticSqlSource sqlSource1 = null;
         String newSql = boundSql.getSql();
         boolean flag = false;
-        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
+
+        String conditionSql = DataPermissionInterceptor.getConditionSql();
+        if(isNotNull(conditionSql)){
             try {
-                newSql = SqlUtil.addConditionToSql_0(newSql, tlOfConditionSql.get());
+                newSql = SqlUtil.addConditionToSql_0(newSql, conditionSql);
                 newSql = removeLimitOffset(newSql);
                 MetaObject metaObject = SystemMetaObject.forObject(boundSql);
                 metaObject.setValue("sql", newSql);
@@ -96,6 +116,18 @@ public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
                 logger.error(e.getMessage(),e);
             }
         }
+//        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
+//            try {
+//                newSql = SqlUtil.addConditionToSql_0(newSql, tlOfConditionSql.get());
+//                newSql = removeLimitOffset(newSql);
+//                MetaObject metaObject = SystemMetaObject.forObject(boundSql);
+//                metaObject.setValue("sql", newSql);
+//                sqlSource1 = new StaticSqlSource(this.configuration, ((Parser)localParser.get()).getCountSql(newSql), boundSql.getParameterMappings());
+//                flag = true;
+//            } catch (JSQLParserException e) {
+//                logger.error(e.getMessage(),e);
+//            }
+//        }
         if(!flag){
             sqlSource1 = new StaticSqlSource(this.configuration, ((Parser)localParser.get()).getCountSql(boundSql.getSql()), boundSql.getParameterMappings());
         }
@@ -131,9 +163,10 @@ public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
         StaticSqlSource sqlSource2 = null;
         String newSql = boundSql.getSql();
         boolean flag = false;
-        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
+        String conditionSql = DataPermissionInterceptor.getConditionSql();
+        if(isNotNull(conditionSql)){
             try {
-                newSql = SqlUtil.addConditionToSql_0(newSql, tlOfConditionSql.get());
+                newSql = SqlUtil.addConditionToSql_0(newSql, conditionSql);
                 newSql = removeLimitOffset(newSql);
                 MetaObject metaObject = SystemMetaObject.forObject(boundSql);
                 metaObject.setValue("sql", newSql);
@@ -143,6 +176,18 @@ public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
                 logger.error(e.getMessage(),e);
             }
         }
+//        if(isNotNull(tlOfConditionSql) && isNotNull(tlOfConditionSql.get())){
+//            try {
+//                newSql = SqlUtil.addConditionToSql_0(newSql, tlOfConditionSql.get());
+//                newSql = removeLimitOffset(newSql);
+//                MetaObject metaObject = SystemMetaObject.forObject(boundSql);
+//                metaObject.setValue("sql", newSql);
+//                sqlSource2 = new StaticSqlSource(this.configuration, ((Parser)localParser.get()).getPageSql(newSql), ((Parser)localParser.get()).getPageParameterMapping(this.configuration, boundSql));
+//                flag = true;
+//            } catch (JSQLParserException e) {
+//                logger.error(e.getMessage(),e);
+//            }
+//        }
         if(!flag){
             sqlSource2 = new StaticSqlSource(this.configuration, ((Parser)localParser.get()).getPageSql(boundSql.getSql()), ((Parser)localParser.get()).getPageParameterMapping(this.configuration, boundSql));
         }
@@ -170,8 +215,8 @@ public class NewDPDynamicSqlSource extends PageDynamicSqlSource {
     public SqlNode getRootSqlNode() {
         return rootSqlNode;
     }
-
-    public ThreadLocal<String> getTlOfConditionSql() {
-        return tlOfConditionSql;
-    }
+//
+//    public ThreadLocal<String> getTlOfConditionSql() {
+//        return tlOfConditionSql;
+//    }
 }

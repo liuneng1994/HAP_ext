@@ -64,7 +64,8 @@ public final class SqlSourceUtil {
             Configuration configuration = (Configuration) metaObject2.getValue("configuration");
             SqlNode rootSqlNode = (SqlNode) metaObject2.getValue("rootSqlNode");
             // 替换新的sql源
-            DPDynamicSqlSource vpdDynamicSqlSource = new DPDynamicSqlSource(configuration, rootSqlNode, parameterObject, threadLocal, tlOfIsCountFlag);
+//            DPDynamicSqlSource vpdDynamicSqlSource = new DPDynamicSqlSource(configuration, rootSqlNode, parameterObject, threadLocal, tlOfIsCountFlag);
+            DPDynamicSqlSource vpdDynamicSqlSource = new DPDynamicSqlSource(configuration, rootSqlNode, parameterObject);
             result = vpdDynamicSqlSource;
         } else if (sqlSource instanceof StaticSqlSource || sqlSource instanceof OrderByStaticSqlSource
                 || sqlSource instanceof PageStaticSqlSource) {
@@ -91,8 +92,10 @@ public final class SqlSourceUtil {
             SqlNode rootSqlNode = (SqlNode) metaObject2.getValue("rootSqlNode");
 //            DPPageDynamicSqlSource vpdPageDynamicSqlSource = new DPPageDynamicSqlSource(
 //                    configuration, rootSqlNode,threadLocal, tlOfIsCountFlag);
+//            NewDPDynamicSqlSource vpdPageDynamicSqlSource = new NewDPDynamicSqlSource(
+//                    configuration, rootSqlNode,conditionSql);
             NewDPDynamicSqlSource vpdPageDynamicSqlSource = new NewDPDynamicSqlSource(
-                    configuration, rootSqlNode,conditionSql);
+                    configuration, rootSqlNode);
             result = vpdPageDynamicSqlSource;
         }
         if (logger.isInfoEnabled()) {

@@ -6,8 +6,10 @@ import com.hand.hap.cache.Cache;
 import com.hand.hap.cache.CacheManager;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.core.impl.RequestHelper;
+import hap.extend.core.operation.utils.OPConstUtil;
 import org.apache.commons.collections.list.TransformedList;
 import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.plugin.*;
@@ -45,16 +47,34 @@ public class DataPermissionInterceptor implements Interceptor {
     private Cache<String> ruleUserMappingCache;
     private Cache<String> rulesCache;
 
+    private static final ThreadLocal<String> conditionSqlThisThread = new ThreadLocal<>();
+
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         IRequest request = RequestHelper.getCurrentRequest(true);
         Long userId_L = request.getUserId();
         Long roleId_L = request.getRoleId();
+        logger.info("\n(userId,roleId,sqlId)=({},{})\n",userId_L,roleId_L);
         if(isNull(userId_L) || userId_L < 0){
             return jumpIntercept(invocation);
         }
         final Object[] args = invocation.getArgs();
         MappedStatement statement = (MappedStatement) args[0];//在当前类的开头使用注解规定需要注入的参数
+        SqlSource sqlSource = statement.getSqlSource();
+        BoundSql boundSql = sqlSource.getBoundSql(args[1]);
+        Object requestObj = boundSql.getAdditionalParameter(OPConstUtil.HAP_REQUEST_CONTEXT_REQUEST_KEY);
+//        IRequest request = null;
+//        logger.info("\nhap设置的request1：{}\nhap设置的request2：{}\n\n",requestObj,RequestHelper.getCurrentRequest(true));
+//        if(isNull(requestObj)){
+//            request = RequestHelper.getCurrentRequest(true);
+//        }else {
+//            request = (IRequest)requestObj;
+//        }
+//        Long userId_L = request.getUserId();
+//        Long roleId_L = request.getRoleId();
+//        if(isNull(userId_L) || userId_L < 0){
+//            return jumpIntercept(invocation);
+//        }
         String sqlId = statement.getId();
         logger.info("\ndata permission:is going to handle(userId,roleId,sqlId)=({},{},{})\n",userId_L,roleId_L,sqlId);
         boolean isCountFlag = isPrePagingMethod(sqlId);
@@ -113,20 +133,11 @@ public class DataPermissionInterceptor implements Interceptor {
         String conditionSql = handleRuleList(userId_L.toString(), roleId_L.toString(), filteredRuleKeys, rulesCache);
         /** 应用customize 插件*/
         conditionSql = handlePlugin(conditionSql);
-//        if(isNull(conditionSql)){//now null has special meaning
-//            conditionSql="";
-//            return jumpIntercept(invocation);
-//        }
-//        //apply rules below
-//        BoundSql boundSql = statement.getBoundSql(args[1]);
-//        String oldSql = boundSql.getSql();
-//        Assert.notNull(oldSql,"需要执行的sql不能为null");
-//        Assert.isTrue(oldSql.length() > 0,"需要执行的sql不能为空串");
+        conditionSqlThisThread.set(conditionSql);
         ThreadLocal<String> threadLocal = new ThreadLocal<>();
         threadLocal.set(conditionSql);
         ThreadLocal<Boolean> threadLocalOfCountFlag = new ThreadLocal<>();
         threadLocalOfCountFlag.set(isCountFlag);
-        SqlSource sqlSource = statement.getSqlSource();
         SqlSource newSqlSource1 = SqlSourceUtil.covertSqlSource(sqlSource, conditionSql,args[1], threadLocal,threadLocalOfCountFlag);
         MetaObject msObject = SystemMetaObject.forObject(statement);
         msObject.setValue("sqlSource", newSqlSource1);
@@ -268,5 +279,9 @@ public class DataPermissionInterceptor implements Interceptor {
         }
 
         return conditionSql;
+    }
+
+    public static String getConditionSql(){
+        return conditionSqlThisThread.get();
     }
 }

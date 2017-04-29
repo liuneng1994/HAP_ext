@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import hap.extend.core.dataPermission.interceptor.DataPermissionInterceptor;
 import hap.extend.core.dataPermission.utils.DPDynamicSqlSource;
 import hap.extend.core.dataPermission.utils.DPPageDynamicSqlSource;
 import hap.extend.core.dataPermission.utils.NewDPDynamicSqlSource;
@@ -243,8 +244,9 @@ public class SqlUtil implements Constant {
             if( sqlSource instanceof DPDynamicSqlSource){
                 DPDynamicSqlSource temp = (DPDynamicSqlSource)sqlSource;
 //                pageSqlSource = new DPPageDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode(),temp.getTlOfConditionSql(),temp.getTlOfIsCountFlag());
-                pageSqlSource = new NewDPDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode(),
-                        isNull(temp.getTlOfConditionSql())?"":temp.getTlOfConditionSql().get());
+//                pageSqlSource = new NewDPDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode(),
+//                        isNull(temp.getTlOfConditionSql())?"":temp.getTlOfConditionSql().get());
+                pageSqlSource = new NewDPDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode());
             }else {
                 pageSqlSource = new PageDynamicSqlSource((DynamicSqlSource)sqlSource);
             }
@@ -348,12 +350,13 @@ public class SqlUtil implements Constant {
 
         if(sqlSource instanceof NewDPDynamicSqlSource) {
             NewDPDynamicSqlSource temp = (NewDPDynamicSqlSource)sqlSource;
-            ThreadLocal<String> tlOfConditionSql = temp.getTlOfConditionSql();
-            String conditionSql = "";
-            if(!isNull(tlOfConditionSql) || !isNull(tlOfConditionSql.get())){
-                conditionSql = tlOfConditionSql.get();
-            }
-            NewDPDynamicSqlSource newDPDynamicSqlSource = new NewDPDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode(),conditionSql);
+//            ThreadLocal<String> tlOfConditionSql = temp.getTlOfConditionSql();
+//            String conditionSql = "";
+//            if(!isNull(tlOfConditionSql) || !isNull(tlOfConditionSql.get())){
+//                conditionSql = tlOfConditionSql.get();
+//            }
+//            NewDPDynamicSqlSource newDPDynamicSqlSource = new NewDPDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode(),conditionSql);
+            NewDPDynamicSqlSource newDPDynamicSqlSource = new NewDPDynamicSqlSource(temp.getConfiguration(),temp.getRootSqlNode());
             msObject.setValue("sqlSource", newDPDynamicSqlSource);
             msCountMap.put(ms.getId(), MSUtils.newCountMappedStatement(ms));
         }

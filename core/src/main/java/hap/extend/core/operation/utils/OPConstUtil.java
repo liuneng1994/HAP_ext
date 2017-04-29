@@ -1,5 +1,9 @@
 package hap.extend.core.operation.utils;
 
+import com.hand.hap.core.impl.RequestHelper;
+import hap.extend.core.dataPermission.utils.LangUtils;
+import org.apache.ibatis.mapping.BoundSql;
+
 import static hap.extend.core.operation.utils.LangUtil.isNotNull;
 import static hap.extend.core.operation.utils.LangUtil.isNull;
 
@@ -32,6 +36,11 @@ public final class OPConstUtil {
     public static final String CPN_CTR_FUN_TYPE_REQUIRED = "require";
     public static final String CPN_CTR_FUN_TYPE_READONLY = "readonly";
     public static final String CPN_CTR_FUN_TYPE_DISABLE = "disable";
+
+
+    public static final String HAP_REQUEST_CONTEXT_REQUEST_KEY = "request";
+
+
 
 
 
@@ -124,5 +133,12 @@ public final class OPConstUtil {
             return true;
         }
         return false;
+    }
+
+    public static void setRequestParameterInBundSql(BoundSql boundSql){
+        Object requestParameter = boundSql.getAdditionalParameter(OPConstUtil.HAP_REQUEST_CONTEXT_REQUEST_KEY);
+        if(LangUtils.isNull(requestParameter)){
+            boundSql.setAdditionalParameter(OPConstUtil.HAP_REQUEST_CONTEXT_REQUEST_KEY, RequestHelper.getCurrentRequest(true));
+        }
     }
 }
