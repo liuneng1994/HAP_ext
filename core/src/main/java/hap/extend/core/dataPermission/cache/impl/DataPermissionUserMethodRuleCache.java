@@ -17,6 +17,7 @@ import java.util.Set;
  *
  * @author yazheng.yang@hand-china.com
  */
+@Deprecated
 public class DataPermissionUserMethodRuleCache extends HashStringRedisCache<Long[]> {
     {
         setType(Long[].class);
@@ -32,24 +33,12 @@ public class DataPermissionUserMethodRuleCache extends HashStringRedisCache<Long
         strSerializer = getRedisTemplate().getStringSerializer();
         initLoad();
     }
-    /**
-     * key 为roleId.
-     *
-     * @param key
-     *            roleId
-     * @return values
-     */
+
     @Override
     public Long[] getValue(String key) {
         return super.getValue(key);
     }
 
-    /**
-     *
-     * @param key
-     *            code.lang
-     * @param values values
-     */
     @Override
     public void setValue(String key, Long[] values) {
         super.setValue(key, values);
@@ -76,7 +65,7 @@ public class DataPermissionUserMethodRuleCache extends HashStringRedisCache<Long
             });
         } catch (Throwable e) {
             if (logger.isErrorEnabled()) {
-                logger.error("init role function cache exception: ", e);
+                logger.error("init user_mappermethod_rule cache exception: ", e);
             }
         }
     }

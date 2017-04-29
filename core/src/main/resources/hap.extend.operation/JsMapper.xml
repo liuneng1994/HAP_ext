@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hap.extend.core.operation.mapper.JsMapper" >
+    <resultMap id="BaseResultMap" type="hap.extend.core.operation.dto.Js" extends="com.hand.hap.mapper.StdMapper.STD" >
+        <id column="JS_ID" property="jsId"/>
+        <result column="RESOURCE_ID" property="resourceId"/>
+        <result column="JS_NAME" property="jsName"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="JS_SCRIPT" property="jsScript"/>
+        <result column="ENABLE_FLAG" property="enableFlag"/>
+    </resultMap>
+
+    <!--<select id="selectPageJsByRole" resultMap="BaseResultMap">-->
+        <!--SELECT HCOM_RES_JS.*-->
+        <!--FROM HCOM_RES_JS js JOIN HCOM_RES_PRIV_ASSIGN pt ON (js.RESOURCE_ID=pt.RESOURCE_ID AND pt.ASSIGN_TYPE="ROLE" AND pt.TYPE_ID=#{roleId})-->
+
+        <!--SELECT * FROM HCOM_RES_JS js WHERE js.JS_ID IN-->
+        <!--(SELECT jsassign.JS_ID FROM HCOM_RES_JS_ASSIGN jsassign WHERE jsassign.ENABLE_FLAG="Y" AND jsassign.ASSIGN_ID IN-->
+          <!--(SELECT pt.ASSIGN_ID FROM HCOM_RES_PRIV_ASSIGN pt WHERE )-->
+        <!--)-->
+
+    <!--</select>-->
+
+
+</mapper>

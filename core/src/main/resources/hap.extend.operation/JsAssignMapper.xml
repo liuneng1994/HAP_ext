@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hap.extend.core.operation.mapper.JsAssignMapper" >
+    <resultMap id="BaseResultMap" type="hap.extend.core.operation.dto.JsAssign" extends="com.hand.hap.mapper.StdMapper.STD" >
+        <id column="JS_ASSIGN_ID" property="jsAssignId"/>
+        <result column="JS_ID" property="jsId"/>
+        <result column="ASSIGN_ID" property="assignId"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="ENABLE_FLAG" property="enableFlag"/>
+        <result column="JS_NAME" property="jsName"/>
+    </resultMap>
+</mapper>

@@ -21,5 +21,7 @@ databaseChangeLog(logicalFilePath: "hap/extend/core/db/liquibase.groovy") {
     }
     // 现在支持自动根据 db.url 参数检测数据库类型
     migrationHelper.dbmigrate(dbType,["com/hand/hap","hap/extend/core"] ,["table", "data", "patch"])
+//    migrationHelper.dbmigrate(dbType,["hap/extend/core"] ,["table", "data", "patch"])
+//    migrationHelper.dbmigrate(dbType,["com/hand/hap"] ,["table", "data", "patch"])
 
 }
