@@ -5,12 +5,6 @@
 
 package com.github.pagehelper;
 
-import com.github.pagehelper.Constant;
-import com.github.pagehelper.Dialect;
-import com.github.pagehelper.MSUtils;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.SqlUtilConfig;
-import com.github.pagehelper.StringUtil;
 import com.github.pagehelper.parser.Parser;
 import com.github.pagehelper.parser.impl.AbstractParser;
 import com.github.pagehelper.sqlsource.PageDynamicSqlSource;
@@ -25,9 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import hap.extend.core.dataPermission.interceptor.DataPermissionInterceptor;
 import hap.extend.core.dataPermission.utils.DPDynamicSqlSource;
-import hap.extend.core.dataPermission.utils.DPPageDynamicSqlSource;
 import hap.extend.core.dataPermission.utils.NewDPDynamicSqlSource;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.builder.annotation.ProviderSqlSource;
@@ -42,8 +34,6 @@ import org.apache.ibatis.scripting.xmltags.DynamicSqlSource;
 import org.apache.ibatis.session.RowBounds;
 
 import javax.validation.constraints.NotNull;
-
-import static hap.extend.core.dataPermission.utils.LangUtils.isNull;
 
 public class SqlUtil implements Constant {
     private static final ThreadLocal<Page> LOCAL_PAGE = new ThreadLocal();

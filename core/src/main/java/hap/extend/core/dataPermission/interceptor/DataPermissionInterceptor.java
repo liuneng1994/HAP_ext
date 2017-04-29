@@ -6,10 +6,7 @@ import com.hand.hap.cache.Cache;
 import com.hand.hap.cache.CacheManager;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.core.impl.RequestHelper;
-import hap.extend.core.operation.utils.OPConstUtil;
-import org.apache.commons.collections.list.TransformedList;
 import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.plugin.*;
@@ -54,27 +51,12 @@ public class DataPermissionInterceptor implements Interceptor {
         IRequest request = RequestHelper.getCurrentRequest(true);
         Long userId_L = request.getUserId();
         Long roleId_L = request.getRoleId();
-        logger.info("\n(userId,roleId,sqlId)=({},{})\n",userId_L,roleId_L);
         if(isNull(userId_L) || userId_L < 0){
             return jumpIntercept(invocation);
         }
         final Object[] args = invocation.getArgs();
         MappedStatement statement = (MappedStatement) args[0];//在当前类的开头使用注解规定需要注入的参数
         SqlSource sqlSource = statement.getSqlSource();
-        BoundSql boundSql = sqlSource.getBoundSql(args[1]);
-        Object requestObj = boundSql.getAdditionalParameter(OPConstUtil.HAP_REQUEST_CONTEXT_REQUEST_KEY);
-//        IRequest request = null;
-//        logger.info("\nhap设置的request1：{}\nhap设置的request2：{}\n\n",requestObj,RequestHelper.getCurrentRequest(true));
-//        if(isNull(requestObj)){
-//            request = RequestHelper.getCurrentRequest(true);
-//        }else {
-//            request = (IRequest)requestObj;
-//        }
-//        Long userId_L = request.getUserId();
-//        Long roleId_L = request.getRoleId();
-//        if(isNull(userId_L) || userId_L < 0){
-//            return jumpIntercept(invocation);
-//        }
         String sqlId = statement.getId();
         logger.info("\ndata permission:is going to handle(userId,roleId,sqlId)=({},{},{})\n",userId_L,roleId_L,sqlId);
         boolean isCountFlag = isPrePagingMethod(sqlId);
